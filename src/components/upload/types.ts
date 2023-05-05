@@ -1,6 +1,6 @@
 import { DropzoneOptions } from 'react-dropzone';
 // @mui
-import { SxProps } from '@mui/material';
+import { GridProps, SxProps } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
@@ -26,4 +26,12 @@ export interface UploadProps extends DropzoneOptions {
   onUpload?: VoidFunction;
   onRemove?: (file: CustomFile | string) => void;
   onRemoveAll?: VoidFunction;
+
+  previewProps?: PreviewProps;
+}
+
+export interface PreviewProps {
+  itemPerRow?: number;
+  gridProps?: GridProps;
+  scrollX?: boolean;
 }

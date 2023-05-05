@@ -1,10 +1,12 @@
 import { createContext, useEffect, useReducer, useCallback, useMemo } from 'react';
+// api
+import customerApi from 'src/api-client/customer';
+import adminApi from 'src/api-client/admin';
 // utils
-import axios from '../utils/axios';
 import localStorageAvailable from '../utils/localStorageAvailable';
 //
-import { isValidToken, setSession } from './utils';
 import { ActionMapType, AuthStateType, AuthUserType, JWTContextType } from './types';
+import { RegisterPayload } from '../api-client/type';
 
 // ----------------------------------------------------------------------
 
@@ -94,15 +96,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = storageAvailable ? localStorage.getItem('accessToken') : '';
+      const user = await customerApi.getProfile();
 
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
-
-        const response = await axios.get('/api/account/my-account');
-
-        const { user } = response.data;
-
+      if (user) {
         dispatch({
           type: Types.INITIAL,
           payload: {
@@ -129,6 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageAvailable]);
 
   useEffect(() => {
@@ -136,14 +133,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    const response = await axios.post('/api/account/login', {
-      email,
+  const login = useCallback(async (phone: string, password: string, isCustomer: boolean = true) => {
+    const loginFunc = isCustomer ? customerApi.login : adminApi.login;
+    const { user } = await loginFunc({
+      phone,
       password,
     });
-    const { accessToken, user } = response.data;
-
-    setSession(accessToken);
 
     dispatch({
       type: Types.LOGIN,
@@ -154,31 +149,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // REGISTER
-  const register = useCallback(
-    async (email: string, password: string, firstName: string, lastName: string) => {
-      const response = await axios.post('/api/account/register', {
-        email,
-        password,
-        firstName,
-        lastName,
-      });
-      const { accessToken, user } = response.data;
+  const register = useCallback(async (data: RegisterPayload) => {
+    const { user } = await customerApi.register(data);
 
-      localStorage.setItem('accessToken', accessToken);
-
-      dispatch({
-        type: Types.REGISTER,
-        payload: {
-          user,
-        },
-      });
-    },
-    []
-  );
+    dispatch({
+      type: Types.REGISTER,
+      payload: {
+        user,
+      },
+    });
+  }, []);
 
   // LOGOUT
   const logout = useCallback(() => {
-    setSession(null);
+    customerApi.logout();
     dispatch({
       type: Types.LOGOUT,
     });

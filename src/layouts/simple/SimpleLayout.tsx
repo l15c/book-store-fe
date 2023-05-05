@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function SimpleLayout({ children }: Props) {
-  const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
+  const isOffset = useOffSetTop(HEADER.H_DESKTOP);
 
   return (
     <>

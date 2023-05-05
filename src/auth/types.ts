@@ -1,5 +1,8 @@
 // ----------------------------------------------------------------------
 
+import { IAuthUser } from 'src/@types/user';
+import { RegisterPayload } from 'src/api-client/type';
+
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
@@ -11,7 +14,7 @@ export type ActionMapType<M extends { [index: string]: any }> = {
       };
 };
 
-export type AuthUserType = null | Record<string, any>;
+export type AuthUserType = IAuthUser | null;
 
 export type AuthStateType = {
   isAuthenticated: boolean;
@@ -26,8 +29,8 @@ export type JWTContextType = {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: AuthUserType;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  login: (email: string, password: string, isCustomer?: boolean) => Promise<void>;
+  register: (data: RegisterPayload) => Promise<void>;
   logout: () => void;
   loginWithGoogle?: () => void;
   loginWithGithub?: () => void;

@@ -5,13 +5,13 @@ import { format, getTime, formatDistanceToNow } from 'date-fns';
 type InputValue = Date | string | number | null;
 
 export function fDate(date: InputValue, newFormat?: string) {
-  const fm = newFormat || 'dd MMM yyyy';
+  const fm = newFormat || 'dd/MM/yyyy';
 
   return date ? format(new Date(date), fm) : '';
 }
 
 export function fDateTime(date: InputValue, newFormat?: string) {
-  const fm = newFormat || 'dd MMM yyyy p';
+  const fm = newFormat || 'dd/MM/yyyy p';
 
   return date ? format(new Date(date), fm) : '';
 }

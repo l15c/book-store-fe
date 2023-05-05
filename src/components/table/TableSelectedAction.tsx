@@ -54,7 +54,7 @@ export default function TableSelectedAction({
       />
 
       <Typography
-        variant="subtitle1"
+        variant="subtitle2"
         sx={{
           ml: 2,
           flexGrow: 1,
@@ -64,7 +64,7 @@ export default function TableSelectedAction({
           }),
         }}
       >
-        {numSelected} selected
+        Đã chọn {numSelected} sản phẩm
       </Typography>
 
       {action && action}

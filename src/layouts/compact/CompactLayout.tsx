@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function CompactLayout({ children }: Props) {
-  const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
+  const isOffset = useOffSetTop(HEADER.H_DESKTOP);
 
   return (
     <>
@@ -25,7 +25,7 @@ export default function CompactLayout({ children }: Props) {
       <Container component="main">
         <Stack
           sx={{
-            py: 12,
+            // py: 12,
             m: 'auto',
             maxWidth: 400,
             minHeight: '100vh',

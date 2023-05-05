@@ -72,7 +72,6 @@ export const StyledLabel = styled(Box)(
       whiteSpace: 'nowrap',
       display: 'inline-flex',
       justifyContent: 'center',
-      textTransform: 'capitalize',
       padding: theme.spacing(0, 1),
       color: theme.palette.grey[800],
       fontSize: theme.typography.pxToRem(12),

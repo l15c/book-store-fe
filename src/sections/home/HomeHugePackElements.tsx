@@ -35,8 +35,6 @@ import {
 import useResponsive from '../../hooks/useResponsive';
 // utils
 import { bgGradient } from '../../utils/cssStyles';
-// routes
-import { PATH_PAGE } from '../../routes/paths';
 // _mock
 import _mock from '../../_mock';
 // components
@@ -452,7 +450,7 @@ const ViewAllButton = (
       variant="outlined"
       target="_blank"
       rel="noopener"
-      href={PATH_PAGE.components}
+      href="/"
       endIcon={<Iconify icon="ic:round-arrow-right-alt" />}
     >
       View All Components

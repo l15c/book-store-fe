@@ -20,7 +20,7 @@ type NavListRootProps = {
 export default function NavList({ data, depth, hasChild }: NavListRootProps) {
   const { pathname } = useRouter();
 
-  const { active, isExternalLink } = useActiveLink(data.path);
+  const { active, isExternalLink } = useActiveLink(data.path, hasChild);
 
   const [open, setOpen] = useState(active);
 

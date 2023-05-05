@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Stack, FormHelperText } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // routes
-import { PATH_DASHBOARD } from '../../routes/paths';
+import { PATH_ADMIN } from '../../routes/paths';
 // components
 import { useSnackbar } from '../../components/snackbar';
 import FormProvider, { RHFCodes } from '../../components/hook-form';
@@ -63,7 +63,7 @@ export default function AuthVerifyCodeForm() {
       await new Promise((resolve) => setTimeout(resolve, 500));
       console.log('DATA', Object.values(data).join(''));
       enqueueSnackbar('Verify success!');
-      push(PATH_DASHBOARD.root);
+      push(PATH_ADMIN.root);
     } catch (error) {
       console.error(error);
     }

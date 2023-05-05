@@ -36,6 +36,7 @@ export default function Upload({
   multiple = false,
   error,
   helperText,
+  previewProps,
   //
   file,
   onDelete,
@@ -122,19 +123,24 @@ export default function Upload({
       {hasFiles && (
         <>
           <Box sx={{ my: 3 }}>
-            <MultiFilePreview files={files} thumbnail={thumbnail} onRemove={onRemove} />
+            <MultiFilePreview
+              files={files}
+              thumbnail={thumbnail}
+              onRemove={onRemove}
+              {...previewProps}
+            />
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
             {onRemoveAll && (
               <Button color="inherit" variant="outlined" size="small" onClick={onRemoveAll}>
-                Remove all
+                Xoá tất cả
               </Button>
             )}
 
             {onUpload && (
               <Button size="small" variant="contained" onClick={onUpload}>
-                Upload files
+                Tải lên
               </Button>
             )}
           </Stack>

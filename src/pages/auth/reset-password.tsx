@@ -24,18 +24,18 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Head>
-        <title> Reset Password | Minimal UI</title>
+        <title>Lấy lại mật khẩu | Book Shop</title>
       </Head>
 
       <PasswordIcon sx={{ mb: 5, height: 96 }} />
 
       <Typography variant="h3" paragraph>
-        Forgot your password?
+        Bạn quên mật khẩu?
       </Typography>
 
       <Typography sx={{ color: 'text.secondary', mb: 5 }}>
-        Please enter the email address associated with your account and We will email you a link to
-        reset your password.
+        Vui lòng nhập địa chỉ email được liên kết với tài khoản của bạn và chúng tôi sẽ gửi đến
+        email của bạn một liên kết đặt lại mật khẩu.
       </Typography>
 
       <AuthResetPasswordForm />
@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
         }}
       >
         <Iconify icon="eva:chevron-left-fill" width={16} />
-        Return to sign in
+        Quay lại trang đăng nhập
       </Link>
     </>
   );

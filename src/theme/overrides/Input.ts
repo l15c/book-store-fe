@@ -21,27 +21,27 @@ export default function Input(theme: Theme) {
         },
       },
     },
-    MuiInput: {
-      styleOverrides: {
-        underline: {
-          '&:before': {
-            borderBottomColor: alpha(theme.palette.grey[500], 0.56),
-          },
-          '&:after': {
-            borderBottomColor: theme.palette.text.primary,
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.text.primary,
-          },
-        },
-      },
-    },
+    // MuiInput: {
+    //   styleOverrides: {
+    //     underline: {
+    //       '&:before': {
+    //         borderBottomColor: alpha(theme.palette.grey[500], 0.56),
+    //       },
+    //       '&:after': {
+    //         borderBottomColor: theme.palette.text.primary,
+    //       },
+    //     },
+    //   },
+    // },
+    // MuiTextField: {
+    //   styleOverrides: {
+    //     root: {
+    //       '& .MuiInputLabel-root.Mui-focused': {
+    //         color: theme.palette.text.primary,
+    //       },
+    //     },
+    //   },
+    // },
     MuiFilledInput: {
       styleOverrides: {
         root: {
@@ -67,15 +67,15 @@ export default function Input(theme: Theme) {
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: alpha(theme.palette.grey[500], 0.32),
-          },
-          '&.Mui-focused': {
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderWidth: 1,
-              borderColor: theme.palette.text.primary,
-            },
-          },
+          // '& .MuiOutlinedInput-notchedOutline': {
+          //   borderColor: alpha(theme.palette.grey[500], 0.32),
+          // },
+          // '&.Mui-focused': {
+          //   '& .MuiOutlinedInput-notchedOutline': {
+          //     borderWidth: 1,
+          //     borderColor: theme.palette.text.primary,
+          //   },
+          // },
           '&.Mui-disabled': {
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: theme.palette.action.disabledBackground,

@@ -1,4 +1,4 @@
-import { Public_Sans, Barlow } from '@next/font/google';
+import { Public_Sans, Tillana } from '@next/font/google';
 
 // ----------------------------------------------------------------------
 
@@ -31,8 +31,8 @@ export const primaryFont = Public_Sans({
   fallback: ['Helvetica', 'Arial', 'sans-serif'],
 });
 
-export const secondaryFont = Barlow({
-  weight: ['900'],
+export const secondaryFont = Tillana({
+  weight: ['800'],
   subsets: ['latin'],
   display: 'swap',
   fallback: ['Helvetica', 'Arial', 'sans-serif'],
@@ -116,7 +116,7 @@ const typography = {
     fontWeight: 700,
     lineHeight: 24 / 14,
     fontSize: pxToRem(14),
-    textTransform: 'capitalize',
+    textTransform: 'none',
   },
 } as const;
 

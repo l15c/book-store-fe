@@ -5,7 +5,7 @@ function path(root: string, sublink: string) {
 }
 
 const ROOTS_AUTH = '/auth';
-const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_ADMIN = '/admin';
 
 // ----------------------------------------------------------------------
 
@@ -13,11 +13,25 @@ export const PATH_AUTH = {
   root: ROOTS_AUTH,
   login: path(ROOTS_AUTH, '/login'),
   register: path(ROOTS_AUTH, '/register'),
+  changPassword: path(ROOTS_AUTH, '/change-password'),
   loginUnprotected: path(ROOTS_AUTH, '/login-unprotected'),
   registerUnprotected: path(ROOTS_AUTH, '/register-unprotected'),
   verify: path(ROOTS_AUTH, '/verify'),
   resetPassword: path(ROOTS_AUTH, '/reset-password'),
   newPassword: path(ROOTS_AUTH, '/new-password'),
+};
+
+export const PATH_SHOP = {
+  root: '/',
+  product: {
+    root: '/products',
+    view: (name: string) => `/products/${name}`,
+    checkout: '/checkout',
+  },
+  order: {
+    root: '/orders',
+    detail: (id: string) => `/orders/${id}`,
+  },
 };
 
 export const PATH_PAGE = {
@@ -34,79 +48,60 @@ export const PATH_PAGE = {
   components: '/components',
 };
 
-export const PATH_DASHBOARD = {
-  root: ROOTS_DASHBOARD,
-  kanban: path(ROOTS_DASHBOARD, '/kanban'),
-  calendar: path(ROOTS_DASHBOARD, '/calendar'),
-  fileManager: path(ROOTS_DASHBOARD, '/files-manager'),
-  permissionDenied: path(ROOTS_DASHBOARD, '/permission-denied'),
-  blank: path(ROOTS_DASHBOARD, '/blank'),
+export const PATH_ADMIN = {
+  root: ROOTS_ADMIN,
+  login: path(ROOTS_ADMIN, '/login'),
+  kanban: path(ROOTS_ADMIN, '/kanban'),
+  calendar: path(ROOTS_ADMIN, '/calendar'),
+  fileManager: path(ROOTS_ADMIN, '/files-manager'),
+  permissionDenied: path(ROOTS_ADMIN, '/permission-denied'),
+  blank: path(ROOTS_ADMIN, '/blank'),
   general: {
-    app: path(ROOTS_DASHBOARD, '/app'),
-    ecommerce: path(ROOTS_DASHBOARD, '/ecommerce'),
-    analytics: path(ROOTS_DASHBOARD, '/analytics'),
-    banking: path(ROOTS_DASHBOARD, '/banking'),
-    booking: path(ROOTS_DASHBOARD, '/booking'),
-    file: path(ROOTS_DASHBOARD, '/file'),
+    app: path(ROOTS_ADMIN, '/app'),
+    ecommerce: path(ROOTS_ADMIN, '/ecommerce'),
+    analytics: path(ROOTS_ADMIN, '/analytics'),
+    banking: path(ROOTS_ADMIN, '/banking'),
+    booking: path(ROOTS_ADMIN, '/booking'),
+    file: path(ROOTS_ADMIN, '/file'),
   },
   mail: {
-    root: path(ROOTS_DASHBOARD, '/mail'),
-    all: path(ROOTS_DASHBOARD, '/mail/all'),
+    root: path(ROOTS_ADMIN, '/mail'),
+    all: path(ROOTS_ADMIN, '/mail/all'),
   },
   chat: {
-    root: path(ROOTS_DASHBOARD, '/chat'),
-    new: path(ROOTS_DASHBOARD, '/chat/new'),
-    view: (name: string) => path(ROOTS_DASHBOARD, `/chat/${name}`),
+    root: path(ROOTS_ADMIN, '/chat'),
+    new: path(ROOTS_ADMIN, '/chat/new'),
+    view: (name: string) => path(ROOTS_ADMIN, `/chat/${name}`),
   },
   user: {
-    root: path(ROOTS_DASHBOARD, '/user'),
-    new: path(ROOTS_DASHBOARD, '/user/new'),
-    list: path(ROOTS_DASHBOARD, '/user/list'),
-    cards: path(ROOTS_DASHBOARD, '/user/cards'),
-    profile: path(ROOTS_DASHBOARD, '/user/profile'),
-    account: path(ROOTS_DASHBOARD, '/user/account'),
-    edit: (name: string) => path(ROOTS_DASHBOARD, `/user/${name}/edit`),
-    demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`),
+    root: path(ROOTS_ADMIN, '/user'),
+    new: path(ROOTS_ADMIN, '/user/new'),
+    cards: path(ROOTS_ADMIN, '/user/cards'),
+    profile: path(ROOTS_ADMIN, '/user/profile'),
+    account: path(ROOTS_ADMIN, '/user/account'),
+    edit: (name: string) => path(ROOTS_ADMIN, `/user/${name}/edit`),
+    demoEdit: path(ROOTS_ADMIN, `/user/reece-chung/edit`),
   },
   eCommerce: {
-    root: path(ROOTS_DASHBOARD, '/e-commerce'),
-    shop: path(ROOTS_DASHBOARD, '/e-commerce/shop'),
-    list: path(ROOTS_DASHBOARD, '/e-commerce/list'),
-    checkout: path(ROOTS_DASHBOARD, '/e-commerce/checkout'),
-    new: path(ROOTS_DASHBOARD, '/e-commerce/product/new'),
-    view: (name: string) => path(ROOTS_DASHBOARD, `/e-commerce/product/${name}`),
-    edit: (name: string) => path(ROOTS_DASHBOARD, `/e-commerce/product/${name}/edit`),
-    demoEdit: path(ROOTS_DASHBOARD, '/e-commerce/product/nike-blazer-low-77-vintage/edit'),
-    demoView: path(ROOTS_DASHBOARD, '/e-commerce/product/nike-air-force-1-ndestrukt'),
+    root: path(ROOTS_ADMIN, '/e-commerce'),
+    list: path(ROOTS_ADMIN, '/e-commerce/product'),
+    new: path(ROOTS_ADMIN, '/e-commerce/product/new'),
+    edit: (name: string) => path(ROOTS_ADMIN, `/e-commerce/product/${name}/edit`),
   },
   invoice: {
-    root: path(ROOTS_DASHBOARD, '/invoice'),
-    list: path(ROOTS_DASHBOARD, '/invoice/list'),
-    new: path(ROOTS_DASHBOARD, '/invoice/new'),
-    view: (id: string) => path(ROOTS_DASHBOARD, `/invoice/${id}`),
-    edit: (id: string) => path(ROOTS_DASHBOARD, `/invoice/${id}/edit`),
-    demoEdit: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1/edit'),
-    demoView: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5'),
+    root: path(ROOTS_ADMIN, '/invoice'),
+    list: path(ROOTS_ADMIN, '/invoice/list'),
+    new: path(ROOTS_ADMIN, '/invoice/new'),
+    view: (id: string) => path(ROOTS_ADMIN, `/invoice/${id}`),
+    edit: (id: string) => path(ROOTS_ADMIN, `/invoice/${id}/edit`),
+    demoEdit: path(ROOTS_ADMIN, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1/edit'),
+    demoView: path(ROOTS_ADMIN, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5'),
   },
   blog: {
-    root: path(ROOTS_DASHBOARD, '/blog'),
-    posts: path(ROOTS_DASHBOARD, '/blog/posts'),
-    new: path(ROOTS_DASHBOARD, '/blog/new'),
-    view: (title: string) => path(ROOTS_DASHBOARD, `/blog/post/${title}`),
-    demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
+    root: path(ROOTS_ADMIN, '/blog'),
+    posts: path(ROOTS_ADMIN, '/blog/posts'),
+    new: path(ROOTS_ADMIN, '/blog/new'),
+    view: (title: string) => path(ROOTS_ADMIN, `/blog/post/${title}`),
+    demoView: path(ROOTS_ADMIN, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
   },
 };
-
-export const PATH_DOCS = {
-  root: 'https://docs.minimals.cc',
-  changelog: 'https://docs.minimals.cc/changelog',
-};
-
-export const PATH_ZONE_ON_STORE = 'https://mui.com/store/items/zone-landing-page/';
-
-export const PATH_MINIMAL_ON_STORE = 'https://mui.com/store/items/minimal-dashboard/';
-
-export const PATH_FREE_VERSION = 'https://mui.com/store/items/minimal-dashboard-free/';
-
-export const PATH_FIGMA_PREVIEW =
-  'https://www.figma.com/file/rWMDOkMZYw2VpTdNuBBCvN/%5BPreview%5D-Minimal-Web.26.11.22?node-id=0%3A1&t=ya2mDFiuhTXXLLF1-1';

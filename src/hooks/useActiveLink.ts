@@ -12,7 +12,7 @@ export default function useActiveLink(path: string, deep = true): ReturnType {
 
   const checkPath = path.startsWith('#');
 
-  const currentPath = path === '/' ? '/' : `${path}/`;
+  const currentPath = path === '/' ? '/' : `${path}`; // remove trailingSlash
 
   const normalActive =
     (!checkPath && pathname === currentPath) || (!checkPath && asPath === currentPath);

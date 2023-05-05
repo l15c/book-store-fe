@@ -3,9 +3,9 @@ import Head from 'next/head';
 // @mui
 import { Box } from '@mui/material';
 // layouts
-import MainLayout from '../layouts/main';
+import ShopLayout from 'src/layouts/shop';
 // components
-import ScrollProgress from '../components/scroll-progress';
+import ScrollProgress from 'src/components/scroll-progress';
 // sections
 import {
   HomeHero,
@@ -22,7 +22,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-HomePage.getLayout = (page: React.ReactElement) => <MainLayout> {page} </MainLayout>;
+HomePage.getLayout = (page: React.ReactElement) => <ShopLayout noAuth> {page} </ShopLayout>;
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title> The starting point for your next project | Minimal UI</title>
+        <title>Book Shop</title>
       </Head>
 
       <ScrollProgress />
@@ -41,6 +41,8 @@ export default function HomePage() {
         sx={{
           overflow: 'hidden',
           position: 'relative',
+          top: 0,
+          right: 0,
           bgcolor: 'background.default',
         }}
       >

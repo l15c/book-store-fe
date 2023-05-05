@@ -28,7 +28,7 @@ export default function Header({ isOffset }: Props) {
           justifyContent: 'space-between',
           height: {
             xs: HEADER.H_MOBILE,
-            md: HEADER.H_MAIN_DESKTOP,
+            md: HEADER.H_DESKTOP,
           },
           transition: theme.transitions.create(['height', 'background-color'], {
             easing: theme.transitions.easing.easeInOut,
@@ -37,7 +37,7 @@ export default function Header({ isOffset }: Props) {
           ...(isOffset && {
             ...bgBlur({ color: theme.palette.background.default }),
             height: {
-              md: HEADER.H_MAIN_DESKTOP - 16,
+              md: HEADER.H_DESKTOP - 16,
             },
           }),
         }}
@@ -45,7 +45,7 @@ export default function Header({ isOffset }: Props) {
         <Logo />
 
         <Link component={NextLink} href={PATH_PAGE.faqs} variant="subtitle2" color="inherit">
-          Need Help?
+          Cần trợ giúp?
         </Link>
       </Toolbar>
 

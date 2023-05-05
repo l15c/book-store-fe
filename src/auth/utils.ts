@@ -1,7 +1,7 @@
 // routes
 import { PATH_AUTH } from '../routes/paths';
 // utils
-import axios from '../utils/axios';
+import axios from '../api-client/axios';
 
 // ----------------------------------------------------------------------
 

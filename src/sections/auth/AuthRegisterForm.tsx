@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSnackbar } from 'notistack';
 import * as Yup from 'yup';
 // form
 import { useForm } from 'react-hook-form';
@@ -11,34 +12,44 @@ import { useAuthContext } from '../../auth/useAuthContext';
 // components
 import Iconify from '../../components/iconify';
 import FormProvider, { RHFTextField } from '../../components/hook-form';
+// utils
+import { PHONE_REG_EXP } from '../../utils/regex';
 
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  fullName: string;
   email: string;
+  phone: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  confirmPassword: string;
   afterSubmit?: string;
 };
 
 export default function AuthRegisterForm() {
   const { register } = useAuthContext();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    fullName: Yup.string().required('Vui lòng nhập tên của bạn'),
+    phone: Yup.string()
+      .required('Vui lòng nhập số điện thoại')
+      .matches(PHONE_REG_EXP, 'Số điện thoại không hợp lệ'),
+    email: Yup.string().email('Email không đúng định dạng').required('Vui lòng nhập email'),
+    password: Yup.string().min(8, 'Mật khẩu tối thiểu 8 kí tự').required('Vui lòng nhập mật khẩu'),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Nhập lại mật khẩu không chính xác'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    fullName: '',
+    phone: '',
     email: '',
     password: '',
+    confirmPassword: '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -47,24 +58,34 @@ export default function AuthRegisterForm() {
   });
 
   const {
-    reset,
+    // reset,
     setError,
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
+    const { email, phone, fullName, password } = data;
     try {
       if (register) {
-        await register(data.email, data.password, data.firstName, data.lastName);
+        await register({ email, phone, fullName, password });
+        enqueueSnackbar('Đăng ký thành công');
       }
     } catch (error) {
       console.error(error);
-      reset();
-      setError('afterSubmit', {
-        ...error,
-        message: error.message || error,
-      });
+      const { status } = error;
+
+      if (status === 400) {
+        setError('afterSubmit', {
+          ...error,
+          message: 'Số điện thoại hoặc email đã đăng ký', // error.message || error
+        });
+      } else {
+        setError('afterSubmit', {
+          ...error,
+          message: 'Đã xảy ra lỗi. Vui lòng thử lại', // error.message || error
+        });
+      }
     }
   };
 
@@ -73,22 +94,37 @@ export default function AuthRegisterForm() {
       <Stack spacing={2.5}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <RHFTextField name="firstName" label="First name" />
-          <RHFTextField name="lastName" label="Last name" />
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2.5, sm: 2 }}>
+          <RHFTextField name="fullName" label="Họ và tên" />
+          <RHFTextField name="phone" label="Số điện thoại" />
         </Stack>
 
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="email" label="Email" />
 
         <RHFTextField
           name="password"
-          label="Password"
+          label="Mật khẩu"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
                   <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <RHFTextField
+          name="confirmPassword"
+          label="Nhập lại mật khẩu"
+          type={showRePassword ? 'text' : 'password'}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowRePassword(!showRePassword)} edge="end">
+                  <Iconify icon={showRePassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -111,7 +147,7 @@ export default function AuthRegisterForm() {
             },
           }}
         >
-          Create account
+          Tạo tài khoản
         </LoadingButton>
       </Stack>
     </FormProvider>

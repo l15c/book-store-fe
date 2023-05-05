@@ -1,4 +1,24 @@
 // ----------------------------------------------------------------------
+export type IAuthUser = {
+  id: string;
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  imageUrl?: string;
+  roleId: number;
+  userAddresses?: IUserAddress;
+};
+
+export type IUserAddress = {
+  id: number;
+  title: string;
+  isDefault: boolean;
+  mapping: number[];
+  displayAddress: string;
+  receiver?: string;
+  phone?: string;
+  note?: string;
+};
 
 export type IUserSocialLink = {
   facebookLink: string;
@@ -138,9 +158,9 @@ export type IUserAccountBillingAddress = {
 };
 
 export type IUserAccountChangePassword = {
-  oldPassword: string;
+  password: string;
   newPassword: string;
-  confirmNewPassword: string;
+  confirmPassword: string;
 };
 
 // ----------------------------------------------------------------------

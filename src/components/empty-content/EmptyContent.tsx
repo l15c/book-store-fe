@@ -9,9 +9,17 @@ interface EmptyContentProps extends StackProps {
   title: string;
   img?: string;
   description?: string;
+  actionBtn?: React.ReactNode;
 }
 
-export default function EmptyContent({ title, description, img, sx, ...other }: EmptyContentProps) {
+export default function EmptyContent({
+  title,
+  description,
+  img,
+  sx,
+  actionBtn,
+  ...other
+}: EmptyContentProps) {
   return (
     <Stack
       alignItems="center"
@@ -40,6 +48,7 @@ export default function EmptyContent({ title, description, img, sx, ...other }: 
           {description}
         </Typography>
       )}
+      {actionBtn}
     </Stack>
   );
 }

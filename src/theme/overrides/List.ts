@@ -24,6 +24,7 @@ export default function List(theme: Theme) {
     MuiListItemText: {
       styleOverrides: {
         root: {
+          textTransform: 'none',
           marginTop: 0,
           marginBottom: 0,
         },

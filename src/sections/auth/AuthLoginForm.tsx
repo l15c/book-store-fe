@@ -1,42 +1,46 @@
 import { useState } from 'react';
 import * as Yup from 'yup';
-// next
-import NextLink from 'next/link';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
+import { Stack, Alert, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-// routes
-import { PATH_AUTH } from '../../routes/paths';
+// ro
 // auth
 import { useAuthContext } from '../../auth/useAuthContext';
 // components
 import Iconify from '../../components/iconify';
 import FormProvider, { RHFTextField } from '../../components/hook-form';
+// utils
+import { PHONE_REG_EXP } from '../../utils/regex';
 
 // ----------------------------------------------------------------------
+type Props = {
+  customers?: boolean;
+};
 
 type FormValuesProps = {
-  email: string;
+  phone: string;
   password: string;
   afterSubmit?: string;
 };
 
-export default function AuthLoginForm() {
+export default function AuthLoginForm({ customers = false }: Props) {
   const { login } = useAuthContext();
 
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    phone: Yup.string()
+      .required('Vui lòng nhập số điện thoại')
+      .matches(PHONE_REG_EXP, 'Số điện thoại không hợp lệ'),
+    password: Yup.string().required('Vui lòng nhập mật khẩu'),
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    phone: '',
+    password: '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -53,27 +57,34 @@ export default function AuthLoginForm() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await login(data.email, data.password);
+      await login(data.phone, data.password, customers);
     } catch (error) {
       console.log(error);
       reset();
-      setError('afterSubmit', {
-        ...error,
-        message: error.message || error,
-      });
+      if (error.status === 400) {
+        setError('afterSubmit', {
+          message: 'Tài khoản hoặc mật khẩu không chính xác',
+          ...error,
+        });
+      } else {
+        setError('afterSubmit', {
+          message: 'Đã xảy ra lỗi. Vui lòng thử lại',
+          ...error,
+        });
+      }
     }
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
+      <Stack spacing={3} mb={2}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="phone" label="Số điện thoại" />
 
         <RHFTextField
           name="password"
-          label="Password"
+          label="Mật khẩu"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -85,18 +96,6 @@ export default function AuthLoginForm() {
             ),
           }}
         />
-      </Stack>
-
-      <Stack alignItems="flex-end" sx={{ my: 2 }}>
-        <Link
-          component={NextLink}
-          href={PATH_AUTH.resetPassword}
-          variant="body2"
-          color="inherit"
-          underline="always"
-        >
-          Forgot password?
-        </Link>
       </Stack>
 
       <LoadingButton
@@ -115,7 +114,7 @@ export default function AuthLoginForm() {
           },
         }}
       >
-        Login
+        Đăng nhập
       </LoadingButton>
     </FormProvider>
   );

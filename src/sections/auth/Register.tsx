@@ -7,22 +7,22 @@ import LoginLayout from '../../layouts/login';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
 //
-import AuthWithSocial from './AuthWithSocial';
+// import AuthWithSocial from './AuthWithSocial';
 import AuthRegisterForm from './AuthRegisterForm';
 
 // ----------------------------------------------------------------------
 
 export default function Register() {
   return (
-    <LoginLayout title="Manage the job more effectively with Minimal">
-      <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-        <Typography variant="h4">Get started absolutely free.</Typography>
+    <LoginLayout title="">
+      <Stack spacing={1} sx={{ mb: 3, position: 'relative' }}>
+        <Typography variant="h4">Đăng ký tài khoản Book Shop</Typography>
 
         <Stack direction="row" spacing={0.5}>
-          <Typography variant="body2"> Already have an account? </Typography>
+          <Typography variant="body2"> Bạn đã có tài khoản?</Typography>
 
           <Link component={NextLink} href={PATH_AUTH.login} variant="subtitle2">
-            Sign in
+            Đăng nhập tại đây
           </Link>
         </Stack>
       </Stack>
@@ -33,18 +33,18 @@ export default function Register() {
         component="div"
         sx={{ color: 'text.secondary', mt: 3, typography: 'caption', textAlign: 'center' }}
       >
-        {'By signing up, I agree to '}
+        {'Bằng việc đăng ký, Tôi đồng ý '}
         <Link underline="always" color="text.primary">
-          Terms of Service
+          Điều khoản dịch vụ
         </Link>
-        {' and '}
+        {' và '}
         <Link underline="always" color="text.primary">
-          Privacy Policy
+          Chính sách bảo mật
         </Link>
         .
       </Typography>
 
-      <AuthWithSocial />
+      {/* <AuthWithSocial /> */}
     </LoginLayout>
   );
 }

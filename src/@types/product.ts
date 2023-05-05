@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { IBookCompact } from './book';
+
 export type IProductReview = {
   id: string;
   name: string;
@@ -94,7 +96,7 @@ export type ICheckoutCardOption = {
 
 export type IProductCheckoutState = {
   activeStep: number;
-  cart: ICheckoutCartItem[];
+  cart: IBookCompact[];
   subtotal: number;
   total: number;
   discount: number;

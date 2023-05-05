@@ -1,5 +1,5 @@
 // @mui
-import { alpha, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { TextField, TextFieldProps } from '@mui/material';
 
 // ----------------------------------------------------------------------
@@ -11,22 +11,18 @@ type Props = TextFieldProps & {
 const CustomTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'width',
 })<Props>(({ width, theme }) => ({
+  background: '#f6f5f7',
+  borderRadius: 999,
   '& fieldset': {
     display: 'none',
   },
   '& .MuiOutlinedInput-root': {
     width,
-    border: `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
-    transition: theme.transitions.create(['box-shadow', 'width'], {
-      duration: theme.transitions.duration.shorter,
-    }),
+    borderRadius: 999,
+
     '&.Mui-focused': {
       boxShadow: theme.customShadows.z20,
-      ...(width && {
-        [theme.breakpoints.up('sm')]: {
-          width: width + 60,
-        },
-      }),
+      outline: `solid 3.6px ${theme.palette.primary.light}`,
     },
   },
 }));

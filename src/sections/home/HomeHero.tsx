@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 // @mui
 import { styled, alpha, useTheme } from '@mui/material/styles';
-import { Button, Box, Link, Container, Typography, Stack, Grid, Rating } from '@mui/material';
+import { Button, Box, Container, Stack, Grid } from '@mui/material';
 // routes
-import { PATH_DASHBOARD, PATH_FIGMA_PREVIEW, PATH_FREE_VERSION } from '../../routes/paths';
+import { PATH_SHOP } from '../../routes/paths';
 // hooks
 import useResponsive from '../../hooks/useResponsive';
 // utils
@@ -16,7 +16,7 @@ import { HEADER } from '../../config-global';
 // theme
 import { secondaryFont } from '../../theme/typography';
 // components
-import SvgColor from '../../components/svg-color';
+// import SvgColor from '../../components/svg-color';
 import Iconify from '../../components/iconify';
 import { MotionContainer, varFade } from '../../components/animate';
 
@@ -143,12 +143,11 @@ export default function HomeHero() {
 function Description() {
   return (
     <StyledDescription>
-      <m.div variants={varFade().in}>
+      {/* <m.div variants={varFade().in}>
         <Typography variant="h2" sx={{ textAlign: 'center' }}>
-          Start a <br />
-          new project with
+          <br />
         </Typography>
-      </m.div>
+      </m.div> */}
 
       <m.div variants={varFade().in}>
         <StyledGradientText
@@ -160,14 +159,13 @@ function Description() {
             repeat: Infinity,
           }}
         >
-          Minimal
+          BOOK SHOP
         </StyledGradientText>
       </m.div>
 
-      <m.div variants={varFade().in}>
+      {/* <m.div variants={varFade().in}>
         <Typography variant="body2" sx={{ textAlign: 'center' }}>
-          The starting point for your next project is based on MUI.Easy customization Helps you
-          build apps faster and better.
+          Kho sách lớn cùng nhiều ưu đãi
         </Typography>
       </m.div>
 
@@ -184,17 +182,17 @@ function Description() {
             <Box component="strong" sx={{ mr: 0.5, color: 'text.primary' }}>
               4.95/5
             </Box>
-            (99+ reviews)
+            (99+ đánh giá)
           </Typography>
         </Stack>
-      </m.div>
+      </m.div> */}
 
       <m.div variants={varFade().in}>
         <Stack spacing={1.5} direction={{ xs: 'column-reverse', sm: 'row' }} sx={{ mb: 5 }}>
           <Stack alignItems="center" spacing={2}>
             <Button
               component={NextLink}
-              href={PATH_DASHBOARD.root}
+              href={PATH_SHOP.product.root}
               color="inherit"
               size="large"
               variant="contained"
@@ -207,38 +205,13 @@ function Description() {
                 },
               }}
             >
-              Live Preview
+              Mua sắm ngay
             </Button>
-
-            <Link
-              color="inherit"
-              variant="caption"
-              target="_blank"
-              rel="noopener"
-              href={PATH_FREE_VERSION}
-              sx={{ textDecoration: 'underline', display: 'inline-flex', alignItems: 'center' }}
-            >
-              <Iconify icon="eva:external-link-fill" width={16} sx={{ mr: 0.5 }} />
-              Get Free Version
-            </Link>
           </Stack>
-
-          <Button
-            color="inherit"
-            size="large"
-            variant="outlined"
-            startIcon={<Iconify icon="eva:external-link-fill" width={24} />}
-            target="_blank"
-            rel="noopener"
-            href={PATH_FIGMA_PREVIEW}
-            sx={{ borderColor: 'text.primary' }}
-          >
-            Design Preview
-          </Button>
         </Stack>
       </m.div>
 
-      <Stack spacing={3} sx={{ textAlign: 'center', opacity: 0.48 }}>
+      {/* <Stack spacing={3} sx={{ textAlign: 'center', opacity: 0.48 }}>
         <m.div variants={varFade().in}>
           <Typography variant="overline">Available For</Typography>
         </m.div>
@@ -250,7 +223,7 @@ function Description() {
             </m.div>
           ))}
         </Stack>
-      </Stack>
+      </Stack> */}
     </StyledDescription>
   );
 }
@@ -277,7 +250,7 @@ function Content() {
         height: 1,
         overflow: 'hidden',
         position: 'absolute',
-        mt: `${HEADER.H_MAIN_DESKTOP}px`,
+        mt: `${HEADER.H_DESKTOP}px`,
       }}
     >
       <Stack component={m.div} variants={varFade().in} sx={{ width: 344, position: 'relative' }}>

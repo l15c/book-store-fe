@@ -15,19 +15,15 @@ export default function SearchNotFound({ query, sx, ...other }: Props) {
       }}
       {...other}
     >
-      <Typography variant="h6" paragraph>
-        Not found
-      </Typography>
-
       <Typography variant="body2">
-        No results found for &nbsp;
+        Không tìm thấy kết quả cho &nbsp;
         <strong>&quot;{query}&quot;</strong>.
-        <br /> Try checking for typos or using complete words.
+        <br />
       </Typography>
     </Paper>
   ) : (
     <Typography variant="body2" sx={sx}>
-      Please enter keywords
+      Vui lòng nhập nội dung tìm kiếm
     </Typography>
   );
 }

@@ -1,7 +1,7 @@
 // next
 import NextLink from 'next/link';
 // @mui
-import { Alert, Tooltip, Stack, Typography, Link, Box } from '@mui/material';
+import { Tooltip, Stack, Typography, Link, Box } from '@mui/material';
 // auth
 import { useAuthContext } from '../../auth/useAuthContext';
 // layouts
@@ -20,13 +20,13 @@ export default function Login() {
   return (
     <LoginLayout>
       <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-        <Typography variant="h4">Sign in to Minimal</Typography>
+        <Typography variant="h4">Đăng nhập vào Book Shop</Typography>
 
         <Stack direction="row" spacing={0.5}>
-          <Typography variant="body2">New user?</Typography>
+          <Typography variant="body2">Bạn là người mới?</Typography>
 
           <Link component={NextLink} href={PATH_AUTH.register} variant="subtitle2">
-            Create an account
+            Tạo tài khoản ngay
           </Link>
         </Stack>
 
@@ -40,11 +40,7 @@ export default function Login() {
         </Tooltip>
       </Stack>
 
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert>
-
-      <AuthLoginForm />
+      <AuthLoginForm customers />
 
       <AuthWithSocial />
     </LoginLayout>

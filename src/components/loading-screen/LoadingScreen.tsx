@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { m } from 'framer-motion';
 // @mui
-import { alpha, styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { alpha, styled, useTheme } from '@mui/material/styles';
+import { Box, LinearProgress, Stack } from '@mui/material';
 //
 import Logo from '../logo';
+import { bgBlur } from '../../utils/cssStyles';
 
 // ----------------------------------------------------------------------
 
@@ -87,5 +88,35 @@ export default function LoadingScreen() {
         }}
       />
     </StyledRoot>
+  );
+}
+
+export function LoadingLinear({ maxWidth = 320 }: { maxWidth?: number | string }) {
+  const theme = useTheme();
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  return (
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      sx={{
+        top: 0,
+        left: 0,
+        width: 1,
+        height: 1,
+        zIndex: 9999,
+        position: 'absolute',
+        ...bgBlur({ color: theme.palette.background.paper }),
+      }}
+    >
+      <LinearProgress sx={{ width: 1, maxWidth }} />
+    </Stack>
   );
 }

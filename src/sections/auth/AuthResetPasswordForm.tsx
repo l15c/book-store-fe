@@ -1,15 +1,14 @@
 import * as Yup from 'yup';
 // next
-import { useRouter } from 'next/router';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import { LoadingButton } from '@mui/lab';
 // routes
-import { PATH_AUTH } from '../../routes/paths';
 // components
 import FormProvider, { RHFTextField } from '../../components/hook-form';
+import customerApi from '../../api-client/customer';
 
 // ----------------------------------------------------------------------
 
@@ -18,15 +17,13 @@ type FormValuesProps = {
 };
 
 export default function AuthResetPasswordForm() {
-  const { push } = useRouter();
-
   const ResetPasswordSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    email: Yup.string().required('Vui lòng nhập email').email('Email không đúng định dạng'),
   });
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(ResetPasswordSchema),
-    defaultValues: { email: 'demo@minimals.cc' },
+    defaultValues: { email: '' },
   });
 
   const {
@@ -36,9 +33,10 @@ export default function AuthResetPasswordForm() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      sessionStorage.setItem('email-recovery', data.email);
-      push(PATH_AUTH.newPassword);
+      await customerApi.resetPassword(data.email);
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      // sessionStorage.setItem('email-recovery', data.email);
+      // push(PATH_AUTH.newPassword);
     } catch (error) {
       console.error(error);
     }
@@ -46,7 +44,7 @@ export default function AuthResetPasswordForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="email" label="Email khôi phục" />
 
       <LoadingButton
         fullWidth
@@ -56,7 +54,7 @@ export default function AuthResetPasswordForm() {
         loading={isSubmitting}
         sx={{ mt: 3 }}
       >
-        Send Request
+        Gửi yêu cầu
       </LoadingButton>
     </FormProvider>
   );

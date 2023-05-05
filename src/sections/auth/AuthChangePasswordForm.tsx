@@ -1,0 +1,100 @@
+import * as Yup from 'yup';
+// form
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+// @mui
+import { LoadingButton } from '@mui/lab';
+import { Card, Stack } from '@mui/material';
+// @types
+import { IUserAccountChangePassword } from 'src/@types/user';
+// components
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
+
+// ----------------------------------------------------------------------
+
+type FormValuesProps = IUserAccountChangePassword;
+
+export default function AuthChangePasswordForm() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const ChangePassWordSchema = Yup.object().shape({
+    password: Yup.string().required('Vui lòng nhập mật khẩu hiện tại'),
+    newPassword: Yup.string()
+      .required('Vui lòng nhập mật khẩu mới')
+      .min(8, 'Mật khẩu tối thiểu 8 kí tự'),
+    confirmPassword: Yup.string().oneOf(
+      [Yup.ref('newPassword')],
+      'Nhập lại mật khẩu không chính xác'
+    ),
+  });
+
+  const defaultValues = {
+    password: '',
+    newPassword: '',
+    confirmPassword: '',
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(ChangePassWordSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSubmit = async (data: FormValuesProps) => {
+    // const { password, newPassword } = data;
+
+    try {
+      //   await axiosClient.put('/api/auth/change-password', {
+      //     password,
+      //     newPassword,
+      //   });
+
+      reset();
+      enqueueSnackbar('Cập nhật thành công!');
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar('Cập nhật không thành công!', { variant: 'error' });
+    }
+  };
+
+  return (
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Card sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Stack spacing={3} alignItems="flex-end" sx={{ p: 3, width: '400px' }}>
+          <RHFTextField name="password" type="password" label="Mật khẩu hiện tại" />
+
+          <RHFTextField
+            name="newPassword"
+            type="password"
+            label="Mật khẩu mới"
+            helperText={
+              <Stack component="span" direction="row" alignItems="center">
+                <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Mật khẩu phải tối thiểu
+                8 kí tự
+              </Stack>
+            }
+          />
+
+          <RHFTextField name="confirmPassword" type="password" label="Nhập lại mật khẩu mới" />
+
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            size="large"
+            loading={isSubmitting}
+            fullWidth
+          >
+            Đổi mật khẩu
+          </LoadingButton>
+        </Stack>
+      </Card>
+    </FormProvider>
+  );
+}

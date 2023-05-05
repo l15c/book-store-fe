@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 // hooks
 import useResponsive from '../../hooks/useResponsive';
-// routes
-import { PATH_MINIMAL_ON_STORE } from '../../routes/paths';
 // _mock_
 import { _homePlans } from '../../_mock/arrays';
 // components
@@ -276,7 +274,7 @@ function PlanCard({ plan, sx, ...other }: PlanCardProps) {
           size="small"
           target="_blank"
           rel="noopener"
-          href={PATH_MINIMAL_ON_STORE}
+          href="/"
           endIcon={<Iconify icon="eva:chevron-right-fill" />}
         >
           Learn more

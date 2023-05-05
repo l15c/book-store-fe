@@ -29,6 +29,9 @@ export default function Autocomplete(theme: Theme) {
           margin: theme.spacing(0.75, 0),
           borderRadius: theme.shape.borderRadius,
         },
+        noOptions: {
+          padding: theme.spacing(0, 1),
+        },
       },
     },
   };

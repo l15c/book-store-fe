@@ -9,6 +9,22 @@ export default function GlobalStyles() {
       styles={{
         '*': {
           boxSizing: 'border-box',
+          /* Scrollbar CSS */
+          '&::-webkit-scrollbar': {
+            borderRadius: '10px',
+            width: '6px',
+            height: '6px',
+          },
+
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: '10px',
+            backgroundColor: 'rgba(75, 72, 72, 0.5)',
+          },
+          '&::-webkit-scrollbar-track': {
+            borderRadius: '10px',
+            backgroundColor: '#dadada',
+          },
+          /* Scrollbar CSS */
         },
         html: {
           margin: 0,
@@ -22,6 +38,7 @@ export default function GlobalStyles() {
           padding: 0,
           width: '100%',
           height: '100%',
+          overflow: 'overlay',
         },
         '#__next': {
           width: '100%',
@@ -47,6 +64,9 @@ export default function GlobalStyles() {
         ul: {
           margin: 0,
           padding: 0,
+        },
+        a: {
+          textDecoration: 'none',
         },
       }}
     />
