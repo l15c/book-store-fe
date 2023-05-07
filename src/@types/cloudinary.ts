@@ -1,5 +1,3 @@
-import { CustomFile } from '../components/upload';
-
 export type UploadImageResponse = {
   asset_id: string;
   public_id: string;

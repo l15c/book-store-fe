@@ -14,7 +14,7 @@ import { IProduct } from '../../../../@types/product';
 import Image from '../../../../components/image';
 import Iconify from '../../../../components/iconify';
 import { CustomTextField } from '../../../../components/custom-input';
-import SearchNotFound from '../../../../components/search-not-found';
+// import SearchNotFound from '../../../../components/search-not-found';
 
 // ----------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-import { GET, POST, PUT, DELETE } from './axios';
+import { GET, POST, DELETE } from './axios';
 
 const cartApi = {
   get: () => GET('/carts'),

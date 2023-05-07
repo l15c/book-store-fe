@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { POST } from './axios';
 import { RenameParams, UploadImageResponse, UploadParams } from '../@types/cloudinary';
 import { CustomFile } from '../components/upload';
