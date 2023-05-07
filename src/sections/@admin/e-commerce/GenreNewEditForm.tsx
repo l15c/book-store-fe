@@ -13,6 +13,7 @@ import genresApi from 'src/api-client/genre';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/FormProvider';
 import { useQueryClient } from '@tanstack/react-query';
+import { useData } from 'src/hooks/data';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -27,7 +28,7 @@ const style = {
 
 type Props = {
   isEdit?: boolean;
-  genre?: Partial<IGenre>;
+  genre?: Partial<IGenre> | null;
   onCancel?: () => void;
   onCloseModal?: () => void;
   onSuccess?: (data?: IGenre) => void;
@@ -42,6 +43,9 @@ export default function GenreNewEditForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const {
+    query: { genreQuery },
+  } = useData();
 
   const defaultValues = useMemo(
     () => ({
@@ -64,7 +68,8 @@ export default function GenreNewEditForm({
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    setError,
+    formState: { isSubmitting, isValid, isDirty },
   } = methods;
 
   useEffect(() => {
@@ -79,6 +84,8 @@ export default function GenreNewEditForm({
 
   const onSubmit = async (data: IGenre) => {
     try {
+      if (!isEdit && genreQuery.data?.map((e) => e.name).includes(data.name.trim()))
+        throw Error('duplicate');
       let res;
       if (isEdit) {
         res = await genresApi.update({ ...data, id: genre!.id! });
@@ -87,6 +94,7 @@ export default function GenreNewEditForm({
       }
       queryClient.invalidateQueries({
         queryKey: ['genre', 'all'],
+        refetchType: 'all',
       });
 
       if (onSuccess) await onSuccess(res);
@@ -95,31 +103,36 @@ export default function GenreNewEditForm({
       if (onCloseModal) onCloseModal();
     } catch (err) {
       console.log(err);
-      enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm mới'} thể loại thất bại.`, {
-        variant: 'error',
-      });
+      if (err.message === 'duplicate')
+        setError('name', {
+          message: 'Tên tác giả đã tồn tại',
+        });
+      else
+        enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm mới'} thể loại thất bại.`, {
+          variant: 'error',
+        });
     }
   };
 
   return (
-    <FormProvider methods={methods}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Paper sx={{ ...style }}>
         <Typography mb={2} sx={{ fontSize: 20, fontWeight: 700 }}>
           {!isEdit ? 'Thêm thể loại' : 'Cập nhật thể loại'}
         </Typography>
         <Stack spacing={1}>
           <RHFTextField name="name" label="Tên thể loại" autoFocus />
-          <RHFTextField name="description" label="Mô tả" />
+          <RHFTextField name="description" label="Mô tả" multiline />
         </Stack>
         <Stack direction="row" mt={2} spacing={2}>
           <Button variant="outlined" sx={{ ml: 'auto' }} onClick={onCancel}>
             Hủy
           </Button>
           <LoadingButton
-            onClick={handleSubmit(onSubmit)}
+            type="submit"
             variant="contained"
             loading={isSubmitting}
-            disabled={!isValid}
+            disabled={!isValid || (isEdit && !isDirty)}
           >
             {!isEdit ? 'Thêm mới' : 'Cập nhật'}
           </LoadingButton>

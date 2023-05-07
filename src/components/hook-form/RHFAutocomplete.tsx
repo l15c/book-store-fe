@@ -40,7 +40,9 @@ export default function RHFAutocomplete<
         <Autocomplete
           autoHighlight
           {...field}
-          onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+          onChange={(event, newValue) =>
+            setValue(name, newValue, { shouldValidate: true, shouldDirty: true })
+          }
           renderInput={({ InputProps, ...params }) => (
             <TextField
               label={label}

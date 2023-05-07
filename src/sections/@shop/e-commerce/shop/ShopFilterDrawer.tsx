@@ -1,34 +1,27 @@
 // form
 import { Controller, useFormContext } from 'react-hook-form';
 // @mui
-import { alpha } from '@mui/material/styles';
 import {
-  Box,
-  Radio,
-  Stack,
-  Input,
   Badge,
+  Box,
   Button,
-  Drawer,
-  Rating,
   Divider,
+  Drawer,
   IconButton,
+  Input,
+  Stack,
   Typography,
-  RadioGroup,
-  FormControlLabel,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 // config
 import { NAV } from 'src/config-global';
 // components
+import { NumberFormatValues } from 'react-number-format';
+import { IAuthor, IGenre, IPublisher } from 'src/@types/book';
+import { RHFAutocomplete, RHFSlider } from 'src/components/hook-form';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ColorMultiPicker } from 'src/components/color-utils';
-import { RHFMultiCheckbox, RHFRadioGroup, RHFSlider } from 'src/components/hook-form';
-import { IAuthor, IGenre, IPublisher } from 'src/@types/book';
-import { NumericFormat, NumericFormatProps } from 'react-number-format';
-import { forwardRef } from 'react';
 import { fCurrency } from 'src/utils/formatNumber';
-import { debounce } from 'lodash';
 import NumericFormatCustom from '../../../../components/numeric-format-custom';
 
 // ----------------------------------------------------------------------
@@ -56,23 +49,18 @@ export default function ShopFilterDrawer({
   isDefault,
   onResetFilter,
 }: Props) {
-  const { control, setValue } = useFormContext();
+  const { setValue } = useFormContext();
 
-  const marksLabel = [...Array(21)].map((_, index) => {
-    const value = index * 10;
-
-    const firstValue = index === 0 ? `${value}đ` : `${value}đ`;
+  const marksLabel = [...Array(3)].map((_, index) => {
+    const value = index * 500000;
 
     return {
       value,
-      label: index % 4 ? '' : firstValue,
+      label: fCurrency(value),
     };
   });
 
-  // const getSelected = (selectedItems: string[], item: string) =>
-  //   selectedItems.includes(item)
-  //     ? selectedItems.filter((value) => value !== item)
-  //     : [...selectedItems, item];
+  console.log(marksLabel);
 
   return (
     <>
@@ -102,7 +90,7 @@ export default function ShopFilterDrawer({
           justifyContent="space-between"
           sx={{ pl: 2, pr: 1, py: 2 }}
         >
-          <Typography variant="subtitle1">Filters</Typography>
+          <Typography variant="subtitle1">Bộ lọc</Typography>
 
           <IconButton onClick={onClose}>
             <Iconify icon="eva:close-fill" />
@@ -112,19 +100,50 @@ export default function ShopFilterDrawer({
         <Divider />
 
         <Scrollbar>
-          <Stack spacing={3} sx={{ p: 2.5 }}>
+          <Stack spacing={1} sx={{ p: 2.5 }}>
             <Stack spacing={1}>
-              <Typography variant="subtitle1"> Gender </Typography>
-              {/* <RHFMultiCheckbox name="gender" options={FILTER_GENDER_OPTIONS} sx={{ width: 1 }} /> */}
+              <Typography variant="subtitle1"> Thể loại </Typography>
+              <RHFAutocomplete
+                name="genres"
+                size="small"
+                multiple
+                disableCloseOnSelect
+                options={genresOptions}
+                sx={{ width: 1 }}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                getOptionLabel={(option) => (option as IGenre).name ?? option}
+                noOptionsText={<Typography fontSize={14}>Không có thể loại phù hợp</Typography>}
+              />
             </Stack>
 
             <Stack spacing={1}>
-              <Typography variant="subtitle1"> Category </Typography>
-              {/* <RHFRadioGroup name="category" options={FILTER_CATEGORY_OPTIONS} /> */}
+              <Typography variant="subtitle1"> Tác giả </Typography>
+              <RHFAutocomplete
+                name="authors"
+                size="small"
+                multiple
+                disableCloseOnSelect
+                options={authorsOptions}
+                sx={{ width: 1 }}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                getOptionLabel={(option) => (option as IAuthor).name ?? option}
+                noOptionsText={<Typography fontSize={14}>Không có tác giả phù hợp</Typography>}
+              />
             </Stack>
 
             <Stack spacing={1}>
-              <Typography variant="subtitle1"> Color </Typography>
+              <Typography variant="subtitle1"> Nhà xuất bản </Typography>
+              <RHFAutocomplete
+                name="publishers"
+                size="small"
+                multiple
+                options={publishersOptions}
+                disableCloseOnSelect
+                sx={{ width: 1 }}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                getOptionLabel={(option) => (option as IPublisher).name ?? option}
+                noOptionsText={<Typography fontSize={14}>Không có nhà xuất bản phù hợp</Typography>}
+              />
             </Stack>
 
             <Stack spacing={1} sx={{ pb: 2 }}>
@@ -140,8 +159,8 @@ export default function ShopFilterDrawer({
                 step={Math.round((priceRange[1] - priceRange[0]) / 20)}
                 min={priceRange[0]}
                 max={priceRange[1]}
-                // marks={marksLabel}
-                onChange={(e, value) => setValue('priceRange', value)}
+                marks={marksLabel}
+                onChange={(e, value) => setValue('priceRange', value, { shouldDirty: true })}
                 getAriaValueText={(value) => fCurrency(value)}
                 valueLabelFormat={(value) => fCurrency(value)}
                 sx={{ alignSelf: 'center', width: `calc(100% - 20px)` }}
@@ -240,6 +259,9 @@ function InputRange({ type }: InputRangeProps) {
     if (max > 1000000) {
       setValue('priceRange', [min, 1000000]);
     }
+    if (max < min) {
+      setValue('priceRange', [max, min]);
+    }
   };
 
   return (
@@ -262,13 +284,19 @@ function InputRange({ type }: InputRangeProps) {
                 width: 120,
               }}
             >
-              {type === 'min' ? 'Thấp nhất (vnđ)' : 'Cao nhất (vnđ)'}
+              {type === 'min' ? 'Thấp nhất (VNĐ)' : 'Cao nhất (VNĐ)'}
             </Typography>
 
             <Input
               disableUnderline
               fullWidth
               inputComponent={NumericFormatCustom}
+              inputProps={{
+                isAllowed: (_val: NumberFormatValues) => {
+                  const { formattedValue, floatValue = 0 } = _val;
+                  return formattedValue === '' || floatValue <= 1000000;
+                },
+              }}
               size="small"
               value={isMin ? min : max}
               onChange={(event) => {

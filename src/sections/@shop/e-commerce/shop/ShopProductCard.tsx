@@ -16,6 +16,7 @@ import Iconify from 'src/components/iconify';
 import Label, { LabelColor } from 'src/components/label';
 import Image from 'src/components/image';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
+import { getLinkImage } from 'src/utils/cloudinary';
 
 // ----------------------------------------------------------------------
 
@@ -107,7 +108,12 @@ export default function ShopProductCard({ book }: Props) {
             <Iconify icon="ic:round-add-shopping-cart" />
           </Fab>
 
-          <Image alt={name} src={cover} ratio="1/1" sx={{ borderRadius: 1.5 }} />
+          <Image
+            alt={name}
+            src={getLinkImage(cover, `products/${slug}`) as string}
+            ratio="1/1"
+            sx={{ borderRadius: 1.5 }}
+          />
         </Box>
 
         <Stack spacing={2.5} sx={{ p: 3 }}>

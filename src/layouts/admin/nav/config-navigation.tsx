@@ -63,6 +63,7 @@ const navConfig = [
         children: [
           { title: 'Danh sách', path: PATH_ADMIN.eCommerce.list },
           { title: 'Tạo mới', path: PATH_ADMIN.eCommerce.new },
+          { title: 'Thông tin khác', path: PATH_ADMIN.eCommerce.moreInfo },
         ],
       },
 

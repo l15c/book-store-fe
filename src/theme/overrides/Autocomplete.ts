@@ -30,7 +30,7 @@ export default function Autocomplete(theme: Theme) {
           borderRadius: theme.shape.borderRadius,
         },
         noOptions: {
-          padding: theme.spacing(0, 1),
+          padding: theme.spacing(1, 1),
         },
       },
     },

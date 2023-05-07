@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 // @mui
-import { Container, Typography, Stack } from '@mui/material';
+import { Container, Typography, Stack, Pagination } from '@mui/material';
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
@@ -21,11 +21,10 @@ import {
 } from 'src/sections/@shop/e-commerce/shop';
 // api
 import bookApi from 'src/api-client/book';
-import genresApi from 'src/api-client/genre';
-import authorApi from 'src/api-client/author';
-import publisherApi from 'src/api-client/publisher';
 import { IProductFilter } from 'src/@types/book';
 import useDebounce from 'src/hooks/useDebounce';
+import { useData } from 'src/hooks/data';
+import { SearchPayload } from 'src/api-client/type';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +39,7 @@ export default function ProductsPage() {
 
   const { query } = useRouter();
 
-  const search = query.q ?? '';
+  const search = (query.q ?? '') as string;
 
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -49,8 +48,8 @@ export default function ProductsPage() {
     genres: [],
     publishers: [],
     priceRange: PRICE_RANGE,
-    sortBy: 'featured',
-    sortDirection: 'asc',
+    sortBy: 'Sold',
+    sortDirection: 'desc',
   };
 
   const methods = useForm<IProductFilter>({
@@ -73,18 +72,37 @@ export default function ProductsPage() {
     false;
 
   const values = watch();
-  const [min, max] = useDebounce(values.priceRange, 700);
+  const {
+    sortBy,
+    sortDirection,
+    priceRange,
+    genres: genresF,
+    authors: authorsF,
+    publishers: publishersF,
+  } = values;
+  const [min, max] = useDebounce(priceRange, 700);
+
+  const [page, setPage] = useState(0);
 
   const fixMinMax = (value: number) => Math.max(PRICE_RANGE[0], Math.min(PRICE_RANGE[1], value));
 
   // ----------------------------------------------------------------------
 
-  const filter = { startPrice: fixMinMax(min), endPrice: fixMinMax(max) };
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['products', filter, PAGE_SIZE],
+  const filter: SearchPayload = {
+    search,
+    sortBy: sortBy.replace('+', ''),
+    sortDirection,
+    authorId: authorsF.map((e) => e.id),
+    genreId: genresF.map((e) => e.id),
+    publisherId: publishersF.map((e) => e.id),
+    startPrice: fixMinMax(min),
+    endPrice: fixMinMax(max),
+  };
+  const { data, isFetching } = useQuery({
+    queryKey: ['products', filter, page, PAGE_SIZE],
     queryFn: () =>
       bookApi.getList({
-        page: 1,
+        page,
         pageSize: PAGE_SIZE,
         ...filter,
       }),
@@ -93,20 +111,13 @@ export default function ProductsPage() {
   });
   const books = data?.data ?? [];
 
-  const { data: genres = [] } = useQuery({
-    queryKey: ['genres'],
-    queryFn: () => genresApi.getList(),
-  });
+  const {
+    query: { genreQuery, authorQuery, publisherQuery },
+  } = useData();
 
-  const { data: authors = [] } = useQuery({
-    queryKey: ['authors'],
-    queryFn: () => authorApi.getList(),
-  });
-
-  const { data: publisher = [] } = useQuery({
-    queryKey: ['publisher'],
-    queryFn: () => publisherApi.getList(),
-  });
+  const authors = authorQuery.data ?? [];
+  const genres = genreQuery.data ?? [];
+  const publishers = publisherQuery.data ?? [];
 
   // ----------------------------------------------------------------------
 
@@ -132,13 +143,13 @@ export default function ProductsPage() {
         <Container maxWidth={themeStretch ? false : 'lg'}>
           <Stack direction="row" spacing={1} justifyContent="space-between" sx={{ my: 1 }}>
             <Stack my="auto">
-              {(!isDefault || search) && (
+              {!isFetching && (!isDefault || search) && data?.totalCount !== 0 && (
                 <Typography variant="body2">
-                  {/* Tìm thấy <strong>{dataFiltered.length}</strong> */}
+                  Tìm thấy <strong>{data?.totalCount}</strong>
                   &nbsp;sản phẩm
                   {search && (
                     <>
-                      khớp với <strong>&ldquo;{search}&rdquo;</strong>
+                      &nbsp;khớp với <strong>&ldquo;{search}&rdquo;</strong>
                     </>
                   )}
                 </Typography>
@@ -151,7 +162,7 @@ export default function ProductsPage() {
                 priceRange={PRICE_RANGE}
                 genresOptions={genres}
                 authorsOptions={authors}
-                publishersOptions={publisher}
+                publishersOptions={publishers}
                 onOpen={handleOpenFilter}
                 onClose={handleCloseFilter}
                 onResetFilter={handleResetFilter}
@@ -161,13 +172,31 @@ export default function ProductsPage() {
             </Stack>
           </Stack>
 
-          {/* {!isDefault && (
+          {!isDefault && (
             <Stack sx={{ mb: 1 }}>
               <ShopTagFiltered isFiltered={!isDefault} onResetFilter={handleResetFilter} />
             </Stack>
-          )} */}
+          )}
 
-          <ShopProductList books={books} loading={false} />
+          <ShopProductList books={books} loading={isFetching} />
+
+          {!!data?.totalCount && (
+            <Pagination
+              count={data?.totalPages}
+              page={page + 1}
+              onChange={(e, p) => setPage(p - 1)}
+              showLastButton
+              showFirstButton
+              boundaryCount={2}
+              sx={{
+                mt: 2,
+                mx: 'auto',
+                '& .MuiPagination-ul': {
+                  justifyContent: 'center',
+                },
+              }}
+            />
+          )}
         </Container>
       </FormProvider>
     </>

@@ -45,6 +45,11 @@ export default function useData(enabled: boolean = true) {
     mutationFn: (data: IAuthor) => authorApi.update(data),
   });
 
+  const authorDelete = useMutation({
+    mutationKey: ['author', 'delete'],
+    mutationFn: (id: number) => authorApi.delete(id),
+  });
+
   const genreCreate = useMutation({
     mutationKey: ['genre', 'create'],
     mutationFn: (data: Omit<IGenre, 'id'>) => genresApi.create(data),
@@ -53,6 +58,11 @@ export default function useData(enabled: boolean = true) {
   const genreUpdate = useMutation({
     mutationKey: ['genre', 'update'],
     mutationFn: (data: IGenre) => genresApi.update(data),
+  });
+
+  const genreDelete = useMutation({
+    mutationKey: ['genre', 'delete'],
+    mutationFn: (id: number) => genresApi.delete(id),
   });
 
   const publisherCreate = useMutation({
@@ -65,6 +75,11 @@ export default function useData(enabled: boolean = true) {
     mutationFn: (data: IPublisher) => publisherApi.update(data),
   });
 
+  const publisherDelete = useMutation({
+    mutationKey: ['publisher', 'delete'],
+    mutationFn: (id: number) => publisherApi.delete(id),
+  });
+
   return {
     query: {
       authorQuery,
@@ -74,9 +89,21 @@ export default function useData(enabled: boolean = true) {
     },
 
     mutation: {
-      author: { create: authorCreate, update: authorUpdate },
-      genre: { create: genreCreate, update: genreUpdate },
-      publisher: { create: publisherCreate, update: publisherUpdate },
+      authorMutation: {
+        create: authorCreate,
+        update: authorUpdate,
+        delete: authorDelete,
+      },
+      genreMutation: {
+        create: genreCreate,
+        update: genreUpdate,
+        delete: genreDelete,
+      },
+      publisherMutation: {
+        create: publisherCreate,
+        update: publisherUpdate,
+        delete: publisherDelete,
+      },
     },
   };
 }

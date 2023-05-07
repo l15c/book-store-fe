@@ -8,6 +8,7 @@ import { ICartItem } from 'src/@types/book';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { IncrementerButton } from 'src/components/custom-input';
+import { getLinkImage } from 'src/utils/cloudinary';
 
 // ----------------------------------------------------------------------
 
@@ -24,14 +25,14 @@ export default function CheckoutCartProduct({
   onDecrease,
   onIncrease,
 }: CheckoutProductListRowProps) {
-  const { name, price, cover, quantity, available } = row;
+  const { name, price, cover, quantity, available, slug } = row;
 
   return (
     <TableRow>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Image
-          alt="product image"
-          src={cover}
+          alt={name}
+          src={getLinkImage(cover, `products/${slug}`) as string}
           sx={{ width: 64, height: 64, borderRadius: 1.5, mr: 2 }}
         />
 

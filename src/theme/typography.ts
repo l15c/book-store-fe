@@ -1,4 +1,4 @@
-import { Public_Sans, Tillana } from '@next/font/google';
+import { Public_Sans, Tillana } from 'next/font/google';
 
 // ----------------------------------------------------------------------
 

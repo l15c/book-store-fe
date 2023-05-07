@@ -1,9 +1,9 @@
+import { fCurrency } from 'src/utils/formatNumber';
 import { sentenceCase } from 'change-case';
 // form
 import { useFormContext } from 'react-hook-form';
 // @mui
-import { useTheme } from '@mui/material/styles';
-import { Chip, Stack, Button, Box, StackProps } from '@mui/material';
+import { Chip, Stack, Button, StackProps } from '@mui/material';
 // @type
 import { IProductFilter } from '../../../../@types/product';
 // components
@@ -17,16 +17,14 @@ type Props = {
 };
 
 export default function ShopTagFiltered({ isFiltered, onResetFilter }: Props) {
-  const theme = useTheme();
-
   const { watch, setValue } = useFormContext();
 
   const values = watch();
 
   const {
-    gender: filterGender,
-    category: filterCategory,
-    colors: filterColors,
+    authors: filterAuthor,
+    genres: filterGenre,
+    publishers: filterPublisher,
     priceRange: filterPriceRange,
     rating: filterRating,
   } = values as IProductFilter;
@@ -35,22 +33,23 @@ export default function ShopTagFiltered({ isFiltered, onResetFilter }: Props) {
 
   const max = filterPriceRange[1];
 
-  const handleRemoveGender = (value: string) => {
-    const newValue = filterGender.filter((item) => item !== value);
-    setValue('gender', newValue);
+  const handleRemoveAuthor = (id: number) => {
+    const newValue = filterAuthor.filter((item) => item.id !== id);
+    setValue('authors', newValue, { shouldDirty: true });
   };
 
-  const handleRemoveCategory = () => {
-    setValue('category', 'All');
+  const handleRemoveGenre = (id: number) => {
+    const newValue = filterGenre.filter((item) => item.id !== id);
+    setValue('genres', newValue, { shouldDirty: true });
   };
 
-  const handleRemoveColor = (value: string) => {
-    const newValue = filterColors.filter((item) => item !== value);
-    setValue('colors', newValue);
+  const handleRemovePublisher = (id: number) => {
+    const newValue = filterPublisher.filter((item) => item.id !== id);
+    setValue('publishers', newValue, { shouldDirty: true });
   };
 
   const handleRemovePrice = () => {
-    setValue('priceRange', [0, 200]);
+    setValue('priceRange', [0, 1000000], { shouldDirty: true });
   };
 
   const handleRemoveRating = () => {
@@ -59,64 +58,55 @@ export default function ShopTagFiltered({ isFiltered, onResetFilter }: Props) {
 
   return (
     <Stack flexGrow={1} direction="row" flexWrap="wrap" alignItems="center">
-      {!!filterGender.length && (
-        <Panel label="Gender:">
-          {filterGender.map((gender) => (
+      {!!filterGenre.length && (
+        <Panel label="Thể loại:" sx={{ whiteSpace: 'nowrap' }}>
+          {filterGenre.map((genre) => (
             <Chip
-              key={gender}
-              label={gender}
+              key={genre.id}
+              label={genre.name}
               size="small"
-              onDelete={() => handleRemoveGender(gender)}
+              onDelete={() => handleRemoveGenre(genre.id)}
               sx={{ m: 0.5 }}
             />
           ))}
         </Panel>
       )}
 
-      {filterCategory !== 'All' && (
-        <Panel label="Category:">
-          <Chip
-            size="small"
-            label={filterCategory}
-            onDelete={handleRemoveCategory}
-            sx={{ m: 0.5 }}
-          />
+      {!!filterAuthor.length && (
+        <Panel label="Tác giả:" sx={{ whiteSpace: 'nowrap' }}>
+          {filterAuthor.map((author) => (
+            <Chip
+              key={author.id}
+              label={author.name}
+              size="small"
+              onDelete={() => handleRemoveAuthor(author.id)}
+              sx={{ m: 0.5 }}
+            />
+          ))}
         </Panel>
       )}
 
-      {!!filterColors.length && (
-        <Panel label="Colors:">
-          {filterColors.map((color) => (
+      {!!filterPublisher.length && (
+        <Panel label="Nhà xuất bản:" sx={{ whiteSpace: 'nowrap' }}>
+          {filterPublisher.map((publisher) => (
             <Chip
-              key={color}
+              key={publisher.id}
+              label={publisher.name}
               size="small"
-              label={
-                <Box
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    bgcolor: color,
-                    borderRadius: '50%',
-                    border: `solid 1px ${theme.palette.divider}`,
-                  }}
-                />
-              }
-              onDelete={() => handleRemoveColor(color)}
+              onDelete={() => handleRemovePublisher(publisher.id)}
               sx={{
                 m: 0.5,
-                color: theme.palette.getContrastText(color),
-                '& .MuiChip-label': { pl: 0.25 },
               }}
             />
           ))}
         </Panel>
       )}
 
-      {(min !== 0 || max !== 200) && (
-        <Panel label="Price:">
+      {(min !== 0 || max !== 1000000) && (
+        <Panel label="Đơn giá (VNĐ):">
           <Chip
             size="small"
-            label={`$${min} - ${max}`}
+            label={`${fCurrency(min)} - ${fCurrency(max)}`}
             onDelete={handleRemovePrice}
             sx={{ m: 0.5 }}
           />
@@ -124,7 +114,7 @@ export default function ShopTagFiltered({ isFiltered, onResetFilter }: Props) {
       )}
 
       {!!filterRating && (
-        <Panel label="Rating:">
+        <Panel label="Đánh giá:">
           <Chip
             size="small"
             label={sentenceCase(filterRating)}

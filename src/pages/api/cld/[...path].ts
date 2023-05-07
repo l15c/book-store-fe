@@ -11,7 +11,7 @@ export const config = {
 };
 
 export default (req: NextApiRequest, res: NextApiResponse) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     req.headers.cookie = '';
 
     req.url = req.url?.replace('api/cld', `${process.env.CLOUDINARY_CLOUD_NAME}`);
@@ -22,6 +22,6 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
     });
 
     proxy.once('proxyRes', () => {
-      resolve(true);
+      resolve();
     });
   });

@@ -33,6 +33,8 @@ import bookApi from '../../../api-client/book';
 import { getLinkImage } from '../../../utils/cloudinary';
 import Iconify from '../../../components/iconify';
 import GenreNewEditForm from './GenreNewEditForm';
+import AuthorNewEditForm from './AuthorNewEditForm';
+import PublisherNewEditForm from './PublisherNewEditForm';
 
 // ----------------------------------------------------------------------
 
@@ -157,7 +159,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       let coverUrl;
       if (typeof cover !== 'string') {
         await cloudinaryApi.uploadSign(cover, {
-          public_id: 'cover',
+          public_id: `${cover}.${cover.name.split('.').pop()}`,
           folder: `products/${slug}`,
         });
         coverUrl = 'cover';
@@ -168,14 +170,15 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
           if (typeof e === 'string') return undefined;
           return { file: e, index };
         })
-      ).map((e) =>
-        cloudinaryApi
-          .uploadSign(e.file, { public_id: `image${e.index + 1}`, folder: `products/${slug}` })
+      ).map((e) => {
+        const _name = `image${e.index + 1}.${e.file.name.split('.').pop()}`;
+        return cloudinaryApi
+          .uploadSign(e.file, { public_id: _name, folder: `products/${slug}` })
           .then((res) => {
-            images[e.index] = `image${e.index + 1}`;
+            images[e.index] = _name;
             return res;
-          })
-      );
+          });
+      });
 
       await Promise.all(listPromise);
 
@@ -215,7 +218,10 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
         })
       );
 
-      setValue('images', [...files, ...newFiles], { shouldValidate: true });
+      setValue('images', [...files, ...newFiles], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     },
     [setValue, values.images]
   );
@@ -226,18 +232,24 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
         preview: URL.createObjectURL(acceptedFiles[0]),
       });
 
-      setValue('cover', newFiles, { shouldValidate: true });
+      setValue('cover', newFiles, { shouldValidate: true, shouldDirty: true });
     },
     [setValue]
   );
 
   const handleRemoveFile = (inputFile: File | string) => {
     const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-    setValue('images', filtered);
+    setValue('images', filtered, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleRemoveAllFiles = () => {
-    setValue('images', []);
+    setValue('images', [], {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   return (
@@ -251,7 +263,10 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                   name="name"
                   label="Tên sách"
                   onChange={(event) =>
-                    setValue('name', event.target.value, { shouldValidate: true })
+                    setValue('name', event.target.value, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
                   }
                 />
 
@@ -315,7 +330,10 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                     name="quantity"
                     label="Số lượng"
                     onChange={(event) =>
-                      setValue('quantity', Number(event.target.value), { shouldValidate: true })
+                      setValue('quantity', Number(event.target.value), {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }
                     InputLabelProps={{ shrink: true }}
                     InputProps={{ inputComponent: NumericFormatCustom }}
@@ -328,6 +346,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                     onChange={(event) =>
                       setValue('publishedYear', Number(event.target.value), {
                         shouldValidate: true,
+                        shouldDirty: true,
                       })
                     }
                     InputLabelProps={{ shrink: true }}
@@ -344,22 +363,30 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                   <RHFAutocomplete
                     name="author"
                     label="Tác giả"
-                    options={authors}
+                    options={authors.sort((a, b) =>
+                      toNonAccentVietnamese(a.name.toLowerCase()) >
+                      toNonAccentVietnamese(b.name.toLowerCase())
+                        ? 1
+                        : -1
+                    )}
                     clearOnBlur={false}
-                    ChipProps={{ size: 'small' }}
                     isOptionEqualToValue={(opt, val) => opt.id === val.id}
                     getOptionLabel={(option) => (option as IAuthor).name ?? option}
-                    onInputChange={(_, value) => setSearchAuthor(value)}
+                    onInputChange={(_, value, reason) =>
+                      reason === 'input' && setSearchAuthor(value)
+                    }
                     noOptionsText={
                       <Stack
                         direction="row"
                         alignItems="center"
                         spacing={1}
-                        onClick={() => setOpenModal('author')}
+                        onClick={() => {
+                          setValue('author', null);
+                          setOpenModal('author');
+                        }}
                         sx={{
                           cursor: 'pointer',
                           borderRadius: 1,
-                          my: 1,
                           px: 2,
                           py: 0.75,
                           '&:hover': {
@@ -378,22 +405,30 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                   <RHFAutocomplete
                     name="genre"
                     label="Thể loại"
-                    options={genres}
-                    ChipProps={{ size: 'small' }}
+                    options={genres.sort((a, b) =>
+                      toNonAccentVietnamese(a.name.toLowerCase()) >
+                      toNonAccentVietnamese(b.name.toLowerCase())
+                        ? 1
+                        : -1
+                    )}
                     isOptionEqualToValue={(opt, val) => opt.id === val.id}
                     getOptionLabel={(option) => (option as IGenre).name ?? option}
                     clearOnBlur={false}
-                    onInputChange={(_, value) => setSearchGenre(value)}
+                    onInputChange={(_, value, reason) =>
+                      reason === 'input' && setSearchGenre(value)
+                    }
                     noOptionsText={
                       <Stack
                         direction="row"
                         alignItems="center"
                         spacing={1}
-                        onClick={() => setOpenModal('genre')}
+                        onClick={() => {
+                          setValue('genre', null);
+                          setOpenModal('genre');
+                        }}
                         sx={{
                           cursor: 'pointer',
                           borderRadius: 1,
-                          my: 1,
                           px: 2,
                           py: 0.75,
                           '&:hover': {
@@ -412,22 +447,30 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                   <RHFAutocomplete
                     name="publisher"
                     label="Nhà xuất bản"
-                    options={publishers}
+                    options={publishers.sort((a, b) =>
+                      toNonAccentVietnamese(a.name.toLowerCase()) >
+                      toNonAccentVietnamese(b.name.toLowerCase())
+                        ? 1
+                        : -1
+                    )}
                     clearOnBlur={false}
-                    ChipProps={{ size: 'small' }}
                     isOptionEqualToValue={(opt, val) => opt.id === val.id}
                     getOptionLabel={(option) => (option as IPublisher).name ?? option}
-                    onInputChange={(_, value) => setSearchPublisher(value)}
+                    onInputChange={(_, value, reason) =>
+                      reason === 'input' && setSearchPublisher(value)
+                    }
                     noOptionsText={
                       <Stack
                         direction="row"
                         alignItems="center"
                         spacing={1}
-                        onClick={() => setOpenModal('publisher')}
+                        onClick={() => {
+                          setValue('publisher', null);
+                          setOpenModal('publisher');
+                        }}
                         sx={{
                           cursor: 'pointer',
                           borderRadius: 1,
-                          my: 1,
                           px: 2,
                           py: 0.75,
                           '&:hover': {
@@ -452,7 +495,10 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                     label="Đơn giá"
                     placeholder="0 - 1.000.000"
                     onChange={(event) =>
-                      setValue('price', Number(event.target.value), { shouldValidate: true })
+                      setValue('price', Number(event.target.value), {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }
                     InputLabelProps={{ shrink: true }}
                     InputProps={{
@@ -471,7 +517,12 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                     name="discount"
                     label="Giảm giá (%)"
                     placeholder="0 - 100%"
-                    onChange={(event) => setValue('discount', Number(event.target.value))}
+                    onChange={(event) =>
+                      setValue('discount', Number(event.target.value), {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
+                    }
                     InputLabelProps={{ shrink: true }}
                     InputProps={{ inputComponent: NumericFormatCustom }}
                     inputProps={{
@@ -489,7 +540,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                 variant="contained"
                 size="large"
                 loading={isSubmitting}
-                disabled={!isDirty || !isValid}
+                disabled={!isValid || (isEdit && !isDirty)}
               >
                 {!isEdit ? 'Thêm sản phẩm' : 'Cập nhật'}
               </LoadingButton>
@@ -499,12 +550,34 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       </FormProvider>
       <Modal open={!!openModal} onClose={() => setOpenModal(null)}>
         <Box>
+          {openModal === 'author' && (
+            <AuthorNewEditForm
+              author={{ name: searchAuthor }}
+              onCancel={() => setOpenModal(null)}
+              onCloseModal={() => setOpenModal(null)}
+              onSuccess={(data) =>
+                setValue('author', data ?? null, { shouldValidate: true, shouldDirty: true })
+              }
+            />
+          )}
           {openModal === 'genre' && (
             <GenreNewEditForm
               genre={{ name: searchGenre }}
-              onCancel={() => {
-                setOpenModal(null);
-              }}
+              onCancel={() => setOpenModal(null)}
+              onCloseModal={() => setOpenModal(null)}
+              onSuccess={(data) =>
+                setValue('genre', data ?? null, { shouldValidate: true, shouldDirty: true })
+              }
+            />
+          )}
+          {openModal === 'publisher' && (
+            <PublisherNewEditForm
+              publisher={{ name: searchPublisher }}
+              onCancel={() => setOpenModal(null)}
+              onCloseModal={() => setOpenModal(null)}
+              onSuccess={(data) =>
+                setValue('publisher', data ?? null, { shouldValidate: true, shouldDirty: true })
+              }
             />
           )}
         </Box>

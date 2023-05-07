@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-import { IBookCompact } from './book';
+import { IAuthor, IBookCompact, IGenre, IPublisher } from './book';
 
 export type IProductReview = {
   id: string;
@@ -44,9 +44,9 @@ export type IProduct = {
 };
 
 export type IProductFilter = {
-  gender: string[];
-  category: string;
-  colors: string[];
+  authors: IAuthor[];
+  genres: IGenre[];
+  publishers: IPublisher[];
   priceRange: number[];
   rating: string;
   sortBy: string;

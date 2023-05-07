@@ -12,7 +12,7 @@ import { Container } from '@mui/material';
 import AdminLayout from 'src/layouts/admin';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // // sections
-import ProductNewEditForm from 'src/sections/@admin/e-commerce/ProductNewEditForm';
+import { ProductNewEditForm } from 'src/sections/@admin/e-commerce';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import { useData } from '../../../../../hooks/data';
@@ -50,7 +50,7 @@ export default function EcommerceProductEditPage() {
   return (
     <>
       <Head>
-        <title> Ecommerce: Edit product | Minimal UI</title>
+        <title> Cập nhật sản phẩm | Book Shop</title>
       </Head>
 
       <Container
@@ -59,11 +59,11 @@ export default function EcommerceProductEditPage() {
       >
         {loading && <LoadingLinear />}
         <CustomBreadcrumbs
-          heading="Edit product"
+          heading="Cập nhật"
           links={[
             { name: 'Dashboard', href: PATH_ADMIN.root },
             {
-              name: 'E-Commerce',
+              name: 'Danh sách sản phẩm',
               href: PATH_ADMIN.eCommerce.root,
             },
             { name: data?.name },

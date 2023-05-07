@@ -45,11 +45,11 @@ import useDebounce from 'src/hooks/useDebounce';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Tên sản phẩm', align: 'left', width: 320 },
-  { id: 'quantity', label: 'Số lượng', align: 'center' },
-  { id: 'sold', label: 'Đã bán', align: 'center' },
-  { id: 'status', label: 'Trạng thái', align: 'center', width: 180, disableSort: true },
-  { id: 'price', label: 'Đơn giá', align: 'right' },
+  { id: 'Name', label: 'Tên sản phẩm', align: 'left', width: 320 },
+  { id: 'Quantity', label: 'Số lượng', align: 'center' },
+  { id: 'Sold', label: 'Đã bán', align: 'center' },
+  { id: 'Discount', label: 'Trạng thái', align: 'center', width: 180 },
+  { id: 'Price', label: 'Đơn giá', align: 'right' },
   { id: 'actions', disableSort: true },
 ];
 
@@ -80,7 +80,6 @@ export default function EcommerceProductListPage() {
     setPage,
     //
     selected,
-    setSelected,
     onSelectRow,
     onSelectAllRows,
     //
@@ -89,7 +88,7 @@ export default function EcommerceProductListPage() {
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({
-    defaultOrderBy: 'createdAt',
+    defaultOrderBy: 'releaseDate',
     defaultDense: true,
   });
 
@@ -104,18 +103,14 @@ export default function EcommerceProductListPage() {
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  // useEffect(() => {
-  //   dispatch(getProducts());
-  // }, [dispatch]);
-
   const { data, isFetching } = useQuery({
     queryKey: [
       'products',
       'list',
       {
         search: searchText,
-        // sortBy: orderBy,
-        // sortDirection: order,
+        sortBy: orderBy,
+        sortDirection: order,
         pageSize: rowsPerPage,
         type: filterStatus,
       },
@@ -127,8 +122,8 @@ export default function EcommerceProductListPage() {
         pageSize: rowsPerPage,
         type: filterStatus,
         search: searchText,
-        // sortBy: orderBy,
-        // sortDirection: order,
+        sortBy: orderBy,
+        sortDirection: order,
       }),
     staleTime: Infinity,
     keepPreviousData: true,
@@ -165,32 +160,14 @@ export default function EcommerceProductListPage() {
   };
 
   const handleDeleteRow = (id: string | number) => {
-    // const deleteRow = tableData.filter((row) => row.id !== id);
-    // setSelected([]);
-    // setTableData(deleteRow);
-
     if (page > 0) {
-      if (books.length < 2) {
+      if (books.length < 1) {
         setPage(page - 1);
       }
     }
   };
 
-  const handleDeleteRows = (selectedRows: (string | number)[]) => {
-    // const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
-    // setSelected([]);
-    // setTableData(deleteRows);
-    // if (page > 0) {
-    //   if (selectedRows.length === dataInPage.length) {
-    //     setPage(page - 1);
-    //   } else if (selectedRows.length === dataFiltered.length) {
-    //     setPage(0);
-    //   } else if (selectedRows.length > dataInPage.length) {
-    //     const newPage = Math.ceil((tableData.length - selectedRows.length) / rowsPerPage) - 1;
-    //     setPage(newPage);
-    //   }
-    // }
-  };
+  const handleDeleteRows = (selectedRows: (string | number)[]) => {};
 
   const handleEditRow = (slug: string) => {
     push(PATH_ADMIN.eCommerce.edit(slug));
@@ -208,10 +185,10 @@ export default function EcommerceProductListPage() {
   return (
     <>
       <Head>
-        <title> Ecommerce: Product List | Minimal UI</title>
+        <title> Dánh sách sản phẩm | Book Shop</title>
       </Head>
 
-      <Container maxWidth={themeStretch ? false : 'lg'}>
+      <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 2 }}>
         <CustomBreadcrumbs
           heading=""
           links={[{ name: 'Trang chủ', href: PATH_ADMIN.root }, { name: 'Danh sách sản phẩm' }]}
@@ -264,7 +241,7 @@ export default function EcommerceProductListPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={rowsPerPage}
+                  rowCount={books.length}
                   numSelected={selected.length}
                   onSort={onSort}
                   onSelectAllRows={(checked) =>
@@ -273,6 +250,7 @@ export default function EcommerceProductListPage() {
                       books.map((row) => row.id)
                     )
                   }
+                  sx={{ whiteSpace: 'nowrap' }}
                 />
 
                 <TableBody>

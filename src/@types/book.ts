@@ -88,10 +88,10 @@ export type ICartState = {
 // ----------------------------------------------------------------------
 
 export type IProductFilter = {
-  authors: number[];
-  genres: number[];
+  authors: IAuthor[];
+  genres: IGenre[];
+  publishers: IPublisher[];
   priceRange: [number, number];
-  publishers: number[];
   sortBy: string;
   sortDirection: 'asc' | 'desc';
 };

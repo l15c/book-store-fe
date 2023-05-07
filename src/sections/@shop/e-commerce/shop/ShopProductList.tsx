@@ -1,7 +1,9 @@
+import { NotFoundIllustration } from 'src/assets/illustrations';
 // @mui
-import { Box, BoxProps } from '@mui/material';
+import { Box, BoxProps, Stack, Typography } from '@mui/material';
 // @type
 import { IBookCompact } from 'src/@types/book';
+// assets
 // components
 import { SkeletonProductItem } from '../../../../components/skeleton';
 //
@@ -15,8 +17,15 @@ interface Props extends BoxProps {
 }
 
 export default function ShopProductList({ books, loading, ...other }: Props) {
-    console.log(books)
-  return (
+  return books.length === 0 ? (
+    <Stack alignItems="center" height={1}>
+      <Typography variant="h4" paragraph>
+        Không tìm thấy kết quả phù hợp
+      </Typography>
+
+      <NotFoundIllustration sx={{ my: 2, height: 320 }} />
+    </Stack>
+  ) : (
     <Box
       gap={3}
       display="grid"

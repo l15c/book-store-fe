@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 // utils
 import { fCurrency } from 'src/utils/formatNumber';
+import { getLinkImage } from 'src/utils/cloudinary';
 // @types
 import { IBookCompact } from 'src/@types/book';
 // components
@@ -63,7 +64,7 @@ export default function ProductTableRow({
   onEditRow,
   onViewRow,
 }: Props) {
-  const { name, cover, quantity, price, discount, saleEndDate, saleStartDate, sold } = row;
+  const { name, cover, slug, quantity, price, discount, saleEndDate, saleStartDate, sold } = row;
 
   const stopSale = quantity < 0;
   const outOfStock = quantity === 0;
@@ -117,7 +118,7 @@ export default function ProductTableRow({
               disabledEffect
               visibleByDefault
               alt={name}
-              src={cover}
+              src={getLinkImage(cover, `products/${slug}`) as string}
               sx={{ borderRadius: 1.5, width: 48, height: 48 }}
             />
 

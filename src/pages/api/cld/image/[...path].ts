@@ -13,7 +13,7 @@ export const config = {
 const CLOUDINARY_RESOURCES_URL = 'https://res.cloudinary.com';
 
 export default (req: NextApiRequest, res: NextApiResponse) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     // req.headers.cookie = '';
 
     req.url = req.url?.replace(
@@ -30,6 +30,6 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
     });
 
     proxy.once('proxyRes', () => {
-      resolve(true);
+      resolve();
     });
   });

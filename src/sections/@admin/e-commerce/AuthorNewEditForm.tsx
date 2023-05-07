@@ -13,6 +13,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // component
 import FormProvider from 'src/components/hook-form/FormProvider';
 import { RHFTextField } from 'src/components/hook-form';
+import { useQueryClient } from '@tanstack/react-query';
+import { useData } from 'src/hooks/data';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -27,7 +29,7 @@ const style = {
 
 type Props = {
   isEdit?: boolean;
-  author?: Partial<IAuthor>;
+  author?: Partial<IAuthor> | null;
   onCancel?: () => void;
   onCloseModal?: () => void;
   onSuccess?: (data?: IAuthor) => void;
@@ -40,7 +42,12 @@ export default function AuthorNewEditForm({
   onCancel,
   onSuccess,
 }: Props) {
+  const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
+
+  const {
+    query: { authorQuery },
+  } = useData();
 
   const defaultValues = useMemo(
     () => ({
@@ -62,7 +69,8 @@ export default function AuthorNewEditForm({
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    setError,
+    formState: { isSubmitting, isValid, isDirty },
   } = methods;
 
   useEffect(() => {
@@ -77,42 +85,55 @@ export default function AuthorNewEditForm({
 
   const onSubmit = async (data: IAuthor) => {
     try {
+      if (!isEdit && authorQuery.data?.map((e) => e.name).includes(data.name.trim()))
+        throw Error('duplicate');
       let res;
       if (isEdit) {
         res = await authorApi.update({ ...data, id: author!.id! });
       } else {
         res = await authorApi.create(data);
       }
+      await queryClient.invalidateQueries({
+        queryKey: ['author', 'all'],
+        refetchType: 'all',
+      });
+
       if (onSuccess) await onSuccess(res);
+
       enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm mới'} tác giả thành công.`);
       if (onCloseModal) onCloseModal();
     } catch (err) {
       console.log(err);
-      enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm mới'} tác giả thất bại.`, {
-        variant: 'error',
-      });
+      if (err.message === 'duplicate')
+        setError('name', {
+          message: 'Tên tác giả đã tồn tại',
+        });
+      else
+        enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm mới'} tác giả thất bại.`, {
+          variant: 'error',
+        });
     }
   };
 
   return (
-    <FormProvider methods={methods}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Paper sx={{ ...style }}>
         <Typography mb={2} sx={{ fontSize: 20, fontWeight: 700 }}>
           {!isEdit ? 'Thêm tác giả' : 'Cập nhật tác giả'}
         </Typography>
-        <Stack spacing={1}>
+        <Stack spacing={2}>
           <RHFTextField name="name" label="Tên tác giả" autoFocus />
-          <RHFTextField name="description" label="Mô tả" />
+          <RHFTextField name="description" label="Mô tả" multiline />
         </Stack>
         <Stack direction="row" mt={2} spacing={2}>
           <Button variant="outlined" sx={{ ml: 'auto' }} onClick={onCancel}>
             Hủy
           </Button>
           <LoadingButton
-            onClick={handleSubmit(onSubmit)}
+            type="submit"
             variant="contained"
             loading={isSubmitting}
-            disabled={!isValid}
+            disabled={!isValid || (isEdit && !isDirty)}
           >
             {!isEdit ? 'Thêm mới' : 'Cập nhật'}
           </LoadingButton>

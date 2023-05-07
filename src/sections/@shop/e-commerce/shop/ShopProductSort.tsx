@@ -10,26 +10,25 @@ import MenuPopover from '../../../../components/menu-popover';
 // ----------------------------------------------------------------------
 
 const OPTIONS = [
-  { value: 'featured', label: 'Nổi bật' },
-  { value: 'newest', label: 'Mới nhất' },
-  { value: 'priceDesc', label: 'Giá: giảm dần' },
-  { value: 'priceAsc', label: 'Giá: tăng dần' },
+  { value: 'Sold', label: 'Nổi bật' },
+  { value: 'ReleaseDate', label: 'Mới nhất' },
+  { value: 'Price', label: 'Giá: giảm dần' },
+  { value: 'Price+', label: 'Giá: tăng dần' },
 ];
 
 function renderLabel(label: string) {
   return {
-    featured: 'Nổi bật',
-    newest: 'Mới nhất',
-    priceDesc: 'Giá giảm dần',
-    priceAsc: 'Giá tăng dần',
+    Sold: 'Nổi bật',
+    ReleaseDate: 'Mới nhất',
+    Price: 'Giá giảm dần',
+    'Price+': 'Giá tăng dần',
   }[label];
 }
 
 // ----------------------------------------------------------------------
 
 export default function ShopProductSort() {
-  const { control } = useFormContext();
-
+  const { control, setValue } = useFormContext();
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
   const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -69,6 +68,7 @@ export default function ShopProductSort() {
                 onClick={() => {
                   handleClosePopover();
                   field.onChange(option.value);
+                  setValue('sortDirection', option.value === 'Price+' ? 'asc' : 'desc');
                 }}
               >
                 {option.label}

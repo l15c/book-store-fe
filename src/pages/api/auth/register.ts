@@ -17,7 +17,7 @@ export default (request: NextApiRequest, response: NextApiResponse) => {
 
   request.headers.cookie = '';
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     request.url = request.url?.replace(`auth/register`, 'customers');
     request.headers['accept-encoding'] = '';
 
@@ -49,7 +49,7 @@ export default (request: NextApiRequest, response: NextApiResponse) => {
             console.log('Register error: ', err);
             (res as NextApiResponse).status(500).send({ message: 'Sự cố máy chủ' });
           }
-          resolve(true);
+          resolve();
         });
       })
       .web(request, response, {

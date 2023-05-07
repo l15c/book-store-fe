@@ -12,7 +12,7 @@ export const config = {
 };
 
 export default (req: NextApiRequest, res: NextApiResponse) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     const cookies = new Cookies(req, res);
 
     const accessToken = cookies.get('auth-token');
@@ -28,6 +28,6 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
     });
 
     proxy.once('proxyRes', () => {
-      resolve(true);
+      resolve();
     });
   });

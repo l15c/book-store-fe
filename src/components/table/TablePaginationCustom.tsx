@@ -27,11 +27,17 @@ export default function TablePaginationCustom({
 }: Props & TablePaginationProps) {
   return (
     <Box sx={{ position: 'relative', ...sx }}>
-      <TablePagination rowsPerPageOptions={rowsPerPageOptions} component="div" {...other} />
+      <TablePagination
+        component="div"
+        rowsPerPageOptions={rowsPerPageOptions}
+        labelRowsPerPage="Số dòng hiển thị"
+        labelDisplayedRows={({ from, to, count }) => `${from} - ${to} trên ${count}`}
+        {...other}
+      />
 
       {onChangeDense && (
         <FormControlLabel
-          label="Dense"
+          label="Thu gọn"
           control={<Switch checked={dense} onChange={onChangeDense} />}
           sx={{
             pl: 2,

@@ -21,6 +21,7 @@ import { PATH_SHOP } from 'src/routes/paths';
 import { fCurrency } from 'src/utils/formatNumber';
 import { ICartItem } from 'src/@types/book';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
+import { getLinkImage } from 'src/utils/cloudinary';
 
 // ----------------------------------------------------------------------
 
@@ -162,7 +163,11 @@ function CartProductPopover({ product, onDelete, onDecreaseQuantity, onIncreaseQ
         <IconButton onClick={() => onDelete(id)} sx={{ position: 'absolute', top: 4, right: 0 }}>
           <Iconify icon="eva:close-fill" />
         </IconButton>
-        <Image alt={name} src={cover} sx={{ width: 75, height: 75, borderRadius: 1.5, mr: 2 }} />
+        <Image
+          alt={name}
+          src={getLinkImage(cover, `products/${slug}`) as string}
+          sx={{ width: 75, height: 75, borderRadius: 1.5, mr: 2 }}
+        />
         <Stack spacing={1} flex={1}>
           <Link
             component={NextLink}

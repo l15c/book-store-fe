@@ -11,7 +11,7 @@ export const config = {
 };
 
 export default (req: NextApiRequest, res: NextApiResponse) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     req.url = req.url?.replace('/provinces', '/');
     req.headers.cookie = '';
 
@@ -21,6 +21,6 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
     });
 
     proxy.once('proxyRes', () => {
-      resolve(true);
+      resolve();
     });
   });

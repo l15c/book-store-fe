@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { paramCase } from 'change-case';
+import { useState, useEffect } from 'react';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 // next
@@ -7,7 +6,6 @@ import { useRouter } from 'next/router';
 // @mui
 import { Link, Typography, Autocomplete, InputAdornment } from '@mui/material';
 // utils
-import axios from '../../../../api-client/axios';
 // routes
 import { PATH_SHOP } from '../../../../routes/paths';
 // @types
@@ -25,20 +23,15 @@ export default function ShopProductSearch() {
 
   const searchText = (typeof query.q === 'string' ? query.q : '') ?? '';
 
-  const [searchProducts, setSearchProducts] = useState(paramCase(searchText));
+  const [searchProducts, setSearchProducts] = useState(searchText);
 
-  const [searchResults, setSearchResults] = useState([]);
+  useEffect(() => {
+    if (searchText) setSearchProducts(searchText);
+  }, [searchText]);
 
   const handleChangeSearch = async (value: string) => {
     try {
       setSearchProducts(value);
-      if (value) {
-        const response = await axios.get('/api/products/search', {
-          params: { query: value },
-        });
-
-        setSearchResults(response.data.results);
-      }
     } catch (error) {
       console.error(error);
     }
@@ -48,7 +41,7 @@ export default function ShopProductSearch() {
     push({
       pathname: PATH_SHOP.product.root,
       query: {
-        ...(paramCase(name) && { q: paramCase(name) }),
+        ...(name && { q: name }),
       },
     });
   };
@@ -62,14 +55,18 @@ export default function ShopProductSearch() {
   return (
     <Autocomplete
       size="small"
+      open={false}
       fullWidth
       autoHighlight
       popupIcon={null}
       options={[]} // searchResults
+      inputValue={searchProducts}
       onInputChange={(_, value) => handleChangeSearch(value)}
       clearOnBlur={false}
       getOptionLabel={(product: IProduct) => product.name}
-      noOptionsText={<SearchNotFound query={searchProducts} />}
+      // noOptionsText={<SearchNotFound query={searchProducts} />}
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      noOptionsText={<></>}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       componentsProps={{
         paper: {
@@ -89,10 +86,10 @@ export default function ShopProductSearch() {
           InputProps={{
             ...params.InputProps,
             startAdornment: (
-              <InputAdornment position="start">
+              <InputAdornment position="start" onClick={() => handleGotoProduct(searchProducts)}>
                 <Iconify
                   icon="eva:search-fill"
-                  sx={{ ml: 1, color: (theme) => theme.palette.primary.main }}
+                  sx={{ ml: 1, color: (theme) => theme.palette.primary.main, cursor: 'pointer' }}
                 />
               </InputAdornment>
             ),
