@@ -60,8 +60,6 @@ export default function ShopFilterDrawer({
     };
   });
 
-  console.log(marksLabel);
-
   return (
     <>
       <Button
