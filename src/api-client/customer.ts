@@ -1,4 +1,4 @@
-import { IAuthUser } from 'src/@types/user';
+import { ConfirmResetPassword, IAuthUser } from 'src/@types/user';
 import { GET, POST, PUT } from './axios';
 import { AuthResponse, LoginPayload, RegisterPayload } from './type';
 
@@ -17,7 +17,8 @@ const customerApi = {
 
   resetPassword: (email: string) => GET(`/customers/reset-password/${email}`),
 
-  confirmResetPassword: (data: any) => POST('/customers/reset-password', data),
+  confirmResetPassword: (data: ConfirmResetPassword) =>
+    POST<ConfirmResetPassword, unknown>('/customers/reset-password', data),
 };
 
 export default customerApi;

@@ -28,7 +28,7 @@ export default function useCountdown(date: Date): ReturnType {
 
     const endTime = new Date();
 
-    const distanceToNow = startTime.valueOf() - endTime.valueOf();
+    const distanceToNow = Math.max(startTime.valueOf() - endTime.valueOf(), 0);
 
     const getDays = Math.floor(distanceToNow / (1000 * 60 * 60 * 24));
 

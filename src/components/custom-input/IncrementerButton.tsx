@@ -1,15 +1,21 @@
 import { forwardRef } from 'react';
+import { NumberFormatValues } from 'react-number-format';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Stack, IconButton, StackProps } from '@mui/material';
+import { Stack, IconButton, StackProps, Input } from '@mui/material';
 // components
 import Iconify from '../iconify';
+import NumericFormatCustom from '../numeric-format-custom/NumericFormatCustom';
 
 // ----------------------------------------------------------------------
 
 interface IncrementerButtonProps extends StackProps {
   name?: string;
   quantity: number;
+  enableInput?: boolean;
+  min?: number;
+  max?: number;
+  setQuantity: (value: number) => void;
   disabledIncrease?: boolean;
   disabledDecrease?: boolean;
   onIncrease: VoidFunction;
@@ -17,7 +23,22 @@ interface IncrementerButtonProps extends StackProps {
 }
 
 const IncrementerButton = forwardRef<HTMLDivElement, IncrementerButtonProps>(
-  ({ quantity, onIncrease, onDecrease, disabledIncrease, disabledDecrease, sx, ...other }, ref) => (
+  (
+    {
+      quantity,
+      enableInput,
+      min = -Infinity,
+      max = Infinity,
+      setQuantity,
+      onIncrease,
+      onDecrease,
+      disabledIncrease,
+      disabledDecrease,
+      sx,
+      ...other
+    },
+    ref
+  ) => (
     <Stack
       ref={ref}
       flexShrink={0}
@@ -45,7 +66,29 @@ const IncrementerButton = forwardRef<HTMLDivElement, IncrementerButtonProps>(
         <Iconify icon="eva:minus-fill" width={16} />
       </IconButton>
 
-      {quantity}
+      {enableInput ? (
+        <Input
+          value={quantity}
+          disableUnderline
+          disabled={disabledDecrease && disabledIncrease}
+          onFocus={(e) => e.target.select()}
+          onChange={(e) => {
+            setQuantity(Math.max(Number(e.target.value), min));
+          }}
+          inputComponent={NumericFormatCustom}
+          inputProps={{
+            min,
+            max,
+            sx: { textAlign: 'center' },
+            isAllowed: (_val: NumberFormatValues) => {
+              const { floatValue = 0 } = _val;
+              return floatValue >= min && floatValue <= max;
+            },
+          }}
+        />
+      ) : (
+        quantity
+      )}
 
       <IconButton
         size="small"

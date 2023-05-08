@@ -1,27 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
-import { Stack, Button, Rating, Avatar, Pagination, Typography } from '@mui/material';
-// utils
-import { fDate } from '../../../../utils/formatTime';
-import { fShortenNumber } from '../../../../utils/formatNumber';
+import { Stack, Rating, Avatar, Pagination, Typography } from '@mui/material';
 // @types
-import { IProductReview } from '../../../../@types/product';
+import { IReview } from 'src/@types/book';
+// utils
+import { getLinkImage } from 'src/utils/cloudinary';
+import { fDate } from '../../../../utils/formatTime';
+// import { fShortenNumber } from '../../../../utils/formatNumber';
 // components
 import Iconify from '../../../../components/iconify';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  reviews: IProductReview[];
+  reviews: IReview[];
 };
 
+const PAGE_SIZE = 8;
 export default function ProductDetailsReviewList({ reviews }: Props) {
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    document
+      .getElementById('list-review')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+  }, [page]);
+
   return (
     <>
       <Stack
+        id="list-review"
         spacing={5}
         sx={{
-          pt: 5,
+          mt: -5,
+          pt: 10,
           pl: {
             xs: 2.5,
             md: 0,
@@ -32,7 +44,7 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
           },
         }}
       >
-        {reviews.map((review) => (
+        {reviews.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
       </Stack>
@@ -47,7 +59,14 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
           mr: { md: 5 },
         }}
       >
-        <Pagination count={10} />
+        <Pagination
+          count={Math.ceil(reviews.length / PAGE_SIZE)}
+          page={page + 1}
+          onChange={(e, p) => setPage(p - 1)}
+          showLastButton
+          showFirstButton
+          boundaryCount={2}
+        />
       </Stack>
     </>
   );
@@ -56,13 +75,13 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
 // ----------------------------------------------------------------------
 
 type ReviewItemProps = {
-  review: IProductReview;
+  review: IReview;
 };
 
 function ReviewItem({ review }: ReviewItemProps) {
-  const { name, rating, comment, helpful, postedAt, avatarUrl, isPurchased } = review;
+  const { fullName, comment, createdOn, imageUrl, isPurchased, rating, userId } = review;
 
-  const [isHelpful, setIsHelpful] = useState(false);
+  // const [isHelpful, setIsHelpful] = useState(false);
 
   return (
     <Stack
@@ -85,26 +104,26 @@ function ReviewItem({ review }: ReviewItemProps) {
         }}
       >
         <Avatar
-          src={avatarUrl}
+          src={getLinkImage(imageUrl, `customers/${userId}`) as string}
           sx={{
-            width: { md: 64 },
-            height: { md: 64 },
+            width: { md: 48 },
+            height: { md: 48 },
           }}
         />
 
         <Stack spacing={{ md: 0.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {name}
+            {fullName}
           </Typography>
 
           <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
-            {fDate(postedAt)}
+            {fDate(createdOn)}
           </Typography>
         </Stack>
       </Stack>
 
-      <Stack spacing={1} flexGrow={1}>
-        <Rating size="small" value={rating} precision={0.1} readOnly />
+      <Stack spacing={1} flexGrow={1} justifyContent="center">
+        <Rating size="small" value={rating} readOnly />
 
         {isPurchased && (
           <Typography
@@ -116,13 +135,13 @@ function ReviewItem({ review }: ReviewItemProps) {
             }}
           >
             <Iconify icon="ic:round-verified" width={16} sx={{ mr: 0.5 }} />
-            Verified purchase
+            Đã mua sản phẩm
           </Typography>
         )}
 
         <Typography variant="body2">{comment}</Typography>
 
-        <Stack
+        {/* <Stack
           spacing={1}
           alignItems={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'column', sm: 'row' }}
@@ -139,7 +158,7 @@ function ReviewItem({ review }: ReviewItemProps) {
           >
             {isHelpful ? 'Helpful' : 'Thank'}({fShortenNumber(!isHelpful ? helpful : helpful + 1)})
           </Button>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Stack>
   );

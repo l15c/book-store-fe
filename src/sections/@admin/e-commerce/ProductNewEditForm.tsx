@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { compact } from 'lodash';
+import compact from 'lodash/compact';
 import { paramCase } from 'change-case';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

@@ -1,5 +1,16 @@
 import { IUserAddress } from './user';
 
+export type IReview = {
+  id?: number;
+  userId?: number;
+  bookId?: number;
+  comment: string;
+  rating: number;
+  createdOn: string;
+  fullName: string;
+  imageUrl: string;
+  isPurchased: boolean;
+};
 export type IAuthor = {
   id: number;
   name: string;
@@ -42,7 +53,7 @@ export type IBook = {
   author: IAuthor;
   genre: IGenre;
   publisher: IPublisher;
-  review: unknown[];
+  review: IReview[];
 };
 
 export type IBookCreate = {

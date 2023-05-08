@@ -25,7 +25,7 @@ const slice = createSlice({
       const findP = state.products.find((p) => p.id === addProduct.id);
 
       if (findP) {
-        findP.quantity = Math.min(findP.available, findP.quantity + 1);
+        findP.quantity = Math.min(addProduct.available, findP.quantity + addProduct.quantity);
       } else {
         state.products.push(addProduct);
       }

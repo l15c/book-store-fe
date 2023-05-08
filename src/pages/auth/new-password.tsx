@@ -24,27 +24,27 @@ export default function NewPasswordPage() {
   return (
     <>
       <Head>
-        <title> New Password | Minimal UI</title>
+        <title> Khôi phục mật khẩu | Minimal UI</title>
       </Head>
 
       <SentIcon sx={{ mb: 5, height: 96 }} />
 
       <Typography variant="h3" paragraph>
-        Request sent successfully!
+        Yêu cầu khôi phục mật khẩu!
       </Typography>
 
       <Typography sx={{ color: 'text.secondary', mb: 5 }}>
-        We&apos;ve sent a 6-digit confirmation email to your email.
+        Mật khẩu của bạn sẽ được đặt lại.
         <br />
-        Please enter the code in below box to verify your email.
+        Vui lòng nhập mật khẩu mới bên dưới.
       </Typography>
 
       <AuthNewPasswordForm />
 
-      <Typography variant="body2" sx={{ my: 3 }}>
+      {/* <Typography variant="body2" sx={{ my: 3 }}>
         Don’t have a code? &nbsp;
         <Link variant="subtitle2">Resend code</Link>
-      </Typography>
+      </Typography> */}
 
       <Link
         component={NextLink}
@@ -52,13 +52,14 @@ export default function NewPasswordPage() {
         color="inherit"
         variant="subtitle2"
         sx={{
+          my: 3,
           mx: 'auto',
           alignItems: 'center',
           display: 'inline-flex',
         }}
       >
         <Iconify icon="eva:chevron-left-fill" width={16} />
-        Return to sign in
+        Quay lại trang đăng nhập
       </Link>
     </>
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // routes
-import { PATH_AUTH, PATH_SHOP } from '../../../routes/paths';
+import { PATH_ADMIN, PATH_AUTH, PATH_SHOP } from '../../../routes/paths';
 // auth
 import { useAuthContext } from '../../../auth/useAuthContext';
 // components
@@ -20,10 +20,6 @@ const OPTIONS = [
   {
     label: 'Trang chủ',
     linkTo: '/',
-  },
-  {
-    label: 'Đơn hàng',
-    linkTo: PATH_SHOP.order.root,
   },
   {
     label: 'Đổi mật khẩu',
@@ -111,11 +107,17 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
+          {user?.roleId !== 6 && (
+            <MenuItem onClick={() => handleClickItem(PATH_ADMIN.root)}>Trang quản lý</MenuItem>
+          )}
           {OPTIONS.map((option) => (
             <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>
               {option.label}
             </MenuItem>
           ))}
+          {user?.roleId === 6 && (
+            <MenuItem onClick={() => handleClickItem(PATH_SHOP.order.root)}>Đơn hàng</MenuItem>
+          )}
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

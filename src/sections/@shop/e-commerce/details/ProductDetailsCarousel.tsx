@@ -10,6 +10,7 @@ import { IBook } from 'src/@types/book';
 import Image from 'src/components/image';
 import Lightbox from 'src/components/lightbox';
 import Carousel, { CarouselArrowIndex } from 'src/components/carousel';
+import { getLinkImage } from 'src/utils/cloudinary';
 
 // ----------------------------------------------------------------------
 
@@ -91,7 +92,9 @@ export default function ProductDetailsCarousel({ book }: Props) {
 
   const [selectedImage, setSelectedImage] = useState<number>(-1);
 
-  const fullImages = [cover, ...images];
+  const fullImages = [cover, ...images].map(
+    (e) => getLinkImage(e, `products/${book.slug}`) as string
+  );
 
   const imagesLightbox = fullImages.map((img: string) => ({ src: img }));
 
@@ -157,7 +160,7 @@ export default function ProductDetailsCarousel({ book }: Props) {
             onClick={() => handleOpenLightbox(img)}
             sx={{
               width: 480,
-              height: 600,
+              height: 480,
               m: 'auto',
               cursor: 'zoom-in',
               '& *': {

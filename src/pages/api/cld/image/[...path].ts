@@ -21,8 +21,6 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
       `${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`
     );
 
-    console.log(req.url);
-
     proxy.web(req, res, {
       target: CLOUDINARY_RESOURCES_URL,
       changeOrigin: true,

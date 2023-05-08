@@ -1,10 +1,10 @@
-import { GET, POST, DELETE } from './axios';
+import { IReview } from 'src/@types/book';
+import { GET, POST } from './axios';
+import { Config, Create } from './type';
 
-const cartApi = {
-  get: () => GET('/carts'),
-  update: (data: any) => POST('/carts', data),
-  remove: (id: string) => DELETE(`/carts?bookId=${id}`),
-  clear: () => DELETE('/carts/clear'),
+const reviewApi = {
+  getBySlug: (slug: string, config?: Config) => GET<IReview[]>(`/reviews/${slug}`, config),
+  create: (data: Create<IReview>) => POST('/reviews', data),
 };
 
-export default cartApi;
+export default reviewApi;

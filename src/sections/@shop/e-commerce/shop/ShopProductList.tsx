@@ -17,7 +17,7 @@ interface Props extends BoxProps {
 }
 
 export default function ShopProductList({ books, loading, ...other }: Props) {
-  return books.length === 0 ? (
+  return books.length === 0 && !loading ? (
     <Stack alignItems="center" height={1}>
       <Typography variant="h4" paragraph>
         Không tìm thấy kết quả phù hợp

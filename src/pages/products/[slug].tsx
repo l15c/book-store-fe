@@ -1,62 +1,49 @@
-// import { useEffect, useState } from 'react';
 // next
 import Head from 'next/head';
-// import { useRouter } from 'next/router';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // @mui
-import { alpha } from '@mui/material/styles';
-import {
-  Box,
-  // Tab,
-  // Tabs,
-  // Card,
-  Grid,
-  // Divider,
-  Container,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { Box, Tab, Tabs, Card, Grid, Divider, Container } from '@mui/material';
 // redux
-// import { addToCart, gotoStep } from 'src/redux/slices/checkout';
+import { gotoStep } from 'src/redux/slices/checkout';
 // @types
-// import { ICheckoutCartItem } from 'src/@types/product';
+import { IBook, ICartItem } from 'src/@types/book';
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
-import Iconify from 'src/components/iconify';
-// import Markdown from 'src/components/markdown';
+import Markdown from 'src/components/markdown';
 import { useSettingsContext } from 'src/components/settings';
 import { SkeletonProductDetails } from 'src/components/skeleton';
 // sections
 import {
-  // ProductDetailsSummary,
-  // ProductDetailsReview,
+  ProductDetailsSummary,
+  ProductDetailsReview,
   ProductDetailsCarousel,
 } from 'src/sections/@shop/e-commerce/details';
 import bookApi from 'src/api-client/book';
 import { GetStaticPaths, GetStaticProps } from 'next';
-// import axiosInstance from 'src/api-client/axios';
 import { ParsedUrlQuery } from 'querystring';
-import { IBook } from 'src/@types/book';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { addToCart } from 'src/redux/slices/cart';
 
 // ----------------------------------------------------------------------
 
-const SUMMARY = [
-  {
-    title: '100% Original',
-    description: 'Chocolate bar candy canes ice cream toffee cookie halvah.',
-    icon: 'ic:round-verified',
-  },
-  {
-    title: '10 Day Replacement',
-    description: 'Marshmallow biscuit donut dragée fruitcake wafer.',
-    icon: 'eva:clock-fill',
-  },
-  {
-    title: 'Year Warranty',
-    description: 'Cotton candy gingerbread cake I love sugar sweet.',
-    icon: 'ic:round-verified-user',
-  },
-];
+// const SUMMARY = [
+//   {
+//     title: '100% Original',
+//     description: 'Chocolate bar candy canes ice cream toffee cookie halvah.',
+//     icon: 'ic:round-verified',
+//   },
+//   {
+//     title: '10 Day Replacement',
+//     description: 'Marshmallow biscuit donut dragée fruitcake wafer.',
+//     icon: 'eva:clock-fill',
+//   },
+//   {
+//     title: 'Year Warranty',
+//     description: 'Cotton candy gingerbread cake I love sugar sweet.',
+//     icon: 'ic:round-verified-user',
+//   },
+// ];
 
 // ----------------------------------------------------------------------
 
@@ -84,7 +71,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   try {
     const { slug } = context.params as IParams;
     const book = await bookApi.getBySlug(slug, { baseURL: `${ENDPOINT}/api` });
-
     if (!book)
       return {
         notFound: true,
@@ -96,6 +82,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
       revalidate: 60 * 15,
     };
   } catch (err) {
+    console.log(err);
     console.log(`Failed to fetch posts, received status ${err?.status}`);
     return {
       notFound: true,
@@ -108,56 +95,80 @@ export const getStaticProps: GetStaticProps = async (context) => {
 type Props = {
   book: IBook;
 };
+
 export default function ProductDetailsPage({ book }: Props) {
   const { themeStretch } = useSettingsContext();
 
-  // const [currentTab, setCurrentTab] = useState('description');
+  const dispatch = useDispatch();
 
-  // const handleAddCart = (newProduct: ICheckoutCartItem) => {
-  //   dispatch(addToCart(newProduct));
-  // };
+  const cart = useSelector((e) => e.cart);
 
-  // const handleGotoStep = (step: number) => {
-  //   dispatch(gotoStep(step));
-  // };
+  const handleAddCart = (newProduct: ICartItem) => {
+    dispatch(addToCart(newProduct));
+  };
 
-  // const TABS = [
-  // {
-  //   value: 'description',
-  //   label: 'description',
-  //   component: product ? <Markdown children={product?.description} /> : null,
-  // },
-  // {
-  //   value: 'reviews',
-  //   label: `Reviews (${product ? product.reviews.length : ''})`,
-  //   component: product ? <ProductDetailsReview product={product} /> : null,
-  // },
-  // ];
+  const handleGotoStep = (step: number) => {
+    dispatch(gotoStep(step));
+  };
+
+  const firstUpdate = useRef(true);
+  const [currentTab, setCurrentTab] = useState('description');
+  const [triggerScroll, setTriggerScroll] = useState(false);
+
+  const TABS = useMemo(
+    () => [
+      {
+        value: 'description',
+        label: 'Thông tin sản phẩm',
+        component: <Markdown children={book?.description || ''} />,
+      },
+      {
+        value: 'review',
+        label: `Đánh giá (${(book.review || []).length})`,
+        component: <ProductDetailsReview reviews={book.review || []} />,
+      },
+    ],
+    [book]
+  );
+
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+    } else {
+      const ele = document.getElementById(currentTab);
+      if (ele) ele.scrollIntoView(true);
+    }
+  }, [TABS, currentTab, triggerScroll]);
+
   return (
     <>
       <Head>
         <title>{`${book?.name || ''} | Book Shop`}</title>
       </Head>
 
-      <Container maxWidth={themeStretch ? false : 'lg'}>
+      <Container maxWidth={themeStretch ? false : 'lg'} sx={{ px: { xs: 0, md: 2 } }}>
         {book ? (
           <>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6} lg={7}>
+              <Grid item xs={12} md={6}>
                 <ProductDetailsCarousel book={book} />
               </Grid>
 
-              <Grid item xs={12} md={6} lg={5}>
-                {/* <ProductDetailsSummary
-                product={data}
-                cart={checkout.cart}
-                onAddCart={handleAddCart}
-                onGotoStep={handleGotoStep}
-              /> */}
+              <Grid item xs={12} md={6}>
+                <ProductDetailsSummary
+                  book={book}
+                  cart={cart.products}
+                  onAddCart={handleAddCart}
+                  onGotoStep={handleGotoStep}
+                  scrollToTab={() => {
+                    setCurrentTab('review');
+                    setTriggerScroll((prev) => !prev);
+                  }}
+                />
               </Grid>
             </Grid>
 
-            <Box
+            {/* <Box
               gap={5}
               display="grid"
               gridTemplateColumns={{
@@ -190,37 +201,43 @@ export default function ProductDetailsPage({ book }: Props) {
                   <Typography sx={{ color: 'text.secondary' }}>{item.description}</Typography>
                 </Box>
               ))}
-            </Box>
+            </Box> */}
 
-            {/* <Card>
-            <Tabs
-              value={currentTab}
-              onChange={(event, newValue) => setCurrentTab(newValue)}
-              sx={{ px: 3, bgcolor: 'background.neutral' }}
-            >
+            <Card sx={{ my: 8 }}>
+              <Tabs
+                visibleScrollbar
+                value={currentTab}
+                onChange={(event, newValue) => {
+                  setCurrentTab(newValue);
+                  setTriggerScroll((p) => !p);
+                }}
+                sx={{ px: 3, bgcolor: 'background.neutral' }}
+              >
+                {TABS.map((tab) => (
+                  <Tab key={tab.value} value={tab.value} label={tab.label} />
+                ))}
+              </Tabs>
+
+              <Divider />
+
               {TABS.map((tab) => (
-                <Tab key={tab.value} value={tab.value} label={tab.label} />
+                <Box
+                  id={tab.value}
+                  key={tab.value}
+                  sx={{
+                    display: tab.value === currentTab ? 'block' : 'none',
+                    pt: 10,
+                    mt: -10,
+                    ...(currentTab === 'description' && {
+                      p: 3,
+                      mt: 0,
+                    }),
+                  }}
+                >
+                  {tab.component}
+                </Box>
               ))}
-            </Tabs>
-
-            <Divider />
-
-            {TABS.map(
-              (tab) =>
-                tab.value === currentTab && (
-                  <Box
-                    key={tab.value}
-                    sx={{
-                      ...(currentTab === 'description' && {
-                        p: 3,
-                      }),
-                    }}
-                  >
-                    {tab.component}
-                  </Box>
-                )
-            )}
-          </Card> */}
+            </Card>
           </>
         ) : (
           <SkeletonProductDetails />

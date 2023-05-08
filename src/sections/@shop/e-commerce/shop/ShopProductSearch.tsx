@@ -4,7 +4,15 @@ import match from 'autosuggest-highlight/match';
 // next
 import { useRouter } from 'next/router';
 // @mui
-import { Link, Typography, Autocomplete, InputAdornment } from '@mui/material';
+import {
+  Link,
+  Typography,
+  TextField,
+  TextFieldProps,
+  Autocomplete,
+  InputAdornment,
+  styled,
+} from '@mui/material';
 // utils
 // routes
 import { PATH_SHOP } from '../../../../routes/paths';
@@ -13,10 +21,31 @@ import { IProduct } from '../../../../@types/product';
 // components
 import Image from '../../../../components/image';
 import Iconify from '../../../../components/iconify';
-import { CustomTextField } from '../../../../components/custom-input';
 // import SearchNotFound from '../../../../components/search-not-found';
 
 // ----------------------------------------------------------------------
+type Props = TextFieldProps & {
+  width?: number;
+};
+
+const CustomTextField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'width',
+})<Props>(({ width, theme }) => ({
+  background: '#f6f5f7',
+  borderRadius: 999,
+  '& fieldset': {
+    display: 'none',
+  },
+  '& .MuiOutlinedInput-root': {
+    width,
+    borderRadius: 999,
+
+    '&.Mui-focused': {
+      boxShadow: theme.customShadows.z20,
+      outline: `solid 3.6px ${theme.palette.primary.light}`,
+    },
+  },
+}));
 
 export default function ShopProductSearch() {
   const { push, query } = useRouter();
@@ -81,7 +110,7 @@ export default function ShopProductSearch() {
       renderInput={(params) => (
         <CustomTextField
           {...params}
-          placeholder="Tìm kiếm sách, tác giả,..."
+          placeholder="Tìm kiếm sách,..."
           onKeyUp={handleKeyUp}
           InputProps={{
             ...params.InputProps,

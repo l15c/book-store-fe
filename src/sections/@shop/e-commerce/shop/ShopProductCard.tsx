@@ -44,7 +44,7 @@ export default function ShopProductCard({ book }: Props) {
     const newBook = {
       ...book,
       quantity: 1,
-      available: 2,
+      available: quantity,
     };
     try {
       dispatch(addToCart(newBook));

@@ -9,6 +9,13 @@ export type IAuthUser = {
   userAddresses?: IUserAddress;
 };
 
+export type ConfirmResetPassword = {
+  email: string;
+  token: string;
+  password: string;
+  confirmPassword: string;
+};
+
 export type IUserAddress = {
   id: number;
   title: string;

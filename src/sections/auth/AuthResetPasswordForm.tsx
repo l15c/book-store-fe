@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { useSnackbar } from 'notistack';
 // next
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,6 +18,8 @@ type FormValuesProps = {
 };
 
 export default function AuthResetPasswordForm() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const ResetPasswordSchema = Yup.object().shape({
     email: Yup.string().required('Vui lòng nhập email').email('Email không đúng định dạng'),
   });
@@ -34,11 +37,12 @@ export default function AuthResetPasswordForm() {
   const onSubmit = async (data: FormValuesProps) => {
     try {
       await customerApi.resetPassword(data.email);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      // sessionStorage.setItem('email-recovery', data.email);
-      // push(PATH_AUTH.newPassword);
+      enqueueSnackbar('Thông tin khôi phục mật khẩu đã được gửi. \nVui lòng kiểm tra email.');
+      sessionStorage.setItem('email-recovery', data.email);
     } catch (error) {
       console.error(error);
+      if (error?.detail) enqueueSnackbar(error?.detail, { variant: 'error' });
+      else enqueueSnackbar('Đã xảy ra lỗi. Vui lòng thử lại.', { variant: 'error' });
     }
   };
 
