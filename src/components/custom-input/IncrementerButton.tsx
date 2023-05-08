@@ -15,7 +15,7 @@ interface IncrementerButtonProps extends StackProps {
   enableInput?: boolean;
   min?: number;
   max?: number;
-  setQuantity: (value: number) => void;
+  setQuantity?: (value: number) => void;
   disabledIncrease?: boolean;
   disabledDecrease?: boolean;
   onIncrease: VoidFunction;
@@ -29,7 +29,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, IncrementerButtonProps>(
       enableInput,
       min = -Infinity,
       max = Infinity,
-      setQuantity,
+      setQuantity = () => {},
       onIncrease,
       onDecrease,
       disabledIncrease,
