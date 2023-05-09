@@ -16,26 +16,32 @@ export default function CheckoutBillingInfo({ billing, onBackStep }: Props) {
   return (
     <Card sx={{ mb: 3 }}>
       <CardHeader
-        title="Billing Address"
+        title="Thông tin nhận hàng"
         action={
           <Button size="small" startIcon={<Iconify icon="eva:edit-fill" />} onClick={onBackStep}>
-            Edit
+            Thay đổi
           </Button>
         }
       />
       <CardContent>
         <Typography variant="subtitle2" gutterBottom>
-          {billing?.receiver}&nbsp;
           <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
-            ({billing?.title})
+            Người nhận:&nbsp;
           </Typography>
+          {billing?.receiver}
         </Typography>
 
         <Typography variant="body2" gutterBottom>
+          <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
+            Địa chỉ:&nbsp;
+          </Typography>
           {billing?.displayAddress}
         </Typography>
 
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body2">
+          <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
+            Số điện thoại:&nbsp;
+          </Typography>
           {billing?.phone}
         </Typography>
       </CardContent>

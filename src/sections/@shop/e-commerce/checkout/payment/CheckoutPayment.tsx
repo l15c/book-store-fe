@@ -118,12 +118,12 @@ export default function CheckoutPayment({
           />
 
           <Button
-            size="small"
             color="inherit"
             onClick={onBackStep}
             startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
+            sx={{ px: 2 }}
           >
-            Back
+            Chọn lại địa chỉ
           </Button>
         </Grid>
 
@@ -139,7 +139,7 @@ export default function CheckoutPayment({
             variant="contained"
             loading={isSubmitting}
           >
-            Complete Order
+            Tạo đơn hàng
           </LoadingButton>
         </Grid>
       </Grid>

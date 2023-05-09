@@ -19,201 +19,7 @@ type Props = {
   reviews: IReview[];
 };
 
-export default function ProductDetailsReview({ reviews: _r }: Props) {
-  const reviews = [
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 3,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:42:27.0867292',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc',
-      rating: 1,
-      isPurchased: false,
-      createdOn: '2023-05-08T20:42:55.3823186',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-    {
-      comment: 'Sách chạm vào tâm hồn của người đọc, rất đáng đọc1',
-      rating: 4,
-      isPurchased: true,
-      createdOn: '2023-05-08T20:44:26.841902',
-      fullName: 'Đỗ Hồng2',
-      imageUrl: 'https://bloganchoi.com/wp-content/uploads/2022/02/avatar-trang-y-nghia.jpeg',
-    },
-  ];
+export default function ProductDetailsReview({ reviews }: Props) {
   const totalReview = reviews.length;
   const totalRating = reviews.reduce((a, b) => a + b.rating, 0) / totalReview || 0;
   const [openReview, setOpenReview] = useState(false);
@@ -324,8 +130,7 @@ type ProgressItemProps = {
 };
 
 function ProgressItem({ star, total }: ProgressItemProps) {
-  const { name, reviewCount } = star;
-
+  const { name, reviewCount = 0 } = star;
   return (
     <Stack direction="row" alignItems="center">
       <Typography variant="subtitle2" sx={{ width: 42 }}>
@@ -335,7 +140,7 @@ function ProgressItem({ star, total }: ProgressItemProps) {
       <LinearProgress
         color="inherit"
         variant="determinate"
-        value={(reviewCount / total) * 100}
+        value={(reviewCount / total) * 100 || 0}
         sx={{
           mx: 2,
           flexGrow: 1,

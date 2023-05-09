@@ -26,8 +26,13 @@ type Props = {
 
 const genStatus = (quantity: number, discount: number) => {
   let status = null;
-  if (discount) status = { text: 'Giảm giá', color: 'warning' };
-  if (quantity === 0) status = { text: 'Tạm hết hàng', color: 'error' };
+  if (discount)
+    status = {
+      text: `-${discount}%`,
+      color: 'error',
+      sx: { borderRadius: 999, p: 2, width: 48, height: 48, fontSize: 15 },
+    };
+  if (quantity === 0) status = { text: 'Tạm hết hàng', color: 'default' };
   if (quantity < 0) status = { text: 'Ngừng bán', color: 'default' };
   return status;
 };
@@ -71,13 +76,15 @@ export default function ShopProductCard({ book }: Props) {
           {status && (
             <Label
               variant="filled"
-              color={(status.color as LabelColor) ?? 'default'}
+              color={status.color as LabelColor}
               sx={{
                 top: 16,
                 right: 16,
                 zIndex: 9,
+                py: 2,
                 position: 'absolute',
                 textTransform: 'uppercase',
+                ...status?.sx,
               }}
             >
               {status.text}
@@ -93,6 +100,7 @@ export default function ShopProductCard({ book }: Props) {
               handleAddCart();
             }}
             sx={{
+              ...(quantity <= 0 && { display: 'none' }),
               right: 16,
               bottom: 16,
               zIndex: 9,

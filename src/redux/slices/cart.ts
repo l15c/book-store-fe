@@ -2,6 +2,7 @@ import uniqBy from 'lodash/uniqBy';
 import { ICartItem, ICartState } from 'src/@types/book';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import sumBy from 'lodash/sumBy';
+import differenceBy from 'lodash/differenceBy';
 
 // ----------------------------------------------------------------------
 
@@ -9,12 +10,17 @@ const initialState: ICartState = {
   products: [],
   total: 0,
   totalItems: 0,
+  selected: [],
 };
 
 const slice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    startOrder(state, action: PayloadAction<ICartItem[]>) {
+      state.selected = action.payload;
+    },
+
     getCart(state) {
       state.totalItems = sumBy(state.products, 'quantity');
       state.total = sumBy(state.products, (p) => p.price * p.quantity);
@@ -53,6 +59,14 @@ const slice = createSlice({
       state.products = state.products.filter((p) => p.id !== action.payload);
     },
 
+    finishOrder(state) {
+      const rest = differenceBy(state.products, state.selected, 'id');
+      state.products = rest;
+      state.selected = [];
+      state.totalItems = sumBy(rest, 'quantity');
+      state.total = sumBy(rest, (p) => p.price * p.quantity);
+    },
+
     resetCart(state) {
       state.products = [];
       state.total = 0;
@@ -65,5 +79,12 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { getCart, addToCart, resetCart, deleteCart, increaseQuantity, decreaseQuantity } =
-  slice.actions;
+export const {
+  startOrder,
+  getCart,
+  addToCart,
+  resetCart,
+  deleteCart,
+  increaseQuantity,
+  decreaseQuantity,
+} = slice.actions;

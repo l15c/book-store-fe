@@ -18,13 +18,14 @@ export type ConfirmResetPassword = {
 
 export type IUserAddress = {
   id: number;
-  title: string;
+  address: string;
+  province: number;
+  district: number;
+  ward: number;
   isDefault: boolean;
-  mapping: number[];
+  phone: string;
+  receiver: string;
   displayAddress: string;
-  receiver?: string;
-  phone?: string;
-  note?: string;
 };
 
 export type IUserSocialLink = {

@@ -49,7 +49,7 @@ export default function CheckoutPaymentMethods({ paymentOptions, cardOptions, ..
   return (
     <>
       <Card {...other}>
-        <CardHeader title="Payment options" />
+        <CardHeader title="Phương thức thanh toán" />
 
         <CardContent>
           <Controller
@@ -121,6 +121,7 @@ function PaymentOption({
         transition: (theme) => theme.transitions.create('all'),
         ...(isSelected && {
           boxShadow: (theme) => theme.customShadows.z20,
+          outline: (theme) => `2px solid ${theme.palette.success.main}`,
         }),
         ...(hasChild && {
           flexWrap: 'wrap',
@@ -191,7 +192,7 @@ function PaymentOption({
             onClick={onOpen}
             sx={{ my: 3 }}
           >
-            Add new card
+            Thêm thẻ mới
           </Button>
         </Stack>
       )}

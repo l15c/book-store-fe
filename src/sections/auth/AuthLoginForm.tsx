@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import * as Yup from 'yup';
 import NextLink from 'next/link';
@@ -30,7 +31,7 @@ type FormValuesProps = {
 
 export default function AuthLoginForm({ customers = false }: Props) {
   const { login } = useAuthContext();
-
+  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
@@ -60,6 +61,10 @@ export default function AuthLoginForm({ customers = false }: Props) {
   const onSubmit = async (data: FormValuesProps) => {
     try {
       await login(data.phone, data.password, customers);
+      queryClient.invalidateQueries({
+        queryKey: ['user'],
+        refetchType: 'all',
+      });
     } catch (error) {
       console.log(error);
       reset();

@@ -2,7 +2,7 @@ import { useState } from 'react';
 // form
 import { Controller, useFormContext } from 'react-hook-form';
 // @mui
-import { Button, MenuItem, Box } from '@mui/material';
+import { Button, MenuItem, Box, Stack } from '@mui/material';
 // components
 import Iconify from '../../../../components/iconify';
 import MenuPopover from '../../../../components/menu-popover';
@@ -12,8 +12,8 @@ import MenuPopover from '../../../../components/menu-popover';
 const OPTIONS = [
   { value: 'Sold', label: 'Nổi bật' },
   { value: 'ReleaseDate', label: 'Mới nhất' },
-  { value: 'Price', label: 'Giá: giảm dần' },
-  { value: 'Price+', label: 'Giá: tăng dần' },
+  { value: 'Price', label: 'Giá: Giảm dần' },
+  { value: 'Price+', label: 'Giá: Tăng dần' },
 ];
 
 function renderLabel(label: string) {
@@ -61,19 +61,21 @@ export default function ShopProductSort() {
           </Button>
 
           <MenuPopover open={openPopover} onClose={handleClosePopover}>
-            {OPTIONS.map((option) => (
-              <MenuItem
-                key={option.value}
-                selected={option.value === field.value}
-                onClick={() => {
-                  handleClosePopover();
-                  field.onChange(option.value);
-                  setValue('sortDirection', option.value === 'Price+' ? 'asc' : 'desc');
-                }}
-              >
-                {option.label}
-              </MenuItem>
-            ))}
+            <Stack spacing={0.5}>
+              {OPTIONS.map((option) => (
+                <MenuItem
+                  key={option.value}
+                  selected={option.value === field.value}
+                  onClick={() => {
+                    handleClosePopover();
+                    field.onChange(option.value);
+                    setValue('sortDirection', option.value === 'Price+' ? 'asc' : 'desc');
+                  }}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Stack>
           </MenuPopover>
         </>
       )}

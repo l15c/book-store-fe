@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 // @mui
-import { Badge, Button, Divider, IconButton, Stack, Typography, Link } from '@mui/material';
+import { Badge, Button, Divider, IconButton, Stack, Typography, Link, Box } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 // components
 // import { ICheckoutCartItem } from 'src/@types/product';
@@ -14,7 +14,13 @@ import Image from 'src/components/image';
 import MenuPopover from 'src/components/menu-popover';
 import Scrollbar from 'src/components/scrollbar';
 // redux
-import { decreaseQuantity, deleteCart, getCart, increaseQuantity } from 'src/redux/slices/cart';
+import {
+  addToCart,
+  decreaseQuantity,
+  deleteCart,
+  getCart,
+  increaseQuantity,
+} from 'src/redux/slices/cart';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { PATH_SHOP } from 'src/routes/paths';
 // utils
@@ -22,6 +28,7 @@ import { fCurrency } from 'src/utils/formatNumber';
 import { ICartItem } from 'src/@types/book';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
 import { getLinkImage } from 'src/utils/cloudinary';
+import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +37,6 @@ const ITEM_HEIGHT = 120;
 export default function CartPopover() {
   const dispatch = useDispatch();
   const { products, totalItems } = useSelector((state) => state.cart);
-
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -51,6 +57,10 @@ export default function CartPopover() {
 
   const handleDecreaseQuantity = (productId: number) => {
     dispatch(decreaseQuantity(productId));
+  };
+
+  const handleAddCart = (product: ICartItem) => {
+    dispatch(addToCart(product));
   };
 
   const handleClosePopover = () => {
@@ -101,6 +111,7 @@ export default function CartPopover() {
               <CartProductPopover
                 key={product.id}
                 product={product}
+                onAddCart={handleAddCart}
                 onDelete={handleDeleteCart}
                 onDecreaseQuantity={handleDecreaseQuantity}
                 onIncreaseQuantity={handleIncreaseQuantity}
@@ -131,7 +142,7 @@ export default function CartPopover() {
         <Divider sx={{ my: 1 }} />
         {totalItems ? (
           <NextLink href={PATH_SHOP.product.checkout} passHref>
-            <Button fullWidth variant="contained" sx={{ py: 1, mb: 1 }}>
+            <Button fullWidth variant="contained" sx={{ py: 1 }}>
               Thanh toán
             </Button>
           </NextLink>
@@ -151,12 +162,20 @@ export default function CartPopover() {
 type Props = {
   product: ICartItem;
   onDelete: (id: number) => void;
+  onAddCart: (product: ICartItem) => void;
   onDecreaseQuantity: (id: number) => void;
   onIncreaseQuantity: (id: number) => void;
 };
 
-function CartProductPopover({ product, onDelete, onDecreaseQuantity, onIncreaseQuantity }: Props) {
-  const { id, name, slug, cover, quantity, price, available } = product;
+function CartProductPopover({
+  product,
+  onDelete,
+  onAddCart,
+  onDecreaseQuantity,
+  onIncreaseQuantity,
+}: Props) {
+  const { id, name, slug, cover, quantity, price, discount, available } = product;
+  const stopSale = available < 0;
   return (
     <>
       <Stack direction="row" alignItems="center" position="relative" sx={{ height: ITEM_HEIGHT }}>
@@ -170,6 +189,7 @@ function CartProductPopover({ product, onDelete, onDecreaseQuantity, onIncreaseQ
         />
         <Stack spacing={1} flex={1}>
           <Link
+            color="text.primary"
             component={NextLink}
             href={PATH_SHOP.product.view(slug)}
             sx={{ cursor: 'pointer', mr: 5 }}
@@ -180,15 +200,40 @@ function CartProductPopover({ product, onDelete, onDecreaseQuantity, onIncreaseQ
           </Link>
 
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography fontSize="14px" fontWeight="bold">
-              {fCurrency(price)}
-            </Typography>
+            <Stack direction="row" alignItems="center">
+              <Typography fontSize="14px" fontWeight="bold">
+                {!!discount && (
+                  <Box
+                    component="span"
+                    sx={{ color: 'text.disabled', textDecoration: 'line-through', mr: 0.5 }}
+                  >
+                    {fCurrency(price)}
+                  </Box>
+                )}
+
+                {fCurrency(price * (1 - discount / 100))}
+              </Typography>
+              {!stopSale && !!discount && (
+                <>
+                  <Divider orientation="vertical" sx={{ mx: 1, height: 16 }} />
+                  <Label variant="filled" color="error" sx={{ py: 0, px: 0.5 }}>
+                    {`-${discount}%`}
+                  </Label>
+                </>
+              )}
+            </Stack>
             <IncrementerButton
+              enableInput
+              min={1}
+              max={Math.min(available, 999)}
               quantity={quantity}
+              setQuantity={(value: number) => {
+                onAddCart({ ...product, quantity: value - quantity });
+              }}
               onDecrease={() => onDecreaseQuantity(id)}
               onIncrease={() => onIncreaseQuantity(id)}
-              disabledDecrease={quantity <= 1}
-              disabledIncrease={quantity >= available}
+              disabledDecrease={stopSale || quantity <= 1}
+              disabledIncrease={stopSale || quantity >= available}
               sx={{ py: 0.25, fontSize: '14px' }}
             />
           </Stack>

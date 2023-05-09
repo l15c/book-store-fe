@@ -103,8 +103,8 @@ export default function ProductDetailsPage({ book }: Props) {
 
   const cart = useSelector((e) => e.cart);
 
-  const handleAddCart = (newProduct: ICartItem) => {
-    dispatch(addToCart(newProduct));
+  const handleAddCart = (product: ICartItem) => {
+    dispatch(addToCart(product));
   };
 
   const handleGotoStep = (step: number) => {

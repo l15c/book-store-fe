@@ -16,6 +16,8 @@ import {
   deleteCart,
   increaseQuantity,
   decreaseQuantity,
+  addToCart,
+  startOrder,
 } from 'src/redux/slices/cart';
 import {
   nextStep,
@@ -26,7 +28,8 @@ import {
   applyDiscount,
 } from 'src/redux/slices/checkout';
 // @types
-import { ICheckoutBillingAddress } from 'src/@types/product';
+import { ICartItem } from 'src/@types/book';
+import { IUserAddress } from 'src/@types/user';
 // components
 import { useSettingsContext } from 'src/components/settings';
 // sections
@@ -102,13 +105,21 @@ export default function EcommerceCheckoutPage() {
     dispatch(decreaseQuantity(productId));
   };
 
-  const handleCreateBilling = (address: ICheckoutBillingAddress) => {
+  const handleCreateBilling = (address: IUserAddress) => {
     dispatch(createBilling(address));
     dispatch(nextStep());
   };
 
   const handleApplyShipping = (value: number) => {
     dispatch(applyShipping(value));
+  };
+
+  const handleAddCart = (product: ICartItem) => {
+    dispatch(addToCart(product));
+  };
+
+  const handleStartOrder = (p: ICartItem[]) => {
+    dispatch(startOrder(p));
   };
 
   const handleReset = () => {
@@ -140,6 +151,8 @@ export default function EcommerceCheckoutPage() {
                 onNextStep={handleNextStep}
                 onDeleteCart={handleDeleteCart}
                 onApplyDiscount={handleApplyDiscount}
+                onAddCart={handleAddCart}
+                onStartOrder={handleStartOrder}
                 onIncreaseQuantity={handleIncreaseQuantity}
                 onDecreaseQuantity={handleDecreaseQuantity}
               />

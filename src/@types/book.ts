@@ -1,12 +1,12 @@
 import { IUserAddress } from './user';
 
 export type IReview = {
-  id?: number;
-  userId?: number;
-  bookId?: number;
+  id: number;
+  userId: number;
+  bookId: number;
   comment: string;
   rating: number;
-  createdOn: string;
+  createdAt: string;
   fullName: string;
   imageUrl: string;
   isPurchased: boolean;
@@ -94,6 +94,7 @@ export type ICartState = {
   products: ICartItem[];
   total: number;
   totalItems: number;
+  selected: ICartItem[];
 };
 
 // ----------------------------------------------------------------------

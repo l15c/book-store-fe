@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 // @mui
-import { Button, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Button, Card, Grid, IconButton, Skeleton, Stack, Typography } from '@mui/material';
+import addressApi from 'src/api-client/address';
 // @types
-import { ICheckoutBillingAddress } from '../../../../../@types/product';
-// _mock
-import { _addressBooks } from '../../../../../_mock/arrays';
+import { IUserAddress } from 'src/@types/user';
 // components
 import EmptyContent from '../../../../../components/empty-content';
 import Iconify from '../../../../../components/iconify';
@@ -17,13 +17,18 @@ import CheckoutBillingNewAddressForm from './CheckoutBillingNewAddressForm';
 
 type Props = {
   onBackStep: VoidFunction;
-  onCreateBilling: (address: ICheckoutBillingAddress) => void;
+  onCreateBilling: (address: IUserAddress) => void;
 };
 
 export default function CheckoutBillingAddress({ onBackStep, onCreateBilling }: Props) {
   const [open, setOpen] = useState(false);
 
-  const isEmpty = _addressBooks.length === 0;
+  const { data = [], isFetching } = useQuery({
+    queryKey: ['user', 'address'],
+    queryFn: () => addressApi.getList(),
+  });
+
+  const isEmpty = data.length === 0;
 
   const handleOpen = () => {
     setOpen(true);
@@ -39,42 +44,48 @@ export default function CheckoutBillingAddress({ onBackStep, onCreateBilling }: 
         <Grid item xs={12} md={8}>
           <Stack direction="row" justifyContent="space-between" mb={1}>
             <Button
-              size="small"
               color="inherit"
               onClick={onBackStep}
               startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
-              sx={{ p: 2 }}
+              sx={{ px: 2 }}
             >
               Quay lại
             </Button>
 
             <Button
-              size="small"
               variant="soft"
               onClick={handleOpen}
               startIcon={<Iconify icon="eva:plus-fill" />}
-              sx={{ p: 2 }}
+              sx={{ px: 2 }}
             >
               Thêm địa chỉ
             </Button>
           </Stack>
 
-          {isEmpty ? (
-            <Card>
-              <EmptyContent
-                title=""
-                description="Có vẻ bạn chưa có địa chỉ nhận hàng. Vui lòng thêm một địa chỉ mới."
-                sx={{ height: 320 }}
-              />
-            </Card>
+          {isFetching ? (
+            Array(3)
+              .fill(0)
+              .map((e, idx) => <AddressItemSkeletion key={idx} />)
           ) : (
-            _addressBooks.map((address, index) => (
-              <AddressItem
-                key={index}
-                address={address}
-                onCreateBilling={() => onCreateBilling(address)}
-              />
-            ))
+            <>
+              {isEmpty ? (
+                <Card>
+                  <EmptyContent
+                    title=""
+                    description="Có vẻ bạn chưa có địa chỉ nhận hàng. Vui lòng thêm một địa chỉ mới."
+                    sx={{ height: 320 }}
+                  />
+                </Card>
+              ) : (
+                data.map((address) => (
+                  <AddressItem
+                    key={address.id}
+                    address={address}
+                    onCreateBilling={() => onCreateBilling(address)}
+                  />
+                ))
+              )}
+            </>
           )}
         </Grid>
 
@@ -95,12 +106,12 @@ export default function CheckoutBillingAddress({ onBackStep, onCreateBilling }: 
 // ----------------------------------------------------------------------
 
 type AddressItemProps = {
-  address: ICheckoutBillingAddress;
+  address: IUserAddress;
   onCreateBilling: VoidFunction;
 };
 
 function AddressItem({ address, onCreateBilling }: AddressItemProps) {
-  const { receiver, fullAddress, phoneNumber, isDefault } = address;
+  const { receiver, displayAddress, phone, isDefault } = address;
 
   return (
     <Card
@@ -127,10 +138,10 @@ function AddressItem({ address, onCreateBilling }: AddressItemProps) {
             )}
           </Stack>
 
-          <Typography variant="body2">{fullAddress}</Typography>
+          <Typography variant="body2">{displayAddress}</Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            {phoneNumber}
+            {phone}
           </Typography>
         </Stack>
 
@@ -145,9 +156,49 @@ function AddressItem({ address, onCreateBilling }: AddressItemProps) {
               <Iconify icon="mdi:square-edit-outline" />
             </IconButton>
           </Stack>
-          <Button variant="outlined" size="small" sx={{ maxWidth: 120 }} onClick={onCreateBilling}>
+          <Button
+            variant="text"
+            size="small"
+            sx={{ maxWidth: 120, px: 2 }}
+            onClick={onCreateBilling}
+          >
             Chọn địa chỉ
           </Button>
+        </Stack>
+      </Stack>
+    </Card>
+  );
+}
+
+function AddressItemSkeletion() {
+  return (
+    <Card
+      sx={{
+        p: 3,
+        mb: 2,
+      }}
+    >
+      <Stack
+        spacing={2}
+        direction={{
+          xs: 'column',
+          sm: 'row',
+        }}
+      >
+        <Stack flexGrow={1} spacing={1}>
+          <Stack direction="row" alignItems="center">
+            <Typography variant="subtitle1" width={200}>
+              <Skeleton />
+            </Typography>
+          </Stack>
+
+          <Typography variant="body2">
+            <Skeleton width="60%" />
+          </Typography>
+
+          <Typography variant="body2">
+            <Skeleton width="40%" />
+          </Typography>
         </Stack>
       </Stack>
     </Card>

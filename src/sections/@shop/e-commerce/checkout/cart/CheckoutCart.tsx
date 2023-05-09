@@ -1,5 +1,8 @@
+import { useState, useCallback } from 'react';
 // next
 import NextLink from 'next/link';
+// @type
+import { ICartItem } from 'src/@types/book';
 // @mui
 import { Grid, Card, Button, CardHeader, Typography } from '@mui/material';
 // routes
@@ -19,6 +22,8 @@ type Props = {
   onNextStep: VoidFunction;
   onApplyDiscount: (value: number) => void;
   onDeleteCart: (productId: number) => void;
+  onAddCart: (product: ICartItem) => void;
+  onStartOrder: (product: ICartItem[]) => void;
   onIncreaseQuantity: (productId: number) => void;
   onDecreaseQuantity: (productId: number) => void;
 };
@@ -27,11 +32,46 @@ export default function CheckoutCart({
   onNextStep,
   onApplyDiscount,
   onDeleteCart,
+  onAddCart,
+  onStartOrder,
   onIncreaseQuantity,
   onDecreaseQuantity,
 }: Props) {
-  const { products, totalItems } = useSelector((state) => state.cart);
+  const { products, totalItems, selected: cSelected } = useSelector((state) => state.cart);
   const isEmptyCart = !products.length;
+
+  const [selected, setSelected] = useState<ICartItem[]>(cSelected);
+
+  const onSelectRow = useCallback(
+    (product: ICartItem) => {
+      const selectedIndex = selected.findIndex((val) => val.id === product.id);
+
+      let newSelected: ICartItem[] = [];
+
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, product);
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1));
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1));
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(
+          selected.slice(0, selectedIndex),
+          selected.slice(selectedIndex + 1)
+        );
+      }
+      setSelected(newSelected);
+    },
+    [selected]
+  );
+
+  const onSelectAllRows = useCallback((checked: boolean, newSelecteds: ICartItem[]) => {
+    if (checked) {
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  }, []);
 
   return (
     <Grid container spacing={3}>
@@ -54,7 +94,11 @@ export default function CheckoutCart({
           {!isEmptyCart ? (
             <CheckoutCartProductList
               products={products}
+              selected={selected}
               onDelete={onDeleteCart}
+              onAddCart={onAddCart}
+              onSelectRow={onSelectRow}
+              onSelectAllRows={onSelectAllRows}
               onIncreaseQuantity={onIncreaseQuantity}
               onDecreaseQuantity={onDecreaseQuantity}
             />
@@ -91,14 +135,17 @@ export default function CheckoutCart({
       </Grid>
 
       <Grid item xs={12} md={4}>
-        <CheckoutSummary onApplyVoucher={onApplyDiscount} />
+        <CheckoutSummary selected={selected} onApplyVoucher={onApplyDiscount} />
         <Button
           fullWidth
           size="large"
           type="submit"
           variant="contained"
-          disabled={isEmptyCart}
-          onClick={onNextStep}
+          disabled={isEmptyCart || !selected.length}
+          onClick={() => {
+            onStartOrder(selected);
+            onNextStep();
+          }}
         >
           Tiếp tục thanh toán
         </Button>

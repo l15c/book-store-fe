@@ -12,6 +12,7 @@ import {
   CardContent,
   InputAdornment,
 } from '@mui/material';
+import { ICartItem } from 'src/@types/book';
 import { useSelector } from 'src/redux/store';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
@@ -21,6 +22,7 @@ import Iconify from '../../../../components/iconify';
 // ----------------------------------------------------------------------
 
 type Props = {
+  selected?: ICartItem[];
   onEdit?: VoidFunction;
   enableEdit?: boolean;
   onApplyVoucher?: (discount: number) => void;
@@ -28,16 +30,22 @@ type Props = {
 };
 
 export default function CheckoutSummary({
+  selected,
   onEdit,
   enableEdit = false,
   onApplyVoucher: onApplyDiscount,
   enableVoucher: enableDiscount = false,
 }: Props) {
-  const { products, total } = useSelector((state) => state.cart);
-  const { shipping } = useSelector((state) => state.checkout);
+  const { selected: productsOrder } = useSelector((state) => state.cart);
+  const { shipping, activeStep } = useSelector((state) => state.checkout);
 
-  const displayShipping = shipping !== null ? 'Miễn phí' : '-';
-  const discount = sumBy(products, (p) => p.quantity * (p.price * (p.discount / 100)));
+  const total = sumBy(selected ?? productsOrder, (p) => p.price * p.quantity);
+  const discount = sumBy(
+    selected ?? productsOrder,
+    (p) => p.quantity * (p.price * (p.discount / 100))
+  );
+
+  const displayShipping = !shipping && activeStep === 2 ? 'Miễn phí' : '-';
 
   return (
     <Card sx={{ mb: 3 }}>
@@ -100,7 +108,7 @@ export default function CheckoutSummary({
                 endAdornment: (
                   <InputAdornment position="end">
                     <Button onClick={() => onApplyDiscount(5)} sx={{ mr: -0.5 }}>
-                      Apply
+                      Áp dụng
                     </Button>
                   </InputAdornment>
                 ),

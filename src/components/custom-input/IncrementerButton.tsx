@@ -79,7 +79,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, IncrementerButtonProps>(
           inputProps={{
             min,
             max,
-            sx: { textAlign: 'center' },
+            sx: { textAlign: 'center', p: 0 },
             isAllowed: (_val: NumberFormatValues) => {
               const { floatValue = 0 } = _val;
               return floatValue >= min && floatValue <= max;

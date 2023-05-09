@@ -25,7 +25,7 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
       .getElementById('list-review')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
   }, [page]);
-
+  if (reviews.length === 0) return null;
   return (
     <>
       <Stack
@@ -59,6 +59,7 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
           mr: { md: 5 },
         }}
       >
+        (
         <Pagination
           count={Math.ceil(reviews.length / PAGE_SIZE)}
           page={page + 1}
@@ -67,6 +68,7 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
           showFirstButton
           boundaryCount={2}
         />
+        )
       </Stack>
     </>
   );
@@ -79,7 +81,7 @@ type ReviewItemProps = {
 };
 
 function ReviewItem({ review }: ReviewItemProps) {
-  const { fullName, comment, createdOn, imageUrl, isPurchased, rating, userId } = review;
+  const { fullName, comment, createdAt, imageUrl, isPurchased, rating, userId } = review;
 
   // const [isHelpful, setIsHelpful] = useState(false);
 
@@ -117,7 +119,7 @@ function ReviewItem({ review }: ReviewItemProps) {
           </Typography>
 
           <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
-            {fDate(createdOn)}
+            {fDate(createdAt)}
           </Typography>
         </Stack>
       </Stack>
@@ -135,7 +137,7 @@ function ReviewItem({ review }: ReviewItemProps) {
             }}
           >
             <Iconify icon="ic:round-verified" width={16} sx={{ mr: 0.5 }} />
-            Đã mua sản phẩm
+            Đã mua hàng
           </Typography>
         )}
 
