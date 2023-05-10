@@ -81,6 +81,13 @@ export type IBookCompact = Omit<
 
 export type ICartItem = IBookCompact & {
   available: number;
+  cartId?: number;
+};
+
+export type ICartResponse = {
+  id: number;
+  quantity: number;
+  book: IBook;
 };
 
 export type ICheckoutState = {
@@ -94,7 +101,7 @@ export type ICartState = {
   products: ICartItem[];
   total: number;
   totalItems: number;
-  selected: ICartItem[];
+  selected: number[];
 };
 
 // ----------------------------------------------------------------------

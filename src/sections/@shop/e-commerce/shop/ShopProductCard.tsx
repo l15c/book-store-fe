@@ -7,7 +7,7 @@ import { PATH_SHOP } from 'src/routes/paths';
 // utils
 import { fCurrency } from 'src/utils/formatNumber';
 // redux
-import { useDispatch } from 'src/redux/store';
+import { useDispatch, useSelector } from 'src/redux/store';
 import { addToCart } from 'src/redux/slices/cart';
 // @types
 import { IBookCompact } from 'src/@types/book';
@@ -17,6 +17,7 @@ import Label, { LabelColor } from 'src/components/label';
 import Image from 'src/components/image';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
 import { getLinkImage } from 'src/utils/cloudinary';
+import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +41,8 @@ const genStatus = (quantity: number, discount: number) => {
 export default function ShopProductCard({ book }: Props) {
   const { name, slug, cover, price, quantity, discount } = book;
   const dispatch = useDispatch();
-
+  const { user } = useAuthContext();
+  const products = useSelector((state) => state.cart.products);
   const status = genStatus(quantity, discount);
 
   const linkTo = PATH_SHOP.product.view(slug);
@@ -52,7 +54,7 @@ export default function ShopProductCard({ book }: Props) {
       available: quantity,
     };
     try {
-      dispatch(addToCart(newBook));
+      dispatch(addToCart(newBook, products, !!user));
     } catch (error) {
       console.error(error);
     }

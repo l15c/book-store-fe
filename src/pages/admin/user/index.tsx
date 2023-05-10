@@ -165,7 +165,7 @@ export default function UserListPage() {
     }
   };
 
-  const handleDeleteRows = (selectedRows: (string|number)[]) => {
+  const handleDeleteRows = (selectedRows: (string | number)[]) => {
     const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
     setSelected([]);
     setTableData(deleteRows);
@@ -195,7 +195,7 @@ export default function UserListPage() {
   return (
     <>
       <Head>
-        <title>Danh sách nhân viên | Book Shop</title>
+        <title>Danh sách nhân viên | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

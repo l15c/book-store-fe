@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import { forwardRef } from 'react';
 import { NumberFormatValues } from 'react-number-format';
 // @mui
@@ -72,9 +73,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, IncrementerButtonProps>(
           disableUnderline
           disabled={disabledDecrease && disabledIncrease}
           onFocus={(e) => e.target.select()}
-          onChange={(e) => {
-            setQuantity(Math.max(Number(e.target.value), min));
-          }}
+          onChange={debounce((e: any) => setQuantity(Math.max(Number(e.target.value), min)), 500)}
           inputComponent={NumericFormatCustom}
           inputProps={{
             min,

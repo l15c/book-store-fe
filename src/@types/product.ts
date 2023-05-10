@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------
 
 import { IAuthor, IBookCompact, IGenre, IPublisher } from './book';
+import { PayType } from './order';
 
 export type IProductReview = {
   id: string;
@@ -81,9 +82,10 @@ export type ICheckoutDeliveryOption = {
 };
 
 export type ICheckoutPaymentOption = {
-  value: string;
+  value: PayType;
   title: string;
   description: string;
+  note?: string;
   icons: string[];
 };
 

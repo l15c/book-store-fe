@@ -28,7 +28,7 @@ export default function LoginLayout({ children, illustration, title }: Props) {
 
       <StyledSection>
         <Typography variant="h3" sx={{ mb: 10, maxWidth: 480, textAlign: 'center' }}>
-          {title || 'Hi, Welcome Book Shop'}
+          {title || 'Hi, Welcome Book Store'}
         </Typography>
 
         <Image

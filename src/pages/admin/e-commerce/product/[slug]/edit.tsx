@@ -50,7 +50,7 @@ export default function EcommerceProductEditPage() {
   return (
     <>
       <Head>
-        <title> Cập nhật sản phẩm | Book Shop</title>
+        <title> Cập nhật sản phẩm | Book Store</title>
       </Head>
 
       <Container

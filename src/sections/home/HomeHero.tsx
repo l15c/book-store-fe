@@ -159,7 +159,7 @@ function Description() {
             repeat: Infinity,
           }}
         >
-          BOOK SHOP
+          BOOK STORE
         </StyledGradientText>
       </m.div>
 

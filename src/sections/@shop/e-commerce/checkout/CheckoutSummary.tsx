@@ -1,4 +1,5 @@
 import sumBy from 'lodash/sumBy';
+import intersectionWith from 'lodash/intersectionWith';
 // @mui
 import {
   Box,
@@ -12,7 +13,6 @@ import {
   CardContent,
   InputAdornment,
 } from '@mui/material';
-import { ICartItem } from 'src/@types/book';
 import { useSelector } from 'src/redux/store';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
@@ -22,7 +22,6 @@ import Iconify from '../../../../components/iconify';
 // ----------------------------------------------------------------------
 
 type Props = {
-  selected?: ICartItem[];
   onEdit?: VoidFunction;
   enableEdit?: boolean;
   onApplyVoucher?: (discount: number) => void;
@@ -30,20 +29,18 @@ type Props = {
 };
 
 export default function CheckoutSummary({
-  selected,
   onEdit,
   enableEdit = false,
   onApplyVoucher: onApplyDiscount,
   enableVoucher: enableDiscount = false,
 }: Props) {
-  const { selected: productsOrder } = useSelector((state) => state.cart);
+  const { products, selected } = useSelector((state) => state.cart);
   const { shipping, activeStep } = useSelector((state) => state.checkout);
 
-  const total = sumBy(selected ?? productsOrder, (p) => p.price * p.quantity);
-  const discount = sumBy(
-    selected ?? productsOrder,
-    (p) => p.quantity * (p.price * (p.discount / 100))
-  );
+  const productsSelected = intersectionWith(products, selected, (p, id) => p.id === id);
+
+  const total = sumBy(productsSelected, (p) => p.price * p.quantity);
+  const discount = sumBy(productsSelected, (p) => p.quantity * (p.price * (p.discount / 100)));
 
   const displayShipping = !shipping && activeStep === 2 ? 'Miễn phí' : '-';
 
@@ -91,7 +88,7 @@ export default function CheckoutSummary({
             <Typography variant="subtitle1">Tổng tiền</Typography>
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="subtitle1" sx={{ color: 'error.main' }}>
-                {fCurrency(total - discount)}
+                {fCurrency(total - discount + shipping)}
               </Typography>
               <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
                 (Đã bao gồm VAT)

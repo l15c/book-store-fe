@@ -20,7 +20,7 @@ export default function Login() {
   return (
     <LoginLayout>
       <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-        <Typography variant="h4">Đăng nhập vào Book Shop</Typography>
+        <Typography variant="h4">Đăng nhập vào Book Store</Typography>
 
         <Stack direction="row" spacing={0.5}>
           <Typography variant="body2">Bạn là người mới?</Typography>

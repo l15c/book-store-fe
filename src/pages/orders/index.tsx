@@ -233,7 +233,7 @@ export default function InvoiceIndexPage() {
   return (
     <>
       <Head>
-        <title>Đơn hàng | Book Shop</title>
+        <title>Đơn hàng | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

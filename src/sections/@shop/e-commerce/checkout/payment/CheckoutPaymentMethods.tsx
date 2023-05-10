@@ -64,11 +64,13 @@ export default function CheckoutPaymentMethods({ paymentOptions, cardOptions, ..
                         key={option.title}
                         option={option}
                         cardOptions={cardOptions}
-                        hasChild={option.value === 'credit_card'}
+                        // hasChild={option.value === 'credit_card'}
+                        hasChild={false}
                         isSelected={field.value === option.value}
-                        isCreditMethod={
-                          option.value === 'credit_card' && field.value === 'credit_card'
-                        }
+                        // isCreditMethod={
+                        //   option.value === 'credit_card' && field.value === 'credit_card'
+                        // }
+                        isCreditMethod={false}
                         onOpen={handleOpen}
                       />
                     ))}
@@ -110,7 +112,7 @@ function PaymentOption({
   isCreditMethod,
   onOpen,
 }: PaymentOptionProps) {
-  const { value, title, icons, description } = option;
+  const { value, title, icons, description, note } = option;
 
   return (
     <Paper
@@ -136,6 +138,9 @@ function PaymentOption({
             <Typography variant="subtitle2">{title}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {description}
+            </Typography>
+            <Typography variant="caption" fontStyle="italic" sx={{ color: 'text.secondary' }}>
+              {note ?? ''}
             </Typography>
           </Box>
         }

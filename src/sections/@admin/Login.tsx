@@ -16,9 +16,9 @@ export default function AdminLogin() {
   const { method } = useAuthContext();
 
   return (
-    <LoginLayout title="Book Shop Management">
+    <LoginLayout title="Book Store Management">
       <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-        <Typography variant="h4">Đăng nhập vào Book Shop</Typography>
+        <Typography variant="h4">Đăng nhập vào Book Store</Typography>
 
         <Tooltip title={method} placement="left">
           <Box

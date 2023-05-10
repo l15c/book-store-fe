@@ -33,7 +33,7 @@ export default function InvoiceDetailsPage() {
   return (
     <>
       <Head>
-        <title>Chi tiết đơn hàng | Book Shop</title>
+        <title>Chi tiết đơn hàng | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

@@ -136,7 +136,7 @@ export default function ProductsPage() {
   return (
     <>
       <Head>
-        <title>Danh sách sản phẩm | Book Shop</title>
+        <title>Danh sách sản phẩm | Book Store</title>
       </Head>
 
       <FormProvider methods={methods}>

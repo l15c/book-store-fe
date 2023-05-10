@@ -2,6 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import * as Yup from 'yup';
 import NextLink from 'next/link';
+import { syncCart } from 'src/redux/slices/cart';
+import { useDispatch, useSelector } from 'src/redux/store';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,6 +33,8 @@ type FormValuesProps = {
 
 export default function AuthLoginForm({ customers = false }: Props) {
   const { login } = useAuthContext();
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.products);
   const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -65,6 +69,7 @@ export default function AuthLoginForm({ customers = false }: Props) {
         queryKey: ['user'],
         refetchType: 'all',
       });
+      dispatch(syncCart(cart));
     } catch (error) {
       console.log(error);
       reset();

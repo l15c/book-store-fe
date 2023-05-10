@@ -56,7 +56,7 @@ export default function ProductMoreInfoPage() {
   return (
     <>
       <Head>
-        <title>Thông tin khác | Book Shop</title>
+        <title>Thông tin khác | Book Store</title>
       </Head>
 
       <Container

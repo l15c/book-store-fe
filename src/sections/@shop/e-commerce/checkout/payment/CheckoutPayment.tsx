@@ -1,12 +1,19 @@
+import compact from 'lodash/compact';
+import { useRouter } from 'next/router';
 import * as Yup from 'yup';
+import intersectionWith from 'lodash/intersectionWith';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+// api
+import orderApi from 'src/api-client/order';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { syncCart } from 'src/redux/slices/cart';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Button, Grid } from '@mui/material';
 // @types
-import { ICheckoutState } from 'src/@types/book';
+import { PayType } from 'src/@types/order';
 import { ICheckoutCardOption, ICheckoutPaymentOption } from '../../../../../@types/product';
 // components
 import FormProvider from '../../../../../components/hook-form';
@@ -19,33 +26,34 @@ import CheckoutPaymentMethods from './CheckoutPaymentMethods';
 // ----------------------------------------------------------------------
 
 const PAYMENT_OPTIONS: ICheckoutPaymentOption[] = [
-  // {
-  //   value: 'paypal',
-  //   title: 'Pay with Paypal',
-  //   description: 'You will be redirected to PayPal website to complete your purchase securely.',
-  //   icons: ['/assets/icons/payments/ic_paypal.svg'],
-  // },
-  {
-    value: 'momo',
-    title: 'Ví Momo',
-    description: 'Thanh toán đơn hàng của bạn bằng ví điện tử MoMo.',
-    icons: [
-      // '/assets/icons/payments/momo_square_pinkbg.svg',
-      '/assets/icons/payments/momo_icon_square_pinkbg.svg',
-      // '/assets/icons/payments/momo_circle_pinkbg.svg',
-    ],
-  },
-  // {
-  //   value: 'credit_card',
-  //   title: 'Credit / Debit Card',
-  //   description: 'We support Mastercard, Visa, Discover and Stripe.',
-  //   icons: ['/assets/icons/payments/ic_mastercard.svg', '/assets/icons/payments/ic_visa.svg'],
-  // },
   {
     value: 'cash',
     title: 'Trực tiếp',
     description: 'Thanh toán khi đơn hàng được giao đến bạn.',
     icons: ['/assets/icons/payments/ic_cash.png'],
+  },
+  {
+    value: 'captureWallet',
+    title: 'Ví Momo',
+    description: 'Thanh toán đơn hàng của bạn bằng ví điện tử MoMo.',
+    icons: [
+      '/assets/icons/payments/momo_icon_square_pinkbg.svg',
+      // '/assets/icons/payments/momo_square_pinkbg.svg',
+      // '/assets/icons/payments/momo_circle_pinkbg.svg',
+    ],
+  },
+
+  {
+    value: 'payWithATM',
+    title: 'Thẻ ATM nội địa',
+    description: 'Thanh toán qua thẻ ATM các ngân hàng trong nước.',
+    icons: ['/assets/icons/payments/logo_napas.png'],
+  },
+  {
+    value: 'payWithCC',
+    title: 'Thẻ quốc tế',
+    description: 'Hỗ trợ thẻ thanh toán quốc tế Mastercard, Visa, JCB.',
+    icons: ['/assets/icons/payments/ic_mastercard.svg', '/assets/icons/payments/ic_visa.svg'],
   },
 ];
 
@@ -56,35 +64,31 @@ const CARDS_OPTIONS: ICheckoutCardOption[] = [
 ];
 
 type Props = {
-  checkout: ICheckoutState;
   onNextStep: VoidFunction;
   onBackStep: VoidFunction;
   onReset: VoidFunction;
   onGotoStep: (step: number) => void;
-  onApplyShipping: (value: number) => void;
 };
 
 type FormValuesProps = {
-  delivery: number;
-  payment: string;
+  // delivery: number;
+  payment: PayType | '';
 };
 
-export default function CheckoutPayment({
-  checkout,
-  onReset,
-  onNextStep,
-  onBackStep,
-  onGotoStep,
-  onApplyShipping,
-}: Props) {
-  const { shipping, billing } = checkout;
+export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGotoStep }: Props) {
+  const { push } = useRouter();
+  const dispatch = useDispatch();
+  const { billing, shipping, discount } = useSelector((state) => state.checkout);
+  const { products, selected } = useSelector((state) => state.cart);
+
+  const productsSelected = intersectionWith(products, selected, (p, id) => p.id === id);
 
   const PaymentSchema = Yup.object().shape({
-    payment: Yup.string().required('Payment is required!'),
+    payment: Yup.string().required('Vui lòng chọn phương thức thanh toán'),
   });
 
-  const defaultValues = {
-    delivery: shipping,
+  const defaultValues: FormValuesProps = {
+    // delivery: shipping,
     payment: '',
   };
 
@@ -98,10 +102,26 @@ export default function CheckoutPayment({
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormValuesProps) => {
     try {
-      onNextStep();
+      console.log(shipping);
+      console.log(discount);
+      console.log(productsSelected);
+      if (productsSelected.some((e) => !e.cartId)) await dispatch(syncCart(products));
+
+      const res = await orderApi.create({
+        voucherId: 0,
+        checkedCartId: compact(productsSelected.map((e) => e.cartId)),
+        deliveryFee: shipping,
+        payType: data.payment as PayType,
+        shipNote: '',
+        userAddressId: billing!.id,
+      });
+      console.log(res);
+
       onReset();
+      if (data.payment !== 'cash') push(res as string);
+      else onNextStep();
     } catch (error) {
       console.error(error);
     }
@@ -114,7 +134,7 @@ export default function CheckoutPayment({
           <CheckoutPaymentMethods
             cardOptions={CARDS_OPTIONS}
             paymentOptions={PAYMENT_OPTIONS}
-            sx={{ mb: 3 }}
+            sx={{ mb: 2 }}
           />
 
           <Button

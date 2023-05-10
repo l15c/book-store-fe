@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback } from 'react';
 // next
 import NextLink from 'next/link';
 // @type
@@ -23,7 +24,7 @@ type Props = {
   onApplyDiscount: (value: number) => void;
   onDeleteCart: (productId: number) => void;
   onAddCart: (product: ICartItem) => void;
-  onStartOrder: (product: ICartItem[]) => void;
+  onSelectProductCart: (ids: number[]) => void;
   onIncreaseQuantity: (productId: number) => void;
   onDecreaseQuantity: (productId: number) => void;
 };
@@ -33,23 +34,21 @@ export default function CheckoutCart({
   onApplyDiscount,
   onDeleteCart,
   onAddCart,
-  onStartOrder,
+  onSelectProductCart,
   onIncreaseQuantity,
   onDecreaseQuantity,
 }: Props) {
-  const { products, totalItems, selected: cSelected } = useSelector((state) => state.cart);
+  const { products, totalItems, selected } = useSelector((state) => state.cart);
   const isEmptyCart = !products.length;
 
-  const [selected, setSelected] = useState<ICartItem[]>(cSelected);
-
   const onSelectRow = useCallback(
-    (product: ICartItem) => {
-      const selectedIndex = selected.findIndex((val) => val.id === product.id);
+    (id: number) => {
+      const selectedIndex = selected.findIndex((val) => val === id);
 
-      let newSelected: ICartItem[] = [];
+      let newSelected: number[] = [];
 
       if (selectedIndex === -1) {
-        newSelected = newSelected.concat(selected, product);
+        newSelected = newSelected.concat(selected, id);
       } else if (selectedIndex === 0) {
         newSelected = newSelected.concat(selected.slice(1));
       } else if (selectedIndex === selected.length - 1) {
@@ -60,17 +59,17 @@ export default function CheckoutCart({
           selected.slice(selectedIndex + 1)
         );
       }
-      setSelected(newSelected);
+      onSelectProductCart(newSelected);
     },
     [selected]
   );
 
-  const onSelectAllRows = useCallback((checked: boolean, newSelecteds: ICartItem[]) => {
+  const onSelectAllRows = useCallback((checked: boolean, newSelecteds: number[]) => {
     if (checked) {
-      setSelected(newSelecteds);
+      onSelectProductCart(newSelecteds);
       return;
     }
-    setSelected([]);
+    onSelectProductCart([]);
   }, []);
 
   return (
@@ -135,7 +134,7 @@ export default function CheckoutCart({
       </Grid>
 
       <Grid item xs={12} md={4}>
-        <CheckoutSummary selected={selected} onApplyVoucher={onApplyDiscount} />
+        <CheckoutSummary onApplyVoucher={onApplyDiscount} />
         <Button
           fullWidth
           size="large"
@@ -143,7 +142,7 @@ export default function CheckoutCart({
           variant="contained"
           disabled={isEmptyCart || !selected.length}
           onClick={() => {
-            onStartOrder(selected);
+            onSelectProductCart(selected);
             onNextStep();
           }}
         >

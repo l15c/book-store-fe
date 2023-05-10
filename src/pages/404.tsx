@@ -21,7 +21,7 @@ export default function Page404() {
   return (
     <>
       <Head>
-        <title> 404 Page Not Found | Book Shop</title>
+        <title> 404 Page Not Found | Book Store</title>
       </Head>
 
       <MotionContainer>

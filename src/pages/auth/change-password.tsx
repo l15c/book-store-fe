@@ -23,7 +23,7 @@ export default function UserAccountPage() {
   return (
     <>
       <Head>
-        <title>Đổi mật khẩu | Book Shop</title>
+        <title>Đổi mật khẩu | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

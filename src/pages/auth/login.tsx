@@ -12,7 +12,7 @@ export default function LoginPage() {
   return (
     <>
       <Head>
-        <title>Đăng nhập | Book Shop</title>
+        <title>Đăng nhập | Book Store</title>
       </Head>
 
       <GuestGuard>

@@ -41,7 +41,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
           repeat: Infinity,
         }}
       >
-        {isMobile ? 'B' : 'BOOK SHOP'}
+        {isMobile ? 'B' : 'BOOK STORE'}
       </StyledGradientText>
     );
 

@@ -1,8 +1,10 @@
 import uniqBy from 'lodash/uniqBy';
 import { ICartItem, ICartState } from 'src/@types/book';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Dispatch, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import sumBy from 'lodash/sumBy';
-import differenceBy from 'lodash/differenceBy';
+import differenceWith from 'lodash/differenceWith';
+import cartApi from 'src/api-client/cart';
+import compact from 'lodash/compact';
 
 // ----------------------------------------------------------------------
 
@@ -17,8 +19,12 @@ const slice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    startOrder(state, action: PayloadAction<ICartItem[]>) {
+    setSelected(state, action: PayloadAction<number[]>) {
       state.selected = action.payload;
+    },
+
+    setCart(state, action: PayloadAction<ICartItem[]>) {
+      state.products = action.payload;
     },
 
     getCart(state) {
@@ -60,7 +66,7 @@ const slice = createSlice({
     },
 
     finishOrder(state) {
-      const rest = differenceBy(state.products, state.selected, 'id');
+      const rest = differenceWith(state.products, state.selected, (a, b) => a.id === b);
       state.products = rest;
       state.selected = [];
       state.totalItems = sumBy(rest, 'quantity');
@@ -79,12 +85,129 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const {
-  startOrder,
-  getCart,
-  addToCart,
-  resetCart,
-  deleteCart,
-  increaseQuantity,
-  decreaseQuantity,
-} = slice.actions;
+export const { setSelected, getCart, resetCart } = slice.actions;
+
+// ----------------------------------------------------------------------
+
+export function syncCart(localCart: ICartItem[]) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const res = await cartApi.get();
+
+      // const itemNoLocal = differenceWith(res, localCart, (d, l) => d.book.id === l.id).map((e) => ({
+      //   bookId: e.book.id,
+      //   quantity: e.quantity,
+      // }));
+
+      const itemNoDb = differenceWith(localCart, res, (l, d) => l.id === d.book.id).map((e) => ({
+        bookId: e.id,
+        quantity: e.quantity,
+      }));
+
+      const noMatchQty = localCart.map((item) => {
+        const f = res.find((e) => e.book.id === item.id);
+        if (f && item.quantity !== f.quantity)
+          return { bookId: item.id, quantity: Math.abs(item.quantity - f.quantity) };
+
+        return null;
+      });
+
+      const updateItem = [...itemNoDb, ...compact(noMatchQty)];
+      if (updateItem.length !== 0) {
+        console.log(updateItem);
+        await cartApi.updateMultiple(updateItem);
+        const resAfterUpdate = await cartApi.get();
+
+        dispatch(
+          slice.actions.setCart(
+            resAfterUpdate.map((e) => ({
+              ...e.book,
+              cartId: e.id,
+              available: e.book.quantity,
+              quantity: e.quantity,
+            }))
+          )
+        );
+      } else {
+        dispatch(
+          slice.actions.setCart(
+            res.map((e) => ({
+              ...e.book,
+              cartId: e.id,
+              available: e.book.quantity,
+              quantity: e.quantity,
+            }))
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function deleteCart(id: number, cart: ICartItem[], isLogged: boolean) {
+  return async (dispatch: Dispatch) => {
+    try {
+      if (isLogged) cartApi.remove(id);
+      const _cart = cart.map((e) => ({ ...e })).filter((p) => p.id !== id);
+      dispatch(slice.actions.setCart(_cart));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function addToCart(product: ICartItem, cart: ICartItem[], isLogged: boolean) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const _cart = cart.map((e) => ({ ...e }));
+
+      const findP = _cart.find((p) => p.id === product.id);
+
+      if (findP) {
+        if (isLogged) cartApi.update({ bookId: findP.id, quantity: product.quantity });
+        findP.quantity = Math.min(product.available, findP.quantity + product.quantity);
+      } else {
+        if (isLogged) cartApi.update({ bookId: product.id, quantity: product.quantity });
+        _cart.push(product);
+      }
+
+      dispatch(slice.actions.setCart(_cart));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function increaseQuantity(id: number, cart: ICartItem[], isLogged: boolean) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const _cart = cart.map((e) => ({ ...e }));
+      const findP = _cart.find((p) => p.id === id);
+      if (findP) {
+        if (isLogged) cartApi.update({ bookId: id, quantity: 1 });
+        findP.quantity = Math.min(findP.available, findP.quantity + 1);
+      }
+      dispatch(slice.actions.setCart(_cart));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function decreaseQuantity(id: number, cart: ICartItem[], isLogged: boolean) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const _cart = cart.map((e) => ({ ...e }));
+      const findP = _cart.find((p) => p.id === id);
+      if (findP) {
+        if (isLogged) cartApi.update({ bookId: id, quantity: -1 });
+        findP.quantity = Math.max(1, findP.quantity - 1);
+      }
+      dispatch(slice.actions.setCart(_cart));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}

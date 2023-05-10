@@ -137,18 +137,11 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
         };
 
         const res = await addressApi.create(body);
+        onCreateBilling(res);
         enqueueSnackbar('Thêm địa chỉ thành công');
         reset();
         onClose();
       }
-
-      // onCreateBilling({
-      //   receiver: data.receiver,
-      //   phoneNumber: data.phoneNumber,
-      //   fullAddress: `${data.address}, ${data.city}, ${data.state}, ${data.country}, ${data.zipCode}`,
-      //   addressType: data.addressType,
-      //   isDefault: data.isDefault,
-      // });
     } catch (error) {
       console.error(error);
     }

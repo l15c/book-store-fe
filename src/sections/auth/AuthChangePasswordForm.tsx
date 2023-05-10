@@ -4,13 +4,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack } from '@mui/material';
+import { Card, IconButton, InputAdornment, Stack } from '@mui/material';
 // @types
 import { IUserAccountChangePassword } from 'src/@types/user';
 // components
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { useState } from 'react';
+import customerApi from 'src/api-client/customer';
 
 // ----------------------------------------------------------------------
 
@@ -18,13 +20,13 @@ type FormValuesProps = IUserAccountChangePassword;
 
 export default function AuthChangePasswordForm() {
   const { enqueueSnackbar } = useSnackbar();
-
+  const [showPassword, setShowPassword] = useState(false);
   const ChangePassWordSchema = Yup.object().shape({
     password: Yup.string().required('Vui lòng nhập mật khẩu hiện tại'),
     newPassword: Yup.string()
       .required('Vui lòng nhập mật khẩu mới')
       .min(8, 'Mật khẩu tối thiểu 8 kí tự'),
-    confirmPassword: Yup.string().oneOf(
+    confirmNewPassword: Yup.string().oneOf(
       [Yup.ref('newPassword')],
       'Nhập lại mật khẩu không chính xác'
     ),
@@ -33,7 +35,7 @@ export default function AuthChangePasswordForm() {
   const defaultValues = {
     password: '',
     newPassword: '',
-    confirmPassword: '',
+    confirmNewPassword: '',
   };
 
   const methods = useForm({
@@ -48,14 +50,8 @@ export default function AuthChangePasswordForm() {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    // const { password, newPassword } = data;
-
     try {
-      //   await axiosClient.put('/api/auth/change-password', {
-      //     password,
-      //     newPassword,
-      //   });
-
+      await customerApi.changePassword(data);
       reset();
       enqueueSnackbar('Cập nhật thành công!');
     } catch (error) {
@@ -68,12 +64,34 @@ export default function AuthChangePasswordForm() {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Card sx={{ display: 'flex', justifyContent: 'center' }}>
         <Stack spacing={3} alignItems="flex-end" sx={{ p: 3, width: '400px' }}>
-          <RHFTextField name="password" type="password" label="Mật khẩu hiện tại" />
+          <RHFTextField
+            name="password"
+            label="Mật khẩu hiện tại"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
           <RHFTextField
             name="newPassword"
-            type="password"
             label="Mật khẩu mới"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             helperText={
               <Stack component="span" direction="row" alignItems="center">
                 <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Mật khẩu phải tối thiểu
@@ -82,7 +100,20 @@ export default function AuthChangePasswordForm() {
             }
           />
 
-          <RHFTextField name="confirmPassword" type="password" label="Nhập lại mật khẩu mới" />
+          <RHFTextField
+            name="confirmNewPassword"
+            label="Nhập lại mật khẩu mới"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
           <LoadingButton
             type="submit"

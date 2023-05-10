@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Head>
-        <title>Lấy lại mật khẩu | Book Shop</title>
+        <title>Lấy lại mật khẩu | Book Store</title>
       </Head>
 
       <PasswordIcon sx={{ mb: 5, height: 96 }} />

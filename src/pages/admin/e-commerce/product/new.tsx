@@ -26,7 +26,7 @@ export default function EcommerceProductCreatePage() {
   return (
     <>
       <Head>
-        <title> Thêm sản phẩm | Book Shop</title>
+        <title> Thêm sản phẩm | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

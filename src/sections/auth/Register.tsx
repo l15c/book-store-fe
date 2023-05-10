@@ -16,7 +16,7 @@ export default function Register() {
   return (
     <LoginLayout title="">
       <Stack spacing={1} sx={{ mb: 3, position: 'relative' }}>
-        <Typography variant="h4">Đăng ký tài khoản Book Shop</Typography>
+        <Typography variant="h4">Đăng ký tài khoản Book Store</Typography>
 
         <Stack direction="row" spacing={0.5}>
           <Typography variant="body2"> Bạn đã có tài khoản?</Typography>

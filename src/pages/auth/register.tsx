@@ -11,7 +11,7 @@ export default function RegisterPage() {
   return (
     <>
       <Head>
-        <title>Đăng ký | Book shop</title>
+        <title>Đăng ký | Book Store</title>
       </Head>
 
       <GuestGuard>

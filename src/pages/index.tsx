@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Book Shop</title>
+        <title>Book Store</title>
       </Head>
 
       <ScrollProgress />

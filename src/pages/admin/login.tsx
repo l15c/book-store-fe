@@ -12,7 +12,7 @@ export default function AdminLoginPage() {
   return (
     <>
       <Head>
-        <title>Nhân viên | Book Shop</title>
+        <title>Nhân viên | Book Store</title>
       </Head>
 
       <GuestGuard>

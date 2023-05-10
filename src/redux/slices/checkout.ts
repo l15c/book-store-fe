@@ -38,7 +38,7 @@ const slice = createSlice({
 
     applyShipping(state, action) {
       const shipping = action.payload;
-      state.shipping = shipping;
+      state.shipping = Math.round(shipping / 1000) * 1000;
     },
   },
 });

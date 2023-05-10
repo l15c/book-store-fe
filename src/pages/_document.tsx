@@ -32,9 +32,9 @@ export default class MyDocument extends Document {
           {(this.props as any).emotionStyleTags}
 
           {/* Meta */}
-          <meta name="description" content="Book Shop" />
+          <meta name="description" content="Book Store" />
           <meta name="keywords" content="react,material,kit,application,dashboard,admin,template" />
-          <meta name="author" content="Book Shop" />
+          <meta name="author" content="Book Store" />
         </Head>
 
         <body>

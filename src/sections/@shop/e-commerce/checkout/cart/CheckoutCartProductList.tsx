@@ -22,9 +22,9 @@ const TABLE_HEAD = [
 
 type Props = {
   products: ICartItem[];
-  selected: ICartItem[];
-  onSelectRow: (product: ICartItem) => void;
-  onSelectAllRows: (checked: boolean, newSelecteds: ICartItem[]) => void;
+  selected: number[];
+  onSelectRow: (product: number) => void;
+  onSelectAllRows: (checked: boolean, newSelecteds: number[]) => void;
   onDelete: (id: number) => void;
   onAddCart: (product: ICartItem) => void;
   onDecreaseQuantity: (id: number) => void;
@@ -49,7 +49,12 @@ export default function CheckoutCartProductList({
             headLabel={TABLE_HEAD}
             rowCount={products.length}
             numSelected={selected.length}
-            onSelectAllRows={(checked) => onSelectAllRows(checked, products)}
+            onSelectAllRows={(checked) =>
+              onSelectAllRows(
+                checked,
+                products.map((p) => p.id)
+              )
+            }
             sx={{ whiteSpace: 'nowrap' }}
           />
 
@@ -65,8 +70,8 @@ export default function CheckoutCartProductList({
               <CheckoutCartProduct
                 key={row.id}
                 row={row}
-                selected={!!selected.find((e) => e.id === row.id)}
-                onSelectRow={() => onSelectRow(row)}
+                selected={selected.includes(row.id)}
+                onSelectRow={() => onSelectRow(row.id)}
                 onDelete={() => onDelete(row.id)}
                 onAddCart={onAddCart}
                 onDecrease={() => onDecreaseQuantity(row.id)}

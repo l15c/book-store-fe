@@ -17,7 +17,7 @@ import {
   increaseQuantity,
   decreaseQuantity,
   addToCart,
-  startOrder,
+  setSelected,
 } from 'src/redux/slices/cart';
 import {
   nextStep,
@@ -40,6 +40,8 @@ import {
   CheckoutOrderComplete,
   CheckoutBillingAddress,
 } from 'src/sections/@shop/e-commerce/checkout';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import addressApi from 'src/api-client/address';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +55,7 @@ EcommerceCheckoutPage.getLayout = (page: React.ReactElement) => <ShopLayout>{pag
 
 export default function EcommerceCheckoutPage() {
   const { replace } = useRouter();
-
+  const { user } = useAuthContext();
   const { themeStretch } = useSettingsContext();
 
   const dispatch = useDispatch();
@@ -94,19 +96,22 @@ export default function EcommerceCheckoutPage() {
   };
 
   const handleDeleteCart = (productId: number) => {
-    dispatch(deleteCart(productId));
+    dispatch(deleteCart(productId, products, !!user));
   };
 
   const handleIncreaseQuantity = (productId: number) => {
-    dispatch(increaseQuantity(productId));
+    dispatch(increaseQuantity(productId, products, !!user));
   };
 
   const handleDecreaseQuantity = (productId: number) => {
-    dispatch(decreaseQuantity(productId));
+    dispatch(decreaseQuantity(productId, products, !!user));
   };
 
   const handleCreateBilling = (address: IUserAddress) => {
     dispatch(createBilling(address));
+    addressApi
+      .checkFee({ to_district_id: address.district, to_ward_code: `${address.ward}` })
+      .then((res) => handleApplyShipping(res.total));
     dispatch(nextStep());
   };
 
@@ -115,11 +120,11 @@ export default function EcommerceCheckoutPage() {
   };
 
   const handleAddCart = (product: ICartItem) => {
-    dispatch(addToCart(product));
+    dispatch(addToCart(product, products, !!user));
   };
 
-  const handleStartOrder = (p: ICartItem[]) => {
-    dispatch(startOrder(p));
+  const handleSelectProductCart = (p: number[]) => {
+    dispatch(setSelected(p));
   };
 
   const handleReset = () => {
@@ -132,7 +137,7 @@ export default function EcommerceCheckoutPage() {
   return (
     <>
       <Head>
-        <title>Thanh toán | Book Shop</title>
+        <title>Thanh toán | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -152,7 +157,7 @@ export default function EcommerceCheckoutPage() {
                 onDeleteCart={handleDeleteCart}
                 onApplyDiscount={handleApplyDiscount}
                 onAddCart={handleAddCart}
-                onStartOrder={handleStartOrder}
+                onSelectProductCart={handleSelectProductCart}
                 onIncreaseQuantity={handleIncreaseQuantity}
                 onDecreaseQuantity={handleDecreaseQuantity}
               />
@@ -165,11 +170,12 @@ export default function EcommerceCheckoutPage() {
             )}
             {activeStep === 2 && billing && (
               <CheckoutPayment
-                checkout={checkout}
                 onNextStep={handleNextStep}
-                onBackStep={handleBackStep}
+                onBackStep={() => {
+                  handleBackStep();
+                  handleApplyShipping(0);
+                }}
                 onGotoStep={handleGotoStep}
-                onApplyShipping={handleApplyShipping}
                 onReset={handleReset}
               />
             )}

@@ -24,6 +24,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { addToCart } from 'src/redux/slices/cart';
+import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -98,13 +99,13 @@ type Props = {
 
 export default function ProductDetailsPage({ book }: Props) {
   const { themeStretch } = useSettingsContext();
-
+  const { user } = useAuthContext();
   const dispatch = useDispatch();
 
   const cart = useSelector((e) => e.cart);
 
   const handleAddCart = (product: ICartItem) => {
-    dispatch(addToCart(product));
+    dispatch(addToCart(product, cart.products, !!user));
   };
 
   const handleGotoStep = (step: number) => {
@@ -143,7 +144,7 @@ export default function ProductDetailsPage({ book }: Props) {
   return (
     <>
       <Head>
-        <title>{`${book?.name || ''} | Book Shop`}</title>
+        <title>{`${book?.name || ''} | Book Store`}</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ px: { xs: 0, md: 2 } }}>

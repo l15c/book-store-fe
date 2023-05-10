@@ -185,7 +185,7 @@ export default function EcommerceProductListPage() {
   return (
     <>
       <Head>
-        <title> Dánh sách sản phẩm | Book Shop</title>
+        <title> Dánh sách sản phẩm | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 2 }}>

@@ -20,6 +20,7 @@ import {
   deleteCart,
   getCart,
   increaseQuantity,
+  // syncCart,
 } from 'src/redux/slices/cart';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { PATH_SHOP } from 'src/routes/paths';
@@ -29,12 +30,14 @@ import { ICartItem } from 'src/@types/book';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
 import { getLinkImage } from 'src/utils/cloudinary';
 import Label from 'src/components/label';
+import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
 const ITEM_HEIGHT = 120;
 
 export default function CartPopover() {
+  const { user } = useAuthContext();
   const dispatch = useDispatch();
   const { products, totalItems } = useSelector((state) => state.cart);
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
@@ -43,24 +46,29 @@ export default function CartPopover() {
     dispatch(getCart());
   }, [dispatch, products]);
 
+  // useEffect(() => {
+  //   if (user) dispatch(syncCart(products));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [user?.id]);
+
   const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
     setOpenPopover(event.currentTarget);
   };
 
   const handleDeleteCart = (productId: number) => {
-    dispatch(deleteCart(productId));
+    dispatch(deleteCart(productId, products, !!user));
   };
 
   const handleIncreaseQuantity = (productId: number) => {
-    dispatch(increaseQuantity(productId));
+    dispatch(increaseQuantity(productId, products, !!user));
   };
 
   const handleDecreaseQuantity = (productId: number) => {
-    dispatch(decreaseQuantity(productId));
+    dispatch(decreaseQuantity(productId, products, !!user));
   };
 
   const handleAddCart = (product: ICartItem) => {
-    dispatch(addToCart(product));
+    dispatch(addToCart(product, products, !!user));
   };
 
   const handleClosePopover = () => {
@@ -200,17 +208,21 @@ function CartProductPopover({
           </Link>
 
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="row" alignItems="center">
+            <Stack direction="row" alignItems="center" mr="auto">
               <Typography fontSize="14px" fontWeight="bold">
                 {!!discount && (
                   <Box
                     component="span"
-                    sx={{ color: 'text.disabled', textDecoration: 'line-through', mr: 0.5 }}
+                    sx={{
+                      color: 'text.disabled',
+                      textDecoration: 'line-through',
+                      mr: 0.5,
+                      fontSize: 12,
+                    }}
                   >
                     {fCurrency(price)}
                   </Box>
                 )}
-
                 {fCurrency(price * (1 - discount / 100))}
               </Typography>
               {!stopSale && !!discount && (
@@ -222,6 +234,9 @@ function CartProductPopover({
                 </>
               )}
             </Stack>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5 }}>
+              Hiện có: {available}
+            </Typography>
             <IncrementerButton
               enableInput
               min={1}
