@@ -12,11 +12,11 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+// @types
+import { IOrder } from 'src/@types/order';
 // utils
 import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
-// @types
-import { IInvoice } from '../../../../@types/invoice';
 // components
 import Label from '../../../../components/label';
 import Iconify from '../../../../components/iconify';
@@ -27,8 +27,9 @@ import ConfirmDialog from '../../../../components/confirm-dialog';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IInvoice;
+  row: IOrder;
   selected: boolean;
+  enableMenu?: boolean;
   onSelectRow: VoidFunction;
   onViewRow: VoidFunction;
   onEditRow: VoidFunction;
@@ -38,12 +39,23 @@ type Props = {
 export default function InvoiceTableRow({
   row,
   selected,
+  enableMenu,
   onSelectRow,
   onViewRow,
   onEditRow,
   onDeleteRow,
 }: Props) {
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalPrice } = row;
+  const {
+    totalPrice,
+    dayOfPayment,
+    deliveryFee,
+    discountPrice,
+    id,
+    isPay,
+    orderDate,
+    shipName,
+    status,
+  } = row;
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -74,11 +86,11 @@ export default function InvoiceTableRow({
 
         <TableCell>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <CustomAvatar name={invoiceTo.name} />
+            <CustomAvatar name={shipName} />
 
             <div>
               <Typography variant="subtitle2" noWrap>
-                {invoiceTo.name}
+                {shipName}
               </Typography>
 
               <Link
@@ -87,23 +99,19 @@ export default function InvoiceTableRow({
                 onClick={onViewRow}
                 sx={{ color: 'text.disabled', cursor: 'pointer' }}
               >
-                {`INV-${invoiceNumber}`}
+                {`${id}`}
               </Link>
             </div>
           </Stack>
         </TableCell>
 
-        <TableCell align="left">{fDate(createDate)}</TableCell>
+        <TableCell align="center">{fDate(orderDate)}</TableCell>
 
-        <TableCell align="left">{fDate(dueDate)}</TableCell>
+        <TableCell align="center">{dayOfPayment ? fDate(dayOfPayment) : '-'}</TableCell>
 
         <TableCell align="center">{fCurrency(totalPrice)}</TableCell>
 
-        <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
-          {sent}
-        </TableCell>
-
-        <TableCell align="left">
+        <TableCell align="center">
           <Label
             variant="soft"
             color={
@@ -112,69 +120,75 @@ export default function InvoiceTableRow({
               (status === 'overdue' && 'error') ||
               'default'
             }
+            sx={{ p: 1 }}
           >
             {status}
           </Label>
         </TableCell>
 
-        <TableCell align="right">
-          <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
+        {enableMenu && (
+          <TableCell align="right">
+            <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          </TableCell>
+        )}
       </TableRow>
 
-      <MenuPopover
-        open={openPopover}
-        onClose={handleClosePopover}
-        arrow="right-top"
-        sx={{ width: 160 }}
-      >
-        <MenuItem
-          onClick={() => {
-            onViewRow();
-            handleClosePopover();
-          }}
-        >
-          <Iconify icon="eva:eye-fill" />
-          View
-        </MenuItem>
+      {enableMenu && (
+        <>
+          <MenuPopover
+            open={openPopover}
+            onClose={handleClosePopover}
+            arrow="right-top"
+            sx={{ width: 160 }}
+          >
+            <MenuItem
+              onClick={() => {
+                onViewRow();
+                handleClosePopover();
+              }}
+            >
+              <Iconify icon="eva:eye-fill" />
+              View
+            </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            onEditRow();
-            handleClosePopover();
-          }}
-        >
-          <Iconify icon="eva:edit-fill" />
-          Edit
-        </MenuItem>
+            <MenuItem
+              onClick={() => {
+                onEditRow();
+                handleClosePopover();
+              }}
+            >
+              <Iconify icon="eva:edit-fill" />
+              Edit
+            </MenuItem>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+            <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem
-          onClick={() => {
-            handleOpenConfirm();
-            handleClosePopover();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="eva:trash-2-outline" />
-          Delete
-        </MenuItem>
-      </MenuPopover>
-
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={handleCloseConfirm}
-        title="Delete"
-        content="Are you sure want to delete?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
+            <MenuItem
+              onClick={() => {
+                handleOpenConfirm();
+                handleClosePopover();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="eva:trash-2-outline" />
+              Delete
+            </MenuItem>
+          </MenuPopover>
+          <ConfirmDialog
+            open={openConfirm}
+            onClose={handleCloseConfirm}
+            title="Delete"
+            content="Are you sure want to delete?"
+            action={
+              <Button variant="contained" color="error" onClick={onDeleteRow}>
+                Delete
+              </Button>
+            }
+          />
+        </>
+      )}
     </>
   );
 }

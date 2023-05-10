@@ -1,3 +1,4 @@
+import Script from 'next/script';
 import AuthGuard from '../../auth/AuthGuard';
 //
 import Main from './Main';
@@ -15,6 +16,9 @@ export default function ShopLayout({ children, noAuth }: Props) {
     <>
       <Header />
       <Main>{children}</Main>
+
+      {/* <div id="fb-root" />
+      <div id="fb-customer-chat" className="fb-customerchat" /> */}
     </>
   );
 

@@ -1,3 +1,5 @@
+import { useSnackbar } from 'notistack';
+import { useQueryClient } from '@tanstack/react-query';
 import compact from 'lodash/compact';
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
@@ -78,6 +80,8 @@ type FormValuesProps = {
 export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGotoStep }: Props) {
   const { push } = useRouter();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
   const { billing, shipping, discount } = useSelector((state) => state.checkout);
   const { products, selected } = useSelector((state) => state.cart);
 
@@ -104,9 +108,6 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      console.log(shipping);
-      console.log(discount);
-      console.log(productsSelected);
       if (productsSelected.some((e) => !e.cartId)) await dispatch(syncCart(products));
 
       const res = await orderApi.create({
@@ -114,14 +115,22 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
         checkedCartId: compact(productsSelected.map((e) => e.cartId)),
         deliveryFee: shipping,
         payType: data.payment as PayType,
-        shipNote: '',
+        shipNote: 'abc',
         userAddressId: billing!.id,
       });
-      console.log(res);
 
-      onReset();
+      queryClient.invalidateQueries({
+        queryKey: ['user', 'orders'],
+        refetchType: 'all',
+      });
+
       if (data.payment !== 'cash') push(res as string);
-      else onNextStep();
+      else {
+        enqueueSnackbar('Tạo đơn hàng thành công');
+        onNextStep();
+      }
+      onGotoStep(0);
+      onReset();
     } catch (error) {
       console.error(error);
     }

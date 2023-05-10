@@ -57,4 +57,18 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
   }
 );
 
+export const LogoOnly = () => (
+  <StyledGradientText
+    animate={{ backgroundPosition: '200% center' }}
+    transition={{
+      repeatType: 'reverse',
+      ease: 'linear',
+      duration: 20,
+      repeat: Infinity,
+    }}
+  >
+    BOOK STORE
+  </StyledGradientText>
+);
+
 export default Logo;

@@ -30,7 +30,7 @@ export const PATH_SHOP = {
   },
   order: {
     root: '/orders',
-    detail: (id: string) => `/orders/${id}`,
+    detail: (id: number) => `/orders/${id}`,
   },
 };
 

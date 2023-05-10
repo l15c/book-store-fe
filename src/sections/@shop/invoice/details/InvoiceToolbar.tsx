@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
-// next
-import { useRouter } from 'next/router';
 // @mui
 import {
   Box,
   Stack,
-  Button,
   Dialog,
   Tooltip,
   IconButton,
@@ -14,9 +11,8 @@ import {
   CircularProgress,
 } from '@mui/material';
 // routes
-import { PATH_ADMIN } from '../../../../routes/paths';
 // @types
-import { IInvoice } from '../../../../@types/invoice';
+import { IOrder } from 'src/@types/order';
 // components
 import Iconify from '../../../../components/iconify';
 //
@@ -25,12 +21,10 @@ import InvoicePDF from './InvoicePDF';
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  order: IOrder;
 };
 
-export default function InvoiceToolbar({ invoice }: Props) {
-  const { push } = useRouter();
-
+export default function InvoiceToolbar({ order }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -41,10 +35,6 @@ export default function InvoiceToolbar({ invoice }: Props) {
     setOpen(false);
   };
 
-  const handleEdit = () => {
-    push(PATH_ADMIN.invoice.edit(invoice.id));
-  };
-
   return (
     <>
       <Stack
@@ -52,28 +42,22 @@ export default function InvoiceToolbar({ invoice }: Props) {
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
         alignItems={{ sm: 'center' }}
-        sx={{ mb: 5 }}
+        sx={{ mb: 2 }}
       >
-        <Stack direction="row" spacing={1}>
-          <Tooltip title="Edit">
-            <IconButton onClick={handleEdit}>
-              <Iconify icon="eva:edit-fill" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="View">
+        <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
+          <Tooltip title="Xem dưới dạng PDF">
             <IconButton onClick={handleOpen}>
               <Iconify icon="eva:eye-fill" />
             </IconButton>
           </Tooltip>
 
           <PDFDownloadLink
-            document={<InvoicePDF invoice={invoice} />}
-            fileName={invoice.invoiceNumber}
+            document={<InvoicePDF order={order} />}
+            fileName={`${order.id}`}
             style={{ textDecoration: 'none' }}
           >
             {({ loading }) => (
-              <Tooltip title="Download">
+              <Tooltip title="Tải xuống PDF">
                 <IconButton>
                   {loading ? (
                     <CircularProgress size={24} color="inherit" />
@@ -84,34 +68,7 @@ export default function InvoiceToolbar({ invoice }: Props) {
               </Tooltip>
             )}
           </PDFDownloadLink>
-
-          <Tooltip title="Print">
-            <IconButton>
-              <Iconify icon="eva:printer-fill" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Send">
-            <IconButton>
-              <Iconify icon="ic:round-send" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Share">
-            <IconButton>
-              <Iconify icon="eva:share-fill" />
-            </IconButton>
-          </Tooltip>
         </Stack>
-
-        <Button
-          color="inherit"
-          variant="outlined"
-          startIcon={<Iconify icon="eva:checkmark-fill" />}
-          sx={{ alignSelf: 'flex-end' }}
-        >
-          Mark as Paid
-        </Button>
       </Stack>
 
       <Dialog fullScreen open={open}>
@@ -131,7 +88,7 @@ export default function InvoiceToolbar({ invoice }: Props) {
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InvoicePDF invoice={invoice} />
+              <InvoicePDF order={order} />
             </PDFViewer>
           </Box>
         </Box>

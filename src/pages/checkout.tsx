@@ -18,6 +18,8 @@ import {
   decreaseQuantity,
   addToCart,
   setSelected,
+  syncCart,
+  finishOrder,
 } from 'src/redux/slices/cart';
 import {
   nextStep,
@@ -129,7 +131,8 @@ export default function EcommerceCheckoutPage() {
 
   const handleReset = () => {
     if (completed) {
-      dispatch(resetCart());
+      dispatch(finishOrder());
+      dispatch(syncCart(products));
       replace(PATH_SHOP.product.root);
     }
   };

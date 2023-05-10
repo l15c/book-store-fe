@@ -5,15 +5,16 @@ import { useRouter } from 'next/router';
 import { Container } from '@mui/material';
 // routes
 import { PATH_SHOP } from 'src/routes/paths';
-// _mock_
-import { _invoices } from 'src/_mock/arrays';
+
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // sections
-import InvoiceDetails from 'src/sections/@admin/invoice/details';
+import InvoiceDetails from 'src/sections/@shop/invoice/details';
+import { useQuery } from '@tanstack/react-query';
+import orderApi from 'src/api-client/order';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +29,12 @@ export default function InvoiceDetailsPage() {
     query: { id },
   } = useRouter();
 
-  const currentInvoice = _invoices.find((invoice) => invoice.id === id);
+  const { data, isFetching } = useQuery({
+    queryKey: ['user', 'orders', id],
+    queryFn: () => orderApi.getById(id as string),
+    enabled: !!id,
+    staleTime: Infinity,
+  });
 
   return (
     <>
@@ -44,11 +50,11 @@ export default function InvoiceDetailsPage() {
               name: 'Danh sách đơn hàng',
               href: PATH_SHOP.order.root,
             },
-            { name: `INV-${currentInvoice?.invoiceNumber}` },
+            { name: `${data?.id ?? ''}` },
           ]}
         />
 
-        <InvoiceDetails invoice={currentInvoice} />
+        <InvoiceDetails order={data} />
       </Container>
     </>
   );

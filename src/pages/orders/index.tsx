@@ -23,8 +23,6 @@ import {
 import { PATH_SHOP } from 'src/routes/paths';
 // utils
 import { fTimestamp } from 'src/utils/formatTime';
-// _mock_
-import { _invoices } from 'src/_mock/arrays';
 // @types
 import { IInvoice } from 'src/@types/invoice';
 // layouts
@@ -47,8 +45,11 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // sections
-import InvoiceAnalytic from 'src/sections/@admin/invoice/InvoiceAnalytic';
-import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@admin/invoice/list';
+import InvoiceAnalytic from 'src/sections/@shop/invoice/InvoiceAnalytic';
+import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@shop/invoice/list';
+import { useQuery } from '@tanstack/react-query';
+import orderApi from 'src/api-client/order';
+import { IOrder } from 'src/@types/order';
 
 // ----------------------------------------------------------------------
 
@@ -62,13 +63,11 @@ const SERVICE_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Client', align: 'left' },
-  { id: 'createDate', label: 'Create', align: 'left' },
-  { id: 'dueDate', label: 'Due', align: 'left' },
-  { id: 'price', label: 'Amount', align: 'center', width: 140 },
-  { id: 'sent', label: 'Sent', align: 'center', width: 140 },
-  { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
+  { id: 'shipName', label: 'Tên người nhận', align: 'left' },
+  { id: 'orderDate', label: 'Ngày đặt hàng', align: 'center' },
+  { id: 'dayOfPayment', label: 'Ngày thanh toán', align: 'center' },
+  { id: 'totalPrice', label: 'Tổng đơn hàng', align: 'center', width: 140 },
+  { id: 'status', label: 'Trạng thái', align: 'center' },
 ];
 
 // ----------------------------------------------------------------------
@@ -101,9 +100,18 @@ export default function InvoiceIndexPage() {
     onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({ defaultOrderBy: 'createDate' });
+  } = useTable({ defaultOrderBy: 'orderDate', defaultOrder: 'desc' });
 
-  const [tableData, setTableData] = useState(_invoices);
+  const [tableData, setTableData] = useState<IOrder[]>([]);
+
+  const { isFetching } = useQuery({
+    queryKey: ['user', 'orders'],
+    queryFn: () => orderApi.getList(),
+    staleTime: Infinity,
+    onSuccess(_data) {
+      setTableData(_data);
+    },
+  });
 
   const [filterName, setFilterName] = useState('');
 
@@ -157,11 +165,31 @@ export default function InvoiceIndexPage() {
     (getLengthByStatus(status) / tableData.length) * 100;
 
   const TABS = [
-    { value: 'all', label: 'All', color: 'info', count: tableData.length },
-    { value: 'paid', label: 'Paid', color: 'success', count: getLengthByStatus('paid') },
-    { value: 'unpaid', label: 'Unpaid', color: 'warning', count: getLengthByStatus('unpaid') },
-    { value: 'overdue', label: 'Overdue', color: 'error', count: getLengthByStatus('overdue') },
-    { value: 'draft', label: 'Draft', color: 'default', count: getLengthByStatus('draft') },
+    { value: 'all', label: 'Tất cả', color: 'info', count: tableData.length },
+    {
+      value: 'Giao hàng thành công',
+      label: 'Đã hoàn thành',
+      color: 'success',
+      count: getLengthByStatus('Giao hàng thành công'),
+    },
+    {
+      value: 'Đang giao hàng',
+      label: 'Đang giao hàng',
+      color: 'warning',
+      count: getLengthByStatus('Đang giao hàng'),
+    },
+    {
+      value: 'Giao hàng thất bại',
+      label: 'Giao hàng thất bại',
+      color: 'error',
+      count: getLengthByStatus('Giao hàng thất bại'),
+    },
+    {
+      value: 'Đang xử lý',
+      label: 'Đang xử lý',
+      color: 'default',
+      count: getLengthByStatus('Đang xử lý'),
+    },
   ] as const;
 
   const handleOpenConfirm = () => {
@@ -187,7 +215,7 @@ export default function InvoiceIndexPage() {
     setFilterService(event.target.value);
   };
 
-  const handleDeleteRow = (id: string) => {
+  const handleDeleteRow = (id: number) => {
     const deleteRow = tableData.filter((row) => row.id !== id);
     setSelected([]);
     setTableData(deleteRow);
@@ -199,7 +227,7 @@ export default function InvoiceIndexPage() {
     }
   };
 
-  const handleDeleteRows = (selectedRows: (string | number)[]) => {
+  const handleDeleteRows = (selectedRows: (number | string)[]) => {
     const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
     setSelected([]);
     setTableData(deleteRows);
@@ -216,9 +244,9 @@ export default function InvoiceIndexPage() {
     }
   };
 
-  const handleEditRow = (id: string) => {};
+  const handleEditRow = (id: number) => {};
 
-  const handleViewRow = (id: string) => {
+  const handleViewRow = (id: number) => {
     push(PATH_SHOP.order.detail(id));
   };
 
@@ -257,7 +285,7 @@ export default function InvoiceIndexPage() {
               sx={{ py: 2 }}
             >
               <InvoiceAnalytic
-                title="Total"
+                title="Tất cả"
                 total={tableData.length}
                 percent={100}
                 price={sumBy(tableData, 'totalPrice')}
@@ -266,37 +294,37 @@ export default function InvoiceIndexPage() {
               />
 
               <InvoiceAnalytic
-                title="Paid"
-                total={getLengthByStatus('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalPriceByStatus('paid')}
+                title="Hoàn thành"
+                total={getLengthByStatus('Giao hàng thành công')}
+                percent={getPercentByStatus('Giao hàng thành công')}
+                price={getTotalPriceByStatus('Giao hàng thành công')}
                 icon="eva:checkmark-circle-2-fill"
                 color={theme.palette.success.main}
               />
 
               <InvoiceAnalytic
-                title="Unpaid"
-                total={getLengthByStatus('unpaid')}
-                percent={getPercentByStatus('unpaid')}
-                price={getTotalPriceByStatus('unpaid')}
+                title="Đang giao hàng"
+                total={getLengthByStatus('Đang giao hàng')}
+                percent={getPercentByStatus('Đang giao hàng')}
+                price={getTotalPriceByStatus('Đang giao hàng')}
                 icon="eva:clock-fill"
                 color={theme.palette.warning.main}
               />
 
               <InvoiceAnalytic
-                title="Overdue"
-                total={getLengthByStatus('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalPriceByStatus('overdue')}
+                title="Thất bại"
+                total={getLengthByStatus('Giao hàng thất bại')}
+                percent={getPercentByStatus('Giao hàng thất bại')}
+                price={getTotalPriceByStatus('Giao hàng thất bại')}
                 icon="eva:bell-fill"
                 color={theme.palette.error.main}
               />
 
               <InvoiceAnalytic
-                title="Draft"
-                total={getLengthByStatus('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalPriceByStatus('draft')}
+                title="Đang xử lý"
+                total={getLengthByStatus('Đang xử lý')}
+                percent={getPercentByStatus('Đang xử lý')}
+                price={getTotalPriceByStatus('Đang xử lý')}
                 icon="eva:file-fill"
                 color={theme.palette.text.secondary}
               />
@@ -377,12 +405,6 @@ export default function InvoiceIndexPage() {
                       <Iconify icon="eva:printer-fill" />
                     </IconButton>
                   </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={handleOpenConfirm}>
-                      <Iconify icon="eva:trash-2-outline" />
-                    </IconButton>
-                  </Tooltip>
                 </Stack>
               }
             />
@@ -402,6 +424,7 @@ export default function InvoiceIndexPage() {
                       tableData.map((row) => row.id)
                     )
                   }
+                  sx={{ whiteSpace: 'nowrap' }}
                 />
 
                 <TableBody>
@@ -442,29 +465,6 @@ export default function InvoiceIndexPage() {
           />
         </Card>
       </Container>
-
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={handleCloseConfirm}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows(selected);
-              handleCloseConfirm();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }
@@ -480,7 +480,7 @@ function applyFilter({
   filterStartDate,
   filterEndDate,
 }: {
-  inputData: IInvoice[];
+  inputData: IOrder[];
   comparator: (a: any, b: any) => number;
   filterName: string;
   filterStatus: string;
@@ -500,27 +500,25 @@ function applyFilter({
 
   if (filterName) {
     inputData = inputData.filter(
-      (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (order) => order.shipName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
   if (filterStatus !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === filterStatus);
+    inputData = inputData.filter((order) => order.status === filterStatus);
   }
 
-  if (filterService !== 'all') {
-    inputData = inputData.filter((invoice) =>
-      invoice.items.some((c) => c.service === filterService)
-    );
-  }
+  // if (filterService !== 'all') {
+  //   inputData = inputData.filter((order) =>
+  //     order.items.some((c) => c.service === filterService)
+  //   );
+  // }
 
   if (filterStartDate && filterEndDate) {
     inputData = inputData.filter(
-      (invoice) =>
-        fTimestamp(invoice.createDate) >= fTimestamp(filterStartDate) &&
-        fTimestamp(invoice.createDate) <= fTimestamp(filterEndDate)
+      (order) =>
+        fTimestamp(order.orderDate) >= fTimestamp(filterStartDate) &&
+        fTimestamp(order.orderDate) <= fTimestamp(filterEndDate)
     );
   }
 

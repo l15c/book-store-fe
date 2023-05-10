@@ -43,9 +43,9 @@ export default function InvoiceTableToolbar({
         xs: 'column',
         md: 'row',
       }}
-      sx={{ px: 2.5, py: 3 }}
+      sx={{ px: 2.5, py: 1.5 }}
     >
-      <TextField
+      {/* <TextField
         fullWidth
         select
         label="Service type"
@@ -77,15 +77,16 @@ export default function InvoiceTableToolbar({
             {option}
           </MenuItem>
         ))}
-      </TextField>
+      </TextField> */}
 
       <DatePicker
-        label="Start date"
+        label="Ngày bắt đầu"
         value={filterStartDate}
         onChange={onFilterStartDate}
         renderInput={(params) => (
           <TextField
             {...params}
+            size="small"
             fullWidth
             sx={{
               maxWidth: { md: INPUT_WIDTH },
@@ -95,12 +96,13 @@ export default function InvoiceTableToolbar({
       />
 
       <DatePicker
-        label="End date"
+        label="Ngày kết thúc"
         value={filterEndDate}
         onChange={onFilterEndDate}
         renderInput={(params) => (
           <TextField
             {...params}
+            size="small"
             fullWidth
             sx={{
               maxWidth: { md: INPUT_WIDTH },
@@ -110,10 +112,11 @@ export default function InvoiceTableToolbar({
       />
 
       <TextField
+        size="small"
         fullWidth
         value={filterName}
         onChange={onFilterName}
-        placeholder="Search client or invoice number..."
+        placeholder="Tìm kiếm tên người nhận hoặc ID đơn hàng..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -130,7 +133,7 @@ export default function InvoiceTableToolbar({
           onClick={onResetFilter}
           startIcon={<Iconify icon="eva:trash-2-outline" />}
         >
-          Clear
+          Hủy bộ lọc
         </Button>
       )}
     </Stack>

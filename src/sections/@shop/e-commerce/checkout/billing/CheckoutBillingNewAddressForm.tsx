@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import compact from 'lodash/compact';
 import { useSnackbar } from 'notistack';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Yup from 'yup';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -46,6 +46,7 @@ type Props = {
 
 export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateBilling }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
 
   const NewAddressSchema = Yup.object().shape({
     receiver: Yup.string().required('Vui lòng nhập tên người nhận'),
@@ -138,6 +139,12 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
 
         const res = await addressApi.create(body);
         onCreateBilling(res);
+
+        queryClient.invalidateQueries({
+          queryKey: ['user', 'address'],
+          refetchType: 'all',
+        });
+
         enqueueSnackbar('Thêm địa chỉ thành công');
         reset();
         onClose();

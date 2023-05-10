@@ -85,7 +85,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setSelected, getCart, resetCart } = slice.actions;
+export const { setSelected, getCart, resetCart, finishOrder } = slice.actions;
 
 // ----------------------------------------------------------------------
 
