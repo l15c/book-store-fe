@@ -7,6 +7,10 @@ export type IAuthUser = {
   imageUrl?: string;
   roleId: number;
   userAddresses?: IUserAddress;
+  permissionName: string[];
+  permissions: {
+    [key: string]: string[];
+  };
 };
 
 export type ConfirmResetPassword = {

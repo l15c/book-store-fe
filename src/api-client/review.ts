@@ -1,10 +1,10 @@
 import { IReview } from 'src/@types/book';
 import { GET, POST } from './axios';
-import { Config, Create } from './type';
+import { Config } from './type';
 
 const reviewApi = {
-  getBySlug: (slug: string, config?: Config) => GET<IReview[]>(`/reviews/${slug}`, config),
-  create: (data: Create<IReview>) => POST('/reviews', data),
+  getBySlug: (id: string, config?: Config) => GET<IReview[]>(`/reviews/${id}`, config),
+  create: (data: { comment: string; rating: number; bookId: number }) => POST('/reviews', data),
 };
 
 export default reviewApi;

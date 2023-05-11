@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import useResponsive from '../../hooks/useResponsive';
 // auth
 import AuthGuard from '../../auth/AuthGuard';
+import RoleBasedGuard from '../../auth/RoleBasedGuard';
 // components
 import { useSettingsContext } from '../../components/settings';
 //
@@ -76,5 +77,11 @@ export default function AdminLayout({ children }: Props) {
     );
   };
 
-  return <AuthGuard admin> {renderContent()} </AuthGuard>;
+  return (
+    <AuthGuard admin>
+      <RoleBasedGuard hasContent roles={[1]}>
+        {renderContent()}
+      </RoleBasedGuard>
+    </AuthGuard>
+  );
 }

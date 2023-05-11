@@ -19,7 +19,7 @@ export type NavListProps = {
   info?: React.ReactElement;
   caption?: string;
   disabled?: boolean;
-  roles?: string[];
+  roles?: number[];
   children?: any;
 };
 

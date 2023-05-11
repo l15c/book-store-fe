@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQueryClient } from '@tanstack/react-query';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Grid, InputAdornment, Modal, Stack, Typography } from '@mui/material';
@@ -55,6 +56,8 @@ type Props = {
 
 export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
   const { push } = useRouter();
+
+  const queryClient = useQueryClient();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -158,11 +161,11 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
 
       let coverUrl;
       if (typeof cover !== 'string') {
-        await cloudinaryApi.uploadSign(cover, {
-          public_id: `${cover}.${cover.name.split('.').pop()}`,
+        const res = await cloudinaryApi.uploadSign(cover, {
+          public_id: 'cover',
           folder: `products/${slug}`,
         });
-        coverUrl = 'cover';
+        coverUrl = `cover.${res.format}`;
       } else coverUrl = cover;
 
       const listPromise = compact(
@@ -171,11 +174,11 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
           return { file: e, index };
         })
       ).map((e) => {
-        const _name = `image${e.index + 1}.${e.file.name.split('.').pop()}`;
+        const _name = `image${e.index + 1}`;
         return cloudinaryApi
           .uploadSign(e.file, { public_id: _name, folder: `products/${slug}` })
           .then((res) => {
-            images[e.index] = _name;
+            images[e.index] = `${_name}.${res.format}`;
             return res;
           });
       });
@@ -185,7 +188,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       const body = {
         name,
         description,
-        slug,
+
         cover: coverUrl,
         images: images as string[],
         price,
@@ -199,7 +202,12 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
         releaseDate: isEdit ? currentProduct?.releaseDate : new Date().toISOString(),
       };
 
-      await bookApi.add(body);
+      if (isEdit) {
+        await bookApi.update({ id: currentProduct!.id, ...body });
+        queryClient.invalidateQueries({
+          queryKey: ['products', slug],
+        });
+      } else await bookApi.add(body);
       reset();
       enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thành công!' : 'Cập nhật thành công!');
       push(PATH_ADMIN.eCommerce.list);
@@ -312,7 +320,6 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                       onDrop={handleDrop}
                       onRemove={handleRemoveFile}
                       onRemoveAll={handleRemoveAllFiles}
-                      onUpload={() => console.log('ON UPLOAD')}
                     />
                   </Stack>
                 </Stack>

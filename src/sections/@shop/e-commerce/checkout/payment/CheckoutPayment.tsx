@@ -82,7 +82,7 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const { billing, shipping, discount } = useSelector((state) => state.checkout);
+  const { billing, shipping } = useSelector((state) => state.checkout);
   const { products, selected } = useSelector((state) => state.cart);
 
   const productsSelected = intersectionWith(products, selected, (p, id) => p.id === id);

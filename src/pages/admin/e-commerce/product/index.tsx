@@ -125,7 +125,6 @@ export default function EcommerceProductListPage() {
         sortBy: orderBy,
         sortDirection: order,
       }),
-    staleTime: Infinity,
     keepPreviousData: true,
   });
 

@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Page, View, Text, Document } from '@react-pdf/renderer';
+import { Document, Page, Text, View } from '@react-pdf/renderer';
 // @types
 import { IOrder } from 'src/@types/order';
 // utils
-import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
+import { fDate } from '../../../../utils/formatTime';
 //
 import styles from './InvoiceStyle';
 
@@ -22,11 +22,9 @@ export default function InvoicePDF({ order }: Props) {
     discountPrice,
     displayAddress,
     orderDetails = [],
-    payType,
     shipNote,
     shipPhone,
     id,
-    isPay,
     orderDate,
     shipName,
     status,
@@ -36,9 +34,12 @@ export default function InvoicePDF({ order }: Props) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={[styles.gridContainer, styles.mb40]}>
-          {/* <LogoOnly /> */}
+          <View>
+            <Text style={styles.h3}>BOOK STORE</Text>
+          </View>
+
           <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
-            <Text style={styles.h3}>{status}</Text>
+            <Text style={styles.h5}>{status}</Text>
             <Text> {`Mã đơn hàng: ${id}`} </Text>
           </View>
         </View>
@@ -46,15 +47,12 @@ export default function InvoicePDF({ order }: Props) {
         <View style={[styles.gridContainer, styles.mb40]}>
           <View style={styles.col6}>
             <Text style={[styles.overline, styles.mb8]}>Thông tin người nhận</Text>
-            <Text style={styles.body1}>{shipName}</Text>
-            <Text style={styles.body1}>{displayAddress}</Text>
-            <Text style={styles.body1}>{shipPhone}</Text>
+            <Text style={styles.body1}>Tên người nhận: {shipName}</Text>
+            <Text style={styles.body1}>Số điện thoại: {shipPhone}</Text>
+            <Text style={styles.body1}>Địa chỉ: {displayAddress}</Text>
+            <Text style={styles.body1}>Ghi chú: {shipNote}</Text>
           </View>
 
-          <View style={styles.col6} />
-        </View>
-
-        <View style={[styles.gridContainer, styles.mb40]}>
           <View style={styles.col4}>
             <Text style={[styles.overline, styles.mb8]}>Ngày đặt hàng</Text>
             <Text style={styles.body1}>{fDate(orderDate)}</Text>
@@ -78,12 +76,16 @@ export default function InvoicePDF({ order }: Props) {
                 <Text style={styles.subtitle2}>Tên sản phẩm</Text>
               </View>
 
-              <View style={styles.tableCell_3}>
+              <View style={[styles.tableCell_4, styles.alignCenter]}>
                 <Text style={styles.subtitle2}>Số lượng</Text>
               </View>
 
-              <View style={styles.tableCell_3}>
+              <View style={[styles.tableCell_4, styles.alignRight]}>
                 <Text style={styles.subtitle2}>Đơn giá</Text>
+              </View>
+
+              <View style={[styles.tableCell_4, styles.alignCenter]}>
+                <Text style={styles.subtitle2}>Giảm giá</Text>
               </View>
 
               <View style={[styles.tableCell_3, styles.alignRight]}>
@@ -101,19 +103,22 @@ export default function InvoicePDF({ order }: Props) {
 
                 <View style={styles.tableCell_2}>
                   <Text style={styles.subtitle2}>{item.name}</Text>
-                  <Text>{item.name}</Text>
                 </View>
 
-                <View style={styles.tableCell_3}>
+                <View style={[styles.tableCell_4, styles.alignCenter]}>
                   <Text>{item.quantity}</Text>
                 </View>
 
-                <View style={styles.tableCell_3}>
-                  <Text>{item.price}</Text>
+                <View style={[styles.tableCell_4, styles.alignRight]}>
+                  <Text>{fCurrency(item.price)}</Text>
+                </View>
+
+                <View style={[styles.tableCell_4, styles.alignCenter]}>
+                  <Text>{item.discount ? `${item.discount}%` : '-'}</Text>
                 </View>
 
                 <View style={[styles.tableCell_3, styles.alignRight]}>
-                  <Text>{fCurrency(item.price * item.quantity)}</Text>
+                  <Text>{fCurrency(item.price * (1 - item.discount / 100) * item.quantity)}</Text>
                 </View>
               </View>
             ))}
@@ -123,19 +128,7 @@ export default function InvoicePDF({ order }: Props) {
               <View style={styles.tableCell_2} />
               <View style={styles.tableCell_3} />
               <View style={styles.tableCell_3}>
-                <Text>Tạm tính</Text>
-              </View>
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{fCurrency(totalPrice + deliveryFee)}</Text>
-              </View>
-            </View>
-
-            <View style={[styles.tableRow, styles.noBorder]}>
-              <View style={styles.tableCell_1} />
-              <View style={styles.tableCell_2} />
-              <View style={styles.tableCell_3} />
-              <View style={styles.tableCell_3}>
-                <Text>Giảm giá</Text>
+                <Text>Đã giảm giá</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
                 <Text>{fCurrency(-discountPrice)}</Text>
@@ -147,10 +140,34 @@ export default function InvoicePDF({ order }: Props) {
               <View style={styles.tableCell_2} />
               <View style={styles.tableCell_3} />
               <View style={styles.tableCell_3}>
+                <Text>Tạm tính</Text>
+              </View>
+              <View style={[styles.tableCell_3, styles.alignRight]}>
+                <Text>{fCurrency(totalPrice)}</Text>
+              </View>
+            </View>
+
+            <View style={[styles.tableRow, styles.noBorder]}>
+              <View style={styles.tableCell_1} />
+              <View style={styles.tableCell_2} />
+              <View style={styles.tableCell_3} />
+              <View style={styles.tableCell_3}>
+                <Text>Phí vận chuyển</Text>
+              </View>
+              <View style={[styles.tableCell_3, styles.alignRight]}>
+                <Text>{fCurrency(deliveryFee)}</Text>
+              </View>
+            </View>
+
+            <View style={[styles.tableRow, styles.noBorder]}>
+              <View style={styles.tableCell_1} />
+              <View style={styles.tableCell_2} />
+              <View style={styles.tableCell_3} />
+              <View style={styles.tableCell_3}>
                 <Text style={styles.h4}>Tổng tiền</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text style={styles.h4}>{fCurrency(totalPrice)}</Text>
+                <Text style={styles.h4}>{fCurrency(totalPrice + deliveryFee)}</Text>
               </View>
             </View>
           </View>

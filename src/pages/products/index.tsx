@@ -107,7 +107,6 @@ export default function ProductsPage() {
         ...filter,
       }),
     keepPreviousData: true,
-    staleTime: Infinity,
   });
   const books = data?.data ?? [];
 

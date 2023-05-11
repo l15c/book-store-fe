@@ -64,7 +64,7 @@ export default function TableSelectedAction({
           }),
         }}
       >
-        Đã chọn {numSelected} sản phẩm
+        Đã chọn {numSelected}
       </Typography>
 
       {action && action}

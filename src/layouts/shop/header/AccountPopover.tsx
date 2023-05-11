@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getLinkImage } from 'src/utils/cloudinary';
 // next
 import { useRouter } from 'next/router';
 // @mui
@@ -87,7 +88,11 @@ export default function AccountPopover() {
         }}
       >
         <CustomAvatar
-          src="/assets/avatar_default.jpg" // user?.imageUrl ??
+          src={
+            user?.imageUrl
+              ? (getLinkImage(user.imageUrl, 'users') as string)
+              : '/assets/avatar_default.jpg'
+          } // user?.imageUrl ??
           alt={user?.fullName}
           name={user?.fullName}
         />

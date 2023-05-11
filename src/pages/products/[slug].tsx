@@ -25,6 +25,7 @@ import { ParsedUrlQuery } from 'querystring';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { addToCart } from 'src/redux/slices/cart';
 import { useAuthContext } from 'src/auth/useAuthContext';
+import { useQuery } from '@tanstack/react-query';
 
 // ----------------------------------------------------------------------
 
@@ -97,10 +98,17 @@ type Props = {
   book: IBook;
 };
 
-export default function ProductDetailsPage({ book }: Props) {
+export default function ProductDetailsPage({ book: _book }: Props) {
   const { themeStretch } = useSettingsContext();
   const { user } = useAuthContext();
   const dispatch = useDispatch();
+
+  const { data: book, isFetching } = useQuery({
+    initialData: _book,
+    queryKey: ['products', _book.slug],
+    queryFn: () => bookApi.getBySlug(_book.slug),
+    keepPreviousData: true,
+  });
 
   const cart = useSelector((e) => e.cart);
 
@@ -125,8 +133,8 @@ export default function ProductDetailsPage({ book }: Props) {
       },
       {
         value: 'review',
-        label: `Đánh giá (${(book.review || []).length})`,
-        component: <ProductDetailsReview reviews={book.review || []} />,
+        label: `Đánh giá (${(book?.review || []).length})`,
+        component: <ProductDetailsReview book={book} />,
       },
     ],
     [book]
@@ -148,7 +156,7 @@ export default function ProductDetailsPage({ book }: Props) {
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ px: { xs: 0, md: 2 } }}>
-        {book ? (
+        {!isFetching || book ? (
           <>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>

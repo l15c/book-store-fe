@@ -3,6 +3,7 @@ import { m } from 'framer-motion';
 // @mui
 import { alpha, styled, useTheme } from '@mui/material/styles';
 import { Box, LinearProgress, Stack } from '@mui/material';
+import { SxProps } from '@mui/system';
 //
 import Logo from '../logo';
 import { bgBlur } from '../../utils/cssStyles';
@@ -91,15 +92,28 @@ export default function LoadingScreen() {
   );
 }
 
-export function LoadingLinear({ maxWidth = 320 }: { maxWidth?: number | string }) {
+export function LoadingLinear({
+  enableScroll,
+  maxWidth = 320,
+  sx,
+}: {
+  enableScroll?: boolean;
+  maxWidth?: number | string;
+  sx?: SxProps;
+}) {
   const theme = useTheme();
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    if (!enableScroll) {
+      document.body.style.overflow = 'hidden';
 
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+    return () => {};
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -114,6 +128,7 @@ export function LoadingLinear({ maxWidth = 320 }: { maxWidth?: number | string }
         zIndex: 9999,
         position: 'absolute',
         ...bgBlur({ color: theme.palette.background.paper }),
+        ...sx,
       }}
     >
       <LinearProgress sx={{ width: 1, maxWidth }} />

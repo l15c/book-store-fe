@@ -1,4 +1,6 @@
 import * as Yup from 'yup';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,6 +18,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import reviewApi from 'src/api-client/review';
 // components
 import FormProvider, { RHFTextField } from '../../../../components/hook-form';
 
@@ -23,28 +26,28 @@ import FormProvider, { RHFTextField } from '../../../../components/hook-form';
 
 type FormValuesProps = {
   rating: number | string | null;
-  review: string;
-  name: string;
-  email: string;
+  comment: string;
 };
 
 interface Props extends DialogProps {
   onClose: VoidFunction;
+  bookId: number;
+  slug: string;
 }
 
-export default function ProductDetailsNewReviewForm({ onClose, ...other }: Props) {
+export default function ProductDetailsNewReviewForm({ onClose, slug, bookId, ...other }: Props) {
+  const queryClient = useQueryClient();
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const ReviewSchema = Yup.object().shape({
-    rating: Yup.mixed().required('Rating is required'),
-    review: Yup.string().required('Review is required'),
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    rating: Yup.mixed().required('Vui lòng đánh giá sản phẩm'),
+    comment: Yup.string().required('Vui lòng viết nhận xét'),
   });
 
   const defaultValues = {
     rating: null,
-    review: '',
-    name: '',
-    email: '',
+    comment: '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -59,12 +62,20 @@ export default function ProductDetailsNewReviewForm({ onClose, ...other }: Props
     formState: { errors, isSubmitting },
   } = methods;
 
-  const onSubmit = async (data: FormValuesProps) => {
+  const onSubmit = async ({ rating, comment }: FormValuesProps) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await reviewApi.create({
+        rating: Number(rating),
+        comment,
+        bookId,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['products', slug],
+        refetchType: 'all',
+      });
+      enqueueSnackbar('Gửi đánh giá thành công');
       reset();
       onClose();
-      console.log('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -76,13 +87,13 @@ export default function ProductDetailsNewReviewForm({ onClose, ...other }: Props
   };
 
   return (
-    <Dialog onClose={onClose} {...other}>
+    <Dialog onClose={onClose} fullWidth maxWidth="sm" {...other}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle> Add Review </DialogTitle>
+        <DialogTitle> Đánh giá sản phẩm </DialogTitle>
 
         <DialogContent>
           <Stack direction="row" flexWrap="wrap" alignItems="center" spacing={1.5}>
-            <Typography variant="body2">Your review about this product:</Typography>
+            <Typography variant="body2">Đánh giá về sản phẩm này:</Typography>
 
             <Controller
               name="rating"
@@ -93,20 +104,22 @@ export default function ProductDetailsNewReviewForm({ onClose, ...other }: Props
 
           {!!errors.rating && <FormHelperText error> {errors.rating?.message}</FormHelperText>}
 
-          <RHFTextField name="review" label="Review *" multiline rows={3} sx={{ mt: 3 }} />
-
-          <RHFTextField name="name" label="Name *" sx={{ mt: 3 }} />
-
-          <RHFTextField name="email" label="Email *" sx={{ mt: 3 }} />
+          <RHFTextField
+            name="comment"
+            label="Nhận xét sản phẩm *"
+            multiline
+            rows={3}
+            sx={{ mt: 3 }}
+          />
         </DialogContent>
 
         <DialogActions>
           <Button color="inherit" variant="outlined" onClick={onCancel}>
-            Cancel
+            Hủy
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Post review
+            Gửi đánh giá
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -15,6 +15,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import InvoiceDetails from 'src/sections/@shop/invoice/details';
 import { useQuery } from '@tanstack/react-query';
 import orderApi from 'src/api-client/order';
+import { LoadingLinear } from 'src/components/loading-screen/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,6 @@ export default function InvoiceDetailsPage() {
     queryKey: ['user', 'orders', id],
     queryFn: () => orderApi.getById(id as string),
     enabled: !!id,
-    staleTime: Infinity,
   });
 
   return (
@@ -43,6 +43,7 @@ export default function InvoiceDetailsPage() {
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>
+        {isFetching && <LoadingLinear />}
         <CustomBreadcrumbs
           links={[
             { name: 'Trang chủ', href: PATH_SHOP.root },

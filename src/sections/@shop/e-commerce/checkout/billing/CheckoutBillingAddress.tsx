@@ -26,7 +26,6 @@ export default function CheckoutBillingAddress({ onBackStep, onCreateBilling }: 
   const { data = [], isFetching } = useQuery({
     queryKey: ['user', 'address'],
     queryFn: () => addressApi.getList(),
-    staleTime: Infinity,
   });
 
   const isEmpty = data.length === 0;

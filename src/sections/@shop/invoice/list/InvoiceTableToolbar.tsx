@@ -1,37 +1,31 @@
 // @mui
-import { Stack, InputAdornment, TextField, MenuItem, Button } from '@mui/material';
+import { Stack, InputAdornment, TextField, Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '../../../../components/iconify';
 
 // ----------------------------------------------------------------------
 
-const INPUT_WIDTH = 160;
+const INPUT_WIDTH = 200;
 
 type Props = {
   filterName: string;
   isFiltered: boolean;
-  filterService: string;
-  optionsService: string[];
   filterEndDate: Date | null;
   onResetFilter: VoidFunction;
   filterStartDate: Date | null;
   onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onFilterService: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onFilterStartDate: (value: Date | null) => void;
   onFilterEndDate: (value: Date | null) => void;
 };
 
 export default function InvoiceTableToolbar({
-  filterName,
   isFiltered,
+  filterName,
   onFilterName,
   filterEndDate,
-  filterService,
   onResetFilter,
-  optionsService,
   filterStartDate,
-  onFilterService,
   onFilterEndDate,
   onFilterStartDate,
 }: Props) {
@@ -45,47 +39,18 @@ export default function InvoiceTableToolbar({
       }}
       sx={{ px: 2.5, py: 1.5 }}
     >
-      {/* <TextField
-        fullWidth
-        select
-        label="Service type"
-        value={filterService}
-        onChange={onFilterService}
-        SelectProps={{
-          MenuProps: {
-            PaperProps: {
-              sx: { maxHeight: 220 },
-            },
-          },
-        }}
-        sx={{
-          maxWidth: { md: INPUT_WIDTH },
-          textTransform: 'capitalize',
-        }}
-      >
-        {optionsService.map((option) => (
-          <MenuItem
-            key={option}
-            value={option}
-            sx={{
-              mx: 1,
-              borderRadius: 0.75,
-              typography: 'body2',
-              textTransform: 'capitalize',
-            }}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </TextField> */}
-
       <DatePicker
         label="Ngày bắt đầu"
         value={filterStartDate}
         onChange={onFilterStartDate}
+        dayOfWeekFormatter={(day) => day}
         renderInput={(params) => (
           <TextField
             {...params}
+            inputProps={{
+              ...params.inputProps,
+              placeholder: 'dd/mm/yyyy',
+            }}
             size="small"
             fullWidth
             sx={{
@@ -99,9 +64,14 @@ export default function InvoiceTableToolbar({
         label="Ngày kết thúc"
         value={filterEndDate}
         onChange={onFilterEndDate}
+        dayOfWeekFormatter={(day) => day}
         renderInput={(params) => (
           <TextField
             {...params}
+            inputProps={{
+              ...params.inputProps,
+              placeholder: 'dd/mm/yyyy',
+            }}
             size="small"
             fullWidth
             sx={{
@@ -116,7 +86,7 @@ export default function InvoiceTableToolbar({
         fullWidth
         value={filterName}
         onChange={onFilterName}
-        placeholder="Tìm kiếm tên người nhận hoặc ID đơn hàng..."
+        placeholder="Tên người nhận, số điện thoại, địa chỉ, mã đơn hàng,..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

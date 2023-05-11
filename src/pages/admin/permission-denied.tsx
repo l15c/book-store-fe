@@ -74,7 +74,7 @@ export default function PermissionDeniedPage() {
           </ToggleButton>
         </ToggleButtonGroup>
 
-        <RoleBasedGuard hasContent roles={[role]}>
+        <RoleBasedGuard hasContent roles={[1]}>
           <Box gap={3} display="grid" gridTemplateColumns="repeat(2, 1fr)">
             {[...Array(8)].map((_, index) => (
               <Card key={index}>

@@ -23,7 +23,7 @@ import {
 // routes
 import { PATH_ADMIN } from 'src/routes/paths';
 // utils
-import { fTimestamp } from 'src/utils/formatTime';
+import { fTimestampDate } from 'src/utils/formatTime';
 // _mock_
 import { _invoices } from 'src/_mock/arrays';
 // @types
@@ -537,8 +537,8 @@ function applyFilter({
   if (filterStartDate && filterEndDate) {
     inputData = inputData.filter(
       (invoice) =>
-        fTimestamp(invoice.createDate) >= fTimestamp(filterStartDate) &&
-        fTimestamp(invoice.createDate) <= fTimestamp(filterEndDate)
+        fTimestampDate(invoice.createDate) >= fTimestampDate(filterStartDate) &&
+        fTimestampDate(invoice.createDate) <= fTimestampDate(filterEndDate)
     );
   }
 

@@ -11,7 +11,6 @@ import {
   Card,
   Table,
   Stack,
-  Button,
   Tooltip,
   Divider,
   TableBody,
@@ -22,16 +21,15 @@ import {
 // routes
 import { PATH_SHOP } from 'src/routes/paths';
 // utils
-import { fTimestamp } from 'src/utils/formatTime';
+import { fTimestampDate } from 'src/utils/formatTime';
 // @types
-import { IInvoice } from 'src/@types/invoice';
+import { IOrder } from 'src/@types/order';
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import ConfirmDialog from 'src/components/confirm-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useSettingsContext } from 'src/components/settings';
 import {
@@ -43,31 +41,25 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  TableSkeleton,
+  TablePaginationActionsExtra,
 } from 'src/components/table';
 // sections
 import InvoiceAnalytic from 'src/sections/@shop/invoice/InvoiceAnalytic';
 import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@shop/invoice/list';
+import { GROUP_STATUS } from 'src/sections/@shop/invoice/constant';
 import { useQuery } from '@tanstack/react-query';
 import orderApi from 'src/api-client/order';
-import { IOrder } from 'src/@types/order';
+import { toNonAccentVietnamese as nonAccent } from 'src/utils/stringConverter';
 
 // ----------------------------------------------------------------------
 
-const SERVICE_OPTIONS = [
-  'all',
-  'full stack development',
-  'backend development',
-  'ui design',
-  'ui/ux design',
-  'front end development',
-];
-
 const TABLE_HEAD = [
-  { id: 'shipName', label: 'Tên người nhận', align: 'left' },
+  { id: 'shipName', label: 'Thông tin đơn hàng', align: 'left', width: 480, minWidth: 480 },
   { id: 'orderDate', label: 'Ngày đặt hàng', align: 'center' },
   { id: 'dayOfPayment', label: 'Ngày thanh toán', align: 'center' },
   { id: 'totalPrice', label: 'Tổng đơn hàng', align: 'center', width: 140 },
-  { id: 'status', label: 'Trạng thái', align: 'center' },
+  { id: 'status', label: 'Trạng thái', align: 'center', width: 180 },
 ];
 
 // ----------------------------------------------------------------------
@@ -92,7 +84,6 @@ export default function InvoiceIndexPage() {
     setPage,
     //
     selected,
-    setSelected,
     onSelectRow,
     onSelectAllRows,
     //
@@ -102,24 +93,14 @@ export default function InvoiceIndexPage() {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'orderDate', defaultOrder: 'desc' });
 
-  const [tableData, setTableData] = useState<IOrder[]>([]);
-
-  const { isFetching } = useQuery({
+  const { data: tableData = [], isFetching } = useQuery({
     queryKey: ['user', 'orders'],
     queryFn: () => orderApi.getList(),
-    staleTime: Infinity,
-    onSuccess(_data) {
-      setTableData(_data);
-    },
   });
 
   const [filterName, setFilterName] = useState('');
 
-  const [openConfirm, setOpenConfirm] = useState(false);
-
   const [filterStatus, setFilterStatus] = useState('all');
-
-  const [filterService, setFilterService] = useState('all');
 
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
 
@@ -129,76 +110,61 @@ export default function InvoiceIndexPage() {
     inputData: tableData,
     comparator: getComparator(order, orderBy),
     filterName,
-    filterService,
     filterStatus,
     filterStartDate,
     filterEndDate,
   });
 
-  const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   const denseHeight = dense ? 56 : 76;
 
   const isFiltered =
-    filterStatus !== 'all' ||
-    filterName !== '' ||
-    filterService !== 'all' ||
-    (!!filterStartDate && !!filterEndDate);
+    filterStatus !== 'all' || filterName !== '' || !!filterStartDate || !!filterEndDate;
 
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterStatus) ||
-    (!dataFiltered.length && !!filterService) ||
-    (!dataFiltered.length && !!filterEndDate) ||
-    (!dataFiltered.length && !!filterStartDate);
+  const isNotFound = dataFiltered.length === 0;
+  // (!dataFiltered.length && !!filterName) ||
+  // (!dataFiltered.length && !!filterStatus) ||
+  // (!dataFiltered.length && !!filterEndDate) ||
+  // (!dataFiltered.length && !!filterStartDate);
 
-  const getLengthByStatus = (status: string) =>
-    tableData.filter((item) => item.status === status).length;
+  const getLengthByColorGroup = (color: string) =>
+    tableData.filter((item) => GROUP_STATUS[color].includes(item.status)).length;
 
-  const getTotalPriceByStatus = (status: string) =>
+  const getTotalPriceByColorGroup = (color: string) =>
     sumBy(
-      tableData.filter((item) => item.status === status),
-      'totalPrice'
+      tableData.filter((item) => GROUP_STATUS[color].includes(item.status)),
+      (e) => Math.round((e.totalPrice + e.deliveryFee) / 1000) * 1000
     );
 
-  const getPercentByStatus = (status: string) =>
-    (getLengthByStatus(status) / tableData.length) * 100;
+  const getPercentByColorGroup = (color: string) =>
+    (getLengthByColorGroup(color) / tableData.length) * 100 || 0;
 
   const TABS = [
     { value: 'all', label: 'Tất cả', color: 'info', count: tableData.length },
     {
-      value: 'Giao hàng thành công',
+      value: 'success',
       label: 'Đã hoàn thành',
       color: 'success',
-      count: getLengthByStatus('Giao hàng thành công'),
+      count: getLengthByColorGroup('success'),
     },
     {
-      value: 'Đang giao hàng',
+      value: 'warning',
       label: 'Đang giao hàng',
       color: 'warning',
-      count: getLengthByStatus('Đang giao hàng'),
+      count: getLengthByColorGroup('warning'),
     },
     {
-      value: 'Giao hàng thất bại',
-      label: 'Giao hàng thất bại',
+      value: 'error',
+      label: 'Thất bại',
       color: 'error',
-      count: getLengthByStatus('Giao hàng thất bại'),
+      count: getLengthByColorGroup('error'),
     },
     {
-      value: 'Đang xử lý',
+      value: 'default',
       label: 'Đang xử lý',
       color: 'default',
-      count: getLengthByStatus('Đang xử lý'),
+      count: getLengthByColorGroup('default'),
     },
   ] as const;
-
-  const handleOpenConfirm = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleCloseConfirm = () => {
-    setOpenConfirm(false);
-  };
 
   const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
     setPage(0);
@@ -210,50 +176,13 @@ export default function InvoiceIndexPage() {
     setFilterName(event.target.value);
   };
 
-  const handleFilterService = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(0);
-    setFilterService(event.target.value);
-  };
-
-  const handleDeleteRow = (id: number) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-
-    if (page > 0) {
-      if (dataInPage.length < 2) {
-        setPage(page - 1);
-      }
-    }
-  };
-
-  const handleDeleteRows = (selectedRows: (number | string)[]) => {
-    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
-
-    if (page > 0) {
-      if (selectedRows.length === dataInPage.length) {
-        setPage(page - 1);
-      } else if (selectedRows.length === dataFiltered.length) {
-        setPage(0);
-      } else if (selectedRows.length > dataInPage.length) {
-        const newPage = Math.ceil((tableData.length - selectedRows.length) / rowsPerPage) - 1;
-        setPage(newPage);
-      }
-    }
-  };
-
-  const handleEditRow = (id: number) => {};
-
-  const handleViewRow = (id: number) => {
+  const handleViewRow = (id: string) => {
     push(PATH_SHOP.order.detail(id));
   };
 
   const handleResetFilter = () => {
     setFilterName('');
     setFilterStatus('all');
-    setFilterService('all');
     setFilterEndDate(null);
     setFilterStartDate(null);
   };
@@ -287,44 +216,47 @@ export default function InvoiceIndexPage() {
               <InvoiceAnalytic
                 title="Tất cả"
                 total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, 'totalPrice')}
+                percent={tableData.length === 0 && !isFiltered ? 0 : 100}
+                price={sumBy(
+                  tableData,
+                  (e) => Math.round((e.totalPrice + e.deliveryFee) / 1000) * 1000
+                )}
                 icon="ic:round-receipt"
                 color={theme.palette.info.main}
               />
 
               <InvoiceAnalytic
                 title="Hoàn thành"
-                total={getLengthByStatus('Giao hàng thành công')}
-                percent={getPercentByStatus('Giao hàng thành công')}
-                price={getTotalPriceByStatus('Giao hàng thành công')}
+                total={getLengthByColorGroup('success')}
+                percent={getPercentByColorGroup('success')}
+                price={getTotalPriceByColorGroup('success')}
                 icon="eva:checkmark-circle-2-fill"
                 color={theme.palette.success.main}
               />
 
               <InvoiceAnalytic
                 title="Đang giao hàng"
-                total={getLengthByStatus('Đang giao hàng')}
-                percent={getPercentByStatus('Đang giao hàng')}
-                price={getTotalPriceByStatus('Đang giao hàng')}
+                total={getLengthByColorGroup('warning')}
+                percent={getPercentByColorGroup('warning')}
+                price={getTotalPriceByColorGroup('warning')}
                 icon="eva:clock-fill"
                 color={theme.palette.warning.main}
               />
 
               <InvoiceAnalytic
                 title="Thất bại"
-                total={getLengthByStatus('Giao hàng thất bại')}
-                percent={getPercentByStatus('Giao hàng thất bại')}
-                price={getTotalPriceByStatus('Giao hàng thất bại')}
+                total={getLengthByColorGroup('error')}
+                percent={getPercentByColorGroup('error')}
+                price={getTotalPriceByColorGroup('error')}
                 icon="eva:bell-fill"
                 color={theme.palette.error.main}
               />
 
               <InvoiceAnalytic
                 title="Đang xử lý"
-                total={getLengthByStatus('Đang xử lý')}
-                percent={getPercentByStatus('Đang xử lý')}
-                price={getTotalPriceByStatus('Đang xử lý')}
+                total={getLengthByColorGroup('default')}
+                percent={getPercentByColorGroup('default')}
+                price={getTotalPriceByColorGroup('default')}
                 icon="eva:file-fill"
                 color={theme.palette.text.secondary}
               />
@@ -360,13 +292,10 @@ export default function InvoiceIndexPage() {
           <InvoiceTableToolbar
             isFiltered={isFiltered}
             filterName={filterName}
-            filterService={filterService}
             filterEndDate={filterEndDate}
             onFilterName={handleFilterName}
-            optionsService={SERVICE_OPTIONS}
             onResetFilter={handleResetFilter}
             filterStartDate={filterStartDate}
-            onFilterService={handleFilterService}
             onFilterStartDate={(newValue) => {
               setFilterStartDate(newValue);
             }}
@@ -388,19 +317,13 @@ export default function InvoiceIndexPage() {
               }
               action={
                 <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="ic:round-send" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
+                  <Tooltip title="Tải xuống">
                     <IconButton color="primary">
                       <Iconify icon="eva:download-outline" />
                     </IconButton>
                   </Tooltip>
 
-                  <Tooltip title="Print">
+                  <Tooltip title="In đơn hàng">
                     <IconButton color="primary">
                       <Iconify icon="eva:printer-fill" />
                     </IconButton>
@@ -428,26 +351,28 @@ export default function InvoiceIndexPage() {
                 />
 
                 <TableBody>
-                  {dataFiltered
+                  {(isFetching ? [...Array(rowsPerPage)] : dataFiltered)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <InvoiceTableRow
-                        key={row.id}
-                        row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
+                    .map((row, index) =>
+                      row ? (
+                        <InvoiceTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                        />
+                      ) : (
+                        <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                      )
+                    )}
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableNoData isNotFound={isNotFound} />
+                  <TableNoData isNotFound={!isFetching && isNotFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -462,6 +387,7 @@ export default function InvoiceIndexPage() {
             //
             dense={dense}
             onChangeDense={onChangeDense}
+            ActionsComponent={TablePaginationActionsExtra}
           />
         </Card>
       </Container>
@@ -476,7 +402,6 @@ function applyFilter({
   comparator,
   filterName,
   filterStatus,
-  filterService,
   filterStartDate,
   filterEndDate,
 }: {
@@ -484,7 +409,6 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filterName: string;
   filterStatus: string;
-  filterService: string;
   filterStartDate: Date | null;
   filterEndDate: Date | null;
 }) {
@@ -500,25 +424,35 @@ function applyFilter({
 
   if (filterName) {
     inputData = inputData.filter(
-      (order) => order.shipName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (order) =>
+        nonAccent(order.shipName.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !==
+          -1 ||
+        nonAccent(order.displayAddress.toLowerCase()).indexOf(
+          nonAccent(filterName.toLowerCase())
+        ) !== -1 ||
+        nonAccent(order.shipPhone.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !==
+          -1 ||
+        nonAccent(order.id.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !== -1
     );
   }
 
   if (filterStatus !== 'all') {
-    inputData = inputData.filter((order) => order.status === filterStatus);
+    inputData = inputData.filter((order) => GROUP_STATUS[filterStatus].includes(order.status));
   }
-
-  // if (filterService !== 'all') {
-  //   inputData = inputData.filter((order) =>
-  //     order.items.some((c) => c.service === filterService)
-  //   );
-  // }
 
   if (filterStartDate && filterEndDate) {
     inputData = inputData.filter(
       (order) =>
-        fTimestamp(order.orderDate) >= fTimestamp(filterStartDate) &&
-        fTimestamp(order.orderDate) <= fTimestamp(filterEndDate)
+        fTimestampDate(order.orderDate) >= fTimestampDate(filterStartDate) &&
+        fTimestampDate(order.orderDate) <= fTimestampDate(filterEndDate)
+    );
+  } else if (filterStartDate) {
+    inputData = inputData.filter(
+      (order) => fTimestampDate(order.orderDate) >= fTimestampDate(filterStartDate)
+    );
+  } else if (filterEndDate) {
+    inputData = inputData.filter(
+      (order) => fTimestampDate(order.orderDate) <= fTimestampDate(filterEndDate)
     );
   }
 

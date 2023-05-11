@@ -72,6 +72,7 @@ const navConfig = [
         title: 'Đơn hàng',
         path: PATH_ADMIN.invoice.root,
         icon: ICONS.invoice,
+        roles: [6],
       },
 
       // USER

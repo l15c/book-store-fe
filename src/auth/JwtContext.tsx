@@ -99,6 +99,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const user = await customerApi.getProfile();
 
       if (user) {
+        const permissions: { [key: string]: string[] } = {
+          view: [],
+          create: [],
+          update: [],
+          delete: [],
+        };
+        (user.permissionName ?? []).forEach((e) => {
+          const arr = e.split('.');
+          const key = arr.pop()!;
+          permissions[key] = permissions[key].concat(arr.at(-2)!.split('-'));
+        });
+
         dispatch({
           type: Types.INITIAL,
           payload: {

@@ -1,10 +1,23 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import sumBy from 'lodash/sumBy';
 import groupBy from 'lodash/groupBy';
+import { useQuery } from '@tanstack/react-query';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import { PATH_AUTH } from 'src/routes/paths';
 // @mui
-import { Divider, Typography, Rating, Button, LinearProgress, Stack, Box } from '@mui/material';
+import {
+  Divider,
+  Typography,
+  Rating,
+  Button,
+  LinearProgress,
+  Stack,
+  Box,
+  Link,
+} from '@mui/material';
 // @types
-import { IReview } from 'src/@types/book';
+import { IBook } from 'src/@types/book';
 // utils
 import { fShortenNumber } from '../../../../utils/formatNumber';
 // components
@@ -16,10 +29,19 @@ import ProductDetailsReviewNewDialog from './ProductDetailsNewReviewForm';
 // ----------------------------------------------------------------------
 
 type Props = {
-  reviews: IReview[];
+  book: IBook;
 };
 
-export default function ProductDetailsReview({ reviews }: Props) {
+export default function ProductDetailsReview({ book }: Props) {
+  const { user } = useAuthContext();
+  const { push, asPath } = useRouter();
+
+  const reviews = book.review ?? [];
+
+  const { isFetching } = useQuery({
+    queryKey: ['products', book.slug],
+  });
+
   const totalReview = reviews.length;
   const totalRating = reviews.reduce((a, b) => a + b.rating, 0) / totalReview || 0;
   const [openReview, setOpenReview] = useState(false);
@@ -84,7 +106,7 @@ export default function ProductDetailsReview({ reviews }: Props) {
             borderRight: (theme) => ({ md: `dashed 1px ${theme.palette.divider}` }),
           }}
         >
-          {ratings.map((rating) => (
+          {ratings.reverse().map((rating) => (
             <ProgressItem key={rating.name} star={rating} total={totalReview} />
           ))}
         </Stack>
@@ -97,23 +119,38 @@ export default function ProductDetailsReview({ reviews }: Props) {
             pb: { xs: 5, md: 0 },
           }}
         >
-          <Button
-            color="primary"
-            size="large"
-            onClick={handleOpenReview}
-            variant="outlined"
-            startIcon={<Iconify icon="eva:edit-fill" />}
-          >
-            Viết đánh giá sản phẩm
-          </Button>
+          {user ? (
+            <Button
+              color="primary"
+              size="large"
+              onClick={handleOpenReview}
+              variant="outlined"
+              startIcon={<Iconify icon="eva:edit-fill" />}
+            >
+              Viết đánh giá sản phẩm
+            </Button>
+          ) : (
+            <Typography>
+              Vui lòng&nbsp;
+              <Link sx={{ cursor: 'pointer' }} onClick={() => push(PATH_AUTH.login, asPath)}>
+                đăng nhập
+              </Link>
+              &nbsp;để tiếp tục
+            </Typography>
+          )}
         </Stack>
       </Box>
 
       <Divider />
 
-      <ProductDetailsReviewList reviews={reviews} />
+      <ProductDetailsReviewList loading={isFetching} reviews={reviews} />
 
-      <ProductDetailsReviewNewDialog open={openReview} onClose={handleCloseReview} />
+      <ProductDetailsReviewNewDialog
+        open={openReview}
+        onClose={handleCloseReview}
+        bookId={book.id}
+        slug={book.slug}
+      />
     </>
   );
 }

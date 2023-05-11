@@ -37,6 +37,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 // @mui
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { vi } from 'date-fns/locale';
 // redux
 import { store } from '../redux/store';
 // utils
@@ -70,7 +71,10 @@ interface MyAppProps extends AppProps {
 export default function MyApp(props: MyAppProps) {
   const { Component, pageProps, emotionCache = clientSideEmotionCache } = props;
   const [queryClient] = useState(
-    () => new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } })
+    () =>
+      new QueryClient({
+        defaultOptions: { queries: { refetchOnWindowFocus: false, staleTime: Infinity } },
+      })
   );
   const getLayout = Component.getLayout ?? ((page) => page);
 
@@ -85,7 +89,7 @@ export default function MyApp(props: MyAppProps) {
           <Hydrate state={pageProps.dehydratedState}>
             <ReactQueryDevtools initialIsOpen={false} />
             <ReduxProvider store={store}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
                 <SettingsProvider>
                   <MotionLazyContainer>
                     <ThemeProvider>

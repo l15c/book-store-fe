@@ -12,29 +12,43 @@ import { useAuthContext } from './useAuthContext';
 
 type RoleBasedGuardProp = {
   hasContent?: boolean;
-  roles?: string[];
+  excludes?: boolean;
+  roles?: number[];
+  permissions?: string[];
+  views?: string[];
   children: React.ReactNode;
 };
 
-export default function RoleBasedGuard({ hasContent, roles, children }: RoleBasedGuardProp) {
+export default function RoleBasedGuard({
+  hasContent,
+  excludes,
+  roles,
+  views,
+  permissions,
+  children,
+}: RoleBasedGuardProp) {
   // Logic here to get current user role
   const { user } = useAuthContext();
 
   // const currentRole = 'user';
-  const currentRole = user?.roleId.toString() ?? ''; // admin;
+  const currentRole = user?.roleId; // admin;
 
-  if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
+  if (
+    currentRole &&
+    typeof roles !== 'undefined' &&
+    (excludes ? roles.includes(currentRole) : !roles.includes(currentRole))
+  ) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>
           <Typography variant="h3" paragraph>
-            Permission Denied
+            Yêu cầu truy cập bị từ chối
           </Typography>
         </m.div>
 
         <m.div variants={varBounce().in}>
           <Typography sx={{ color: 'text.secondary' }}>
-            You do not have permission to access this page
+            Bạn không có quyền truy cập trang này
           </Typography>
         </m.div>
 

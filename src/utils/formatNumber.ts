@@ -9,7 +9,7 @@ export function fNumber(number: InputValue) {
 }
 
 export function fCurrency(number: InputValue) {
-  const format = number ? numeral(number).format('0,0') : '';
+  const format = number ? numeral(Math.round(Number(number) / 1000) * 1000).format('0,0') : '';
 
   return `${result(format).replace(/,/g, '.') || 0}đ`;
 }

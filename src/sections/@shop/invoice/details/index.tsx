@@ -23,6 +23,7 @@ import Label from '../../../../components/label';
 import Scrollbar from '../../../../components/scrollbar';
 //
 import InvoiceToolbar from './InvoiceToolbar';
+import { COLOR_STATUS } from '../constant';
 
 // ----------------------------------------------------------------------
 
@@ -51,16 +52,13 @@ export default function InvoiceDetails({ order }: Props) {
     discountPrice,
     displayAddress,
     orderDetails = [],
-    payType,
     shipNote,
     shipPhone,
     id,
-    isPay,
     orderDate,
     shipName,
     status,
   } = order;
-
   return (
     <>
       <InvoiceToolbar order={order} />
@@ -75,18 +73,13 @@ export default function InvoiceDetails({ order }: Props) {
             <Box sx={{ textAlign: { sm: 'right' } }}>
               <Label
                 variant="soft"
-                color={
-                  (status === 'Giao hàng thành công' && 'success') ||
-                  (status === 'Đang giao hàng' && 'warning') ||
-                  (status === 'Giao hàng thất bại' && 'error') ||
-                  'default'
-                }
-                sx={{ textTransform: 'uppercase', mb: 1 }}
+                color={COLOR_STATUS[status] || 'default'}
+                sx={{ textTransform: 'uppercase', mb: 1, p: 2 }}
               >
                 {status}
               </Label>
 
-              <Typography variant="h6">{`Mã đơn hàng: ${id}`}</Typography>
+              <Typography variant="body2">{`Mã đơn hàng: ${id}`}</Typography>
             </Box>
           </Grid>
 
@@ -95,11 +88,35 @@ export default function InvoiceDetails({ order }: Props) {
               Thông tin người nhận
             </Typography>
 
-            <Typography variant="body2">{shipName}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Tên người nhận:&nbsp;
+              </Typography>
+              <b>{shipName}</b>
+            </Typography>
 
-            <Typography variant="body2">{displayAddress}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                <Typography variant="body2" component="span" color="text.secondary">
+                  Số điện thoại:&nbsp;
+                </Typography>
+              </Typography>
+              {shipPhone}
+            </Typography>
 
-            <Typography variant="body2">Số điện thoại: {shipPhone}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Địa chỉ:&nbsp;
+              </Typography>
+              {displayAddress}
+            </Typography>
+
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Ghi chú:&nbsp;
+              </Typography>
+              {shipNote}
+            </Typography>
           </Grid>
 
           <Grid item xs={12} sm={3} sx={{ mb: 5 }}>
@@ -135,9 +152,10 @@ export default function InvoiceDetails({ order }: Props) {
 
                   <TableCell align="left">Tên sản phẩm</TableCell>
 
-                  <TableCell align="left">Số lượng</TableCell>
+                  <TableCell align="center">Số lượng</TableCell>
 
                   <TableCell align="right">Đơn giá</TableCell>
+                  <TableCell align="center">Giảm giá</TableCell>
 
                   <TableCell align="right">Thành tiền</TableCell>
                 </TableRow>
@@ -159,33 +177,22 @@ export default function InvoiceDetails({ order }: Props) {
                       </Box>
                     </TableCell>
 
-                    <TableCell align="left">{row.quantity}</TableCell>
+                    <TableCell align="center">{row.quantity}</TableCell>
 
                     <TableCell align="right">{fCurrency(row.price)}</TableCell>
-
-                    <TableCell align="right">{fCurrency(row.price * row.quantity)}</TableCell>
+                    <TableCell align="center">{row.discount ? `${row.discount}%` : '-'}</TableCell>
+                    <TableCell align="right">
+                      {fCurrency(row.price * (1 - row.discount / 100) * row.quantity)}
+                    </TableCell>
                   </TableRow>
                 ))}
 
                 <StyledRowResult>
-                  <TableCell colSpan={3} />
+                  <TableCell colSpan={4} />
 
                   <TableCell align="right" sx={{ typography: 'body1' }}>
                     <Box sx={{ mt: 2 }} />
-                    Tạm tính
-                  </TableCell>
-
-                  <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
-                    <Box sx={{ mt: 2 }} />
-                    {fCurrency(totalPrice - deliveryFee)}
-                  </TableCell>
-                </StyledRowResult>
-
-                <StyledRowResult>
-                  <TableCell colSpan={3} />
-
-                  <TableCell align="right" sx={{ typography: 'body1' }}>
-                    Giảm giá
+                    Đã giảm giá
                   </TableCell>
 
                   <TableCell
@@ -193,19 +200,44 @@ export default function InvoiceDetails({ order }: Props) {
                     width={120}
                     sx={{ color: 'error.main', typography: 'body1' }}
                   >
-                    {discountPrice && fCurrency(-discountPrice)}
+                    <Box sx={{ mt: 2 }} />
+                    {discountPrice && fCurrency(discountPrice)}
                   </TableCell>
                 </StyledRowResult>
 
                 <StyledRowResult>
-                  <TableCell colSpan={3} />
+                  <TableCell colSpan={4} />
+
+                  <TableCell align="right" sx={{ typography: 'body1' }}>
+                    Tạm tính
+                  </TableCell>
+
+                  <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
+                    {fCurrency(totalPrice)}
+                  </TableCell>
+                </StyledRowResult>
+
+                <StyledRowResult>
+                  <TableCell colSpan={4} />
+
+                  <TableCell align="right" sx={{ typography: 'body1' }}>
+                    Phí vận chuyển
+                  </TableCell>
+
+                  <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
+                    {deliveryFee && fCurrency(deliveryFee)}
+                  </TableCell>
+                </StyledRowResult>
+
+                <StyledRowResult>
+                  <TableCell colSpan={4} />
 
                   <TableCell align="right" sx={{ typography: 'h6' }}>
                     Tổng tiền
                   </TableCell>
 
                   <TableCell align="right" width={140} sx={{ typography: 'h6' }}>
-                    {fCurrency(totalPrice)}
+                    {fCurrency(totalPrice + deliveryFee)}
                   </TableCell>
                 </StyledRowResult>
               </TableBody>

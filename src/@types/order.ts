@@ -14,12 +14,12 @@ export type IOrderDetail = {
 };
 
 export type IOrder = {
-  id: number;
+  id: string;
   orderDate: string;
   shipName: string;
   shipPhone: string;
   shipNote: string;
-  displayAddress: number;
+  displayAddress: string;
   deliveryFee: number;
   discountPrice: number;
   totalPrice: number;

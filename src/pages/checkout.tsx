@@ -11,7 +11,6 @@ import ShopLayout from 'src/layouts/shop/ShopLayout';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
-  resetCart,
   getCart,
   deleteCart,
   increaseQuantity,

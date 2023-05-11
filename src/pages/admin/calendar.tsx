@@ -17,7 +17,7 @@ import { getEvents, createEvent, updateEvent, deleteEvent } from 'src/redux/slic
 // routes
 import { PATH_ADMIN } from 'src/routes/paths';
 // utils
-import { fTimestamp } from 'src/utils/formatTime';
+import { fTimestampDate } from 'src/utils/formatTime';
 // hooks
 import useResponsive from 'src/hooks/useResponsive';
 // @types
@@ -412,8 +412,8 @@ function applyFilter({
   if (filterStartDate && filterEndDate && !isError) {
     inputData = inputData.filter(
       (event: EventInput) =>
-        fTimestamp(event.start as Date) >= fTimestamp(filterStartDate) &&
-        fTimestamp(event.end as Date) <= fTimestamp(filterEndDate)
+        fTimestampDate(event.start as Date) >= fTimestampDate(filterStartDate) &&
+        fTimestampDate(event.end as Date) <= fTimestampDate(filterEndDate)
     );
   }
 

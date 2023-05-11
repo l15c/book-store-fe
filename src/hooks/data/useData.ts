@@ -9,7 +9,7 @@ import genresApi from '../../api-client/genre';
 import publisherApi from '../../api-client/publisher';
 
 export default function useData(enabled: boolean = true) {
-  const commonOptions = { staleTime: Infinity, enabled };
+  const commonOptions = { enabled };
 
   // -------------------------------- QUERIES --------------------------------
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 // @mui
+import { LoadingLinear } from 'src/components/loading-screen/LoadingScreen';
 import { Stack, Rating, Avatar, Pagination, Typography } from '@mui/material';
 // @types
 import { IReview } from 'src/@types/book';
@@ -13,11 +14,12 @@ import Iconify from '../../../../components/iconify';
 // ----------------------------------------------------------------------
 
 type Props = {
+  loading: boolean;
   reviews: IReview[];
 };
 
 const PAGE_SIZE = 8;
-export default function ProductDetailsReviewList({ reviews }: Props) {
+export default function ProductDetailsReviewList({ loading, reviews }: Props) {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -25,8 +27,11 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
       .getElementById('list-review')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
   }, [page]);
+
   if (reviews.length === 0) return null;
-  return (
+  return loading ? (
+    <LoadingLinear enableScroll sx={{ position: 'unset', height: 240 }} />
+  ) : (
     <>
       <Stack
         id="list-review"
@@ -59,16 +64,16 @@ export default function ProductDetailsReviewList({ reviews }: Props) {
           mr: { md: 5 },
         }}
       >
-        (
-        <Pagination
-          count={Math.ceil(reviews.length / PAGE_SIZE)}
-          page={page + 1}
-          onChange={(e, p) => setPage(p - 1)}
-          showLastButton
-          showFirstButton
-          boundaryCount={2}
-        />
-        )
+        {Math.ceil(reviews.length / PAGE_SIZE) > 1 && (
+          <Pagination
+            count={Math.ceil(reviews.length / PAGE_SIZE)}
+            page={page + 1}
+            onChange={(e, p) => setPage(p - 1)}
+            showLastButton
+            showFirstButton
+            boundaryCount={2}
+          />
+        )}
       </Stack>
     </>
   );

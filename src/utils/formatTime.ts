@@ -16,6 +16,10 @@ export function fDateTime(date: InputValue, newFormat?: string) {
   return date ? format(new Date(date), fm) : '';
 }
 
+export function fTimestampDate(date: InputValue) {
+  return date ? getTime(new Date(date).setHours(0, 0, 0, 0)) : '';
+}
+
 export function fTimestamp(date: InputValue) {
   return date ? getTime(new Date(date)) : '';
 }

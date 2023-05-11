@@ -89,21 +89,18 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
   const { data: provinces = [], isFetching: pLoading } = useQuery({
     queryKey: ['province', 'all'],
     queryFn: () => addressApi.getProvinces(),
-    staleTime: Infinity,
   });
 
   const { data: districts = [], isFetching: dLoading } = useQuery({
     queryKey: ['province', 'district', provinceId],
     queryFn: () => addressApi.getDistrict(provinceId!),
     enabled: !!provinceId,
-    staleTime: Infinity,
   });
 
   const { data: wards = [], isFetching: wLoading } = useQuery({
     queryKey: ['province', 'ward', districtId],
     queryFn: () => addressApi.getWard(districtId!),
     enabled: !!districtId,
-    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -139,7 +136,6 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
 
         const res = await addressApi.create(body);
         onCreateBilling(res);
-
         queryClient.invalidateQueries({
           queryKey: ['user', 'address'],
           refetchType: 'all',
