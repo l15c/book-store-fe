@@ -344,7 +344,7 @@ export default function InvoiceIndexPage() {
                   onSelectAllRows={(checked) =>
                     onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      dataFiltered.map((row) => row.id)
                     )
                   }
                   sx={{ whiteSpace: 'nowrap' }}

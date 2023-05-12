@@ -176,9 +176,9 @@ export default function InvoicePDF({ order }: Props) {
         <View style={[styles.gridContainer, styles.footer]}>
           <View style={styles.col8} />
 
-          <View style={[styles.col4, styles.alignRight]}>
+          <View style={[styles.col6, styles.alignRight]}>
             <Text style={styles.subtitle2}>Bạn cần trợ giúp?</Text>
-            <Text>Liên hệ: bookstore@gmail.com</Text>
+            <Text>Vui lòng liên hệ: bookstore.cn19clcb@gmail.com</Text>
           </View>
         </View>
       </Page>

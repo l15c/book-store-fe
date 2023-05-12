@@ -32,7 +32,7 @@ import Iconify from '../../../../components/iconify';
 import Label from '../../../../components/label';
 
 // ----------------------------------------------------------------------
-const socials = [
+export const socials = [
   {
     value: 'facebook',
     name: 'FaceBook',
@@ -97,7 +97,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 type LabelFlashSaleProps = { sold: number; quantity: number; endDate: string };
 
-function LabelFlashSale({ sold, quantity, endDate }: LabelFlashSaleProps) {
+export function LabelFlashSale({ sold, quantity, endDate }: LabelFlashSaleProps) {
   const { days, hours, minutes, seconds } = useCountdown(new Date(endDate));
 
   return (
@@ -234,6 +234,7 @@ export default function ProductDetailsSummary({
           pt: {
             md: 3.5,
           },
+          px: { xs: 1, md: 0 },
         },
       })}
       {...other}

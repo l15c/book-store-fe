@@ -20,7 +20,7 @@ import { ICartItem } from 'src/@types/book';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { IncrementerButton } from 'src/components/custom-input';
-import { getLinkImage } from 'src/utils/cloudinary';
+import { getUrlImage } from 'src/utils/cloudinary';
 import Label from 'src/components/label';
 import NextLink from 'next/link';
 import { PATH_SHOP } from 'src/routes/paths';
@@ -58,7 +58,7 @@ export default function CheckoutCartProduct({
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Image
           alt={name}
-          src={getLinkImage(cover, `products/${slug}`) as string}
+          src={getUrlImage.product(cover, slug)}
           sx={{ width: 64, height: 64, borderRadius: 1.5, mr: 2 }}
         />
 

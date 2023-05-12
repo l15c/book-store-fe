@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 // utils
 import { fCurrency } from 'src/utils/formatNumber';
-import { getLinkImage } from 'src/utils/cloudinary';
+import { getUrlImage } from 'src/utils/cloudinary';
 // @types
 import { IBookCompact } from 'src/@types/book';
 // components
@@ -118,7 +118,7 @@ export default function ProductTableRow({
               disabledEffect
               visibleByDefault
               alt={name}
-              src={getLinkImage(cover, `products/${slug}`) as string}
+              src={getUrlImage.product(cover, slug)}
               sx={{ borderRadius: 1.5, width: 48, height: 48 }}
             />
 

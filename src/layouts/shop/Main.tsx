@@ -7,7 +7,7 @@ import { HEADER } from '../../config-global';
 
 // ----------------------------------------------------------------------
 
-const SPACING = 8;
+const SPACING = 4;
 
 export default function Main({ children, sx, ...other }: BoxProps) {
   const isDesktop = useResponsive('up', 'lg');

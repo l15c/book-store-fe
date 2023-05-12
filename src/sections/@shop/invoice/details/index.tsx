@@ -253,7 +253,7 @@ export default function InvoiceDetails({ order }: Props) {
           <Grid item xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
             <Typography variant="subtitle2">Bạn cần trợ giúp?</Typography>
 
-            <Typography variant="body2">Liên hệ: bookstore@gmail.com</Typography>
+            <Typography variant="body2">Vui lòng liên hệ: bookstore.cn19clcb@gmail.com</Typography>
           </Grid>
         </Grid>
       </Card>

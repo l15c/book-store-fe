@@ -126,13 +126,14 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
 
       if (data.payment !== 'cash') push(res as string);
       else {
-        enqueueSnackbar('Tạo đơn hàng thành công');
         onNextStep();
       }
+      enqueueSnackbar('Tạo đơn hàng thành công');
       onGotoStep(0);
       onReset();
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Tạo đơn hàng không thành công');
     }
   };
 

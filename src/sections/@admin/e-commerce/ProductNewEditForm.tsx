@@ -31,7 +31,7 @@ import NumericFormatCustom from '../../../components/numeric-format-custom';
 import { toNonAccentVietnamese } from '../../../utils/stringConverter';
 import { cloudinaryApi } from '../../../api-client/cloudinary';
 import bookApi from '../../../api-client/book';
-import { getLinkImage } from '../../../utils/cloudinary';
+import { getUrlImage } from '../../../utils/cloudinary';
 import Iconify from '../../../components/iconify';
 import GenreNewEditForm from './GenreNewEditForm';
 import AuthorNewEditForm from './AuthorNewEditForm';
@@ -74,11 +74,9 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       name: currentProduct?.name || '',
       description: currentProduct?.description || '',
       publishedYear: currentProduct?.publishedYear || 0,
-      cover: currentProduct
-        ? (getLinkImage(currentProduct.cover, `products/${currentProduct.slug}`) as string)
-        : '',
+      cover: currentProduct ? getUrlImage.product(currentProduct.cover, currentProduct.slug) : '',
       images: currentProduct
-        ? (getLinkImage(currentProduct.images, `products/${currentProduct.slug}`) as string[])
+        ? getUrlImage.products(currentProduct.images, currentProduct.slug)
         : [],
       price: currentProduct?.price || 0,
       discount: currentProduct?.discount || 0,
@@ -157,7 +155,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       publisher,
     } = data;
     try {
-      const slug = paramCase(toNonAccentVietnamese(name.toLowerCase()));
+      const slug = currentProduct?.slug || paramCase(toNonAccentVietnamese(name.toLowerCase()));
 
       let coverUrl;
       if (typeof cover !== 'string') {
@@ -188,7 +186,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       const body = {
         name,
         description,
-
+        slug,
         cover: coverUrl,
         images: images as string[],
         price,
@@ -212,6 +210,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thành công!' : 'Cập nhật thành công!');
       push(PATH_ADMIN.eCommerce.list);
     } catch (error) {
+      enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thất bại' : 'Cập nhật thất bại');
       console.error(error);
     }
   };

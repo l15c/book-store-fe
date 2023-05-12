@@ -28,7 +28,7 @@ import { PATH_SHOP } from 'src/routes/paths';
 import { fCurrency } from 'src/utils/formatNumber';
 import { ICartItem } from 'src/@types/book';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
-import { getLinkImage } from 'src/utils/cloudinary';
+import { getUrlImage } from 'src/utils/cloudinary';
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/useAuthContext';
 
@@ -192,7 +192,7 @@ function CartProductPopover({
         </IconButton>
         <Image
           alt={name}
-          src={getLinkImage(cover, `products/${slug}`) as string}
+          src={getUrlImage.product(cover, slug)}
           sx={{ width: 75, height: 75, borderRadius: 1.5, mr: 2 }}
         />
         <Stack spacing={1} flex={1}>

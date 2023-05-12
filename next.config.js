@@ -7,4 +7,7 @@ module.exports = {
     CLOUDINARY_SIGNED_PRESET: 'bookstore_sign',
     CLOUDINARY_UNSIGNED_PRESET: 'img_upload_unsigned',
   },
+  images: {
+    domains: ['cdn0.fahasa.com'],
+  },
 };

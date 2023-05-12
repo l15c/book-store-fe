@@ -32,7 +32,7 @@ export default function FullScreenOptions() {
         },
       }}
     >
-      {fullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+      {fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
 
       <SvgColor
         src={`/assets/icons/setting/${fullscreen ? 'ic_exit_full_screen' : 'ic_full_screen'}.svg`}

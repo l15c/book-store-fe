@@ -5,7 +5,7 @@ import { Stack, Rating, Avatar, Pagination, Typography } from '@mui/material';
 // @types
 import { IReview } from 'src/@types/book';
 // utils
-import { getLinkImage } from 'src/utils/cloudinary';
+import { getUrlImage } from 'src/utils/cloudinary';
 import { fDate } from '../../../../utils/formatTime';
 // import { fShortenNumber } from '../../../../utils/formatNumber';
 // components
@@ -86,7 +86,7 @@ type ReviewItemProps = {
 };
 
 function ReviewItem({ review }: ReviewItemProps) {
-  const { fullName, comment, createdAt, imageUrl, isPurchased, rating, userId } = review;
+  const { fullName, comment, createdAt, imageUrl, isPurchased, rating } = review;
 
   // const [isHelpful, setIsHelpful] = useState(false);
 
@@ -111,7 +111,7 @@ function ReviewItem({ review }: ReviewItemProps) {
         }}
       >
         <Avatar
-          src={getLinkImage(imageUrl, `customers/${userId}`) as string}
+          src={getUrlImage.avatar(imageUrl)}
           sx={{
             width: { md: 48 },
             height: { md: 48 },

@@ -1,24 +1,18 @@
-import { m, useScroll } from 'framer-motion';
-import { useEffect, useState } from 'react';
-// next
-import NextLink from 'next/link';
+import { useScroll } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { IAds } from 'src/api-client/ads';
 // @mui
-import { styled, alpha, useTheme } from '@mui/material/styles';
-import { Button, Box, Container, Stack, Grid } from '@mui/material';
-// routes
-import { PATH_SHOP } from '../../routes/paths';
-// hooks
-import useResponsive from '../../hooks/useResponsive';
+import { Box, Container, Grid } from '@mui/material';
+import { alpha, styled, useTheme } from '@mui/material/styles';
 // utils
-import { textGradient, bgGradient } from '../../utils/cssStyles';
+import { getUrlImage } from 'src/utils/cloudinary';
+import { bgGradient } from '../../utils/cssStyles';
 // config
 import { HEADER } from '../../config-global';
-// theme
-import { secondaryFont } from '../../theme/typography';
 // components
-// import SvgColor from '../../components/svg-color';
-import Iconify from '../../components/iconify';
-import { MotionContainer, varFade } from '../../components/animate';
+import Image from '../../components/image/Image';
+import { MotionContainer } from '../../components/animate';
+import Carousel, { CarouselArrows, CarouselDots } from '../../components/carousel';
 
 // ----------------------------------------------------------------------
 
@@ -29,74 +23,15 @@ const StyledRoot = styled('div')(({ theme }) => ({
     imgUrl: '/assets/background/overlay_2.jpg',
   }),
   [theme.breakpoints.up('md')]: {
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100vh',
-    position: 'fixed',
+    top: HEADER.H_DESKTOP,
+    position: 'sticky',
   },
-}));
-
-const StyledDescription = styled('div')(({ theme }) => ({
-  maxWidth: 480,
-  margin: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: theme.spacing(15, 0),
-  height: '100%',
-}));
-
-const StyledGradientText = styled(m.h1)(({ theme }) => ({
-  ...textGradient(
-    `300deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.primary.main} 100%`
-  ),
-  backgroundSize: '400%',
-  fontFamily: secondaryFont.style.fontFamily,
-  fontSize: `${64 / 16}rem`,
-  textAlign: 'center',
-  lineHeight: 1,
-  padding: 0,
-  marginTop: 8,
-  marginBottom: 24,
-  letterSpacing: 8,
-  [theme.breakpoints.up('md')]: {
-    fontSize: `${96 / 16}rem`,
-  },
-}));
-
-const StyledEllipseTop = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  width: 480,
-  height: 480,
-  top: -80,
-  right: -80,
-  borderRadius: '50%',
-  filter: 'blur(100px)',
-  WebkitFilter: 'blur(100px)',
-  backgroundColor: alpha(theme.palette.primary.darker, 0.12),
-}));
-
-const StyledEllipseBottom = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  height: 400,
-  bottom: -200,
-  left: '10%',
-  right: '10%',
-  borderRadius: '50%',
-  filter: 'blur(100px)',
-  WebkitFilter: 'blur(100px)',
-  backgroundColor: alpha(theme.palette.primary.darker, 0.08),
 }));
 
 // ----------------------------------------------------------------------
 
-export default function HomeHero() {
-  const isDesktop = useResponsive('up', 'md');
-
+export default function HomeHero({ data }: { data: IAds[] }) {
   const { scrollYProgress } = useScroll();
-
   const [hide, setHide] = useState(false);
 
   useEffect(
@@ -112,188 +47,154 @@ export default function HomeHero() {
   );
 
   return (
-    <>
-      <StyledRoot sx={{ ...(hide && { opacity: 0 }) }}>
-        <Container component={MotionContainer} sx={{ height: 1 }}>
-          <Grid container spacing={10} sx={{ height: 1 }}>
-            <Grid item xs={12} md={6} sx={{ height: 1 }}>
-              <Description />
-            </Grid>
-
-            {isDesktop && (
-              <Grid item xs={12} md={6}>
-                <Content />
-              </Grid>
-            )}
-          </Grid>
-        </Container>
-
-        {isDesktop && <StyledEllipseTop />}
-
-        <StyledEllipseBottom />
-      </StyledRoot>
-
-      <Box sx={{ height: { md: '100vh' } }} />
-    </>
-  );
-}
-
-// ----------------------------------------------------------------------
-
-function Description() {
-  return (
-    <StyledDescription>
-      {/* <m.div variants={varFade().in}>
-        <Typography variant="h2" sx={{ textAlign: 'center' }}>
-          <br />
-        </Typography>
-      </m.div> */}
-
-      <m.div variants={varFade().in}>
-        <StyledGradientText
-          animate={{ backgroundPosition: '200% center' }}
-          transition={{
-            repeatType: 'reverse',
-            ease: 'linear',
-            duration: 20,
-            repeat: Infinity,
-          }}
-        >
-          BOOK STORE
-        </StyledGradientText>
-      </m.div>
-
-      {/* <m.div variants={varFade().in}>
-        <Typography variant="body2" sx={{ textAlign: 'center' }}>
-          Kho sách lớn cùng nhiều ưu đãi
-        </Typography>
-      </m.div>
-
-      <m.div variants={varFade().in}>
-        <Stack
-          spacing={0.75}
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          sx={{ my: 3 }}
-        >
-          <Rating readOnly value={4.95} precision={0.1} max={5} />
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            <Box component="strong" sx={{ mr: 0.5, color: 'text.primary' }}>
-              4.95/5
+    <StyledRoot sx={{ ...(hide && { opacity: 0 }) }}>
+      <Container component={MotionContainer} disableGutters sx={{ height: 1 }}>
+        <Grid container spacing={1}>
+          <Grid item xs={12} md={9}>
+            <Box sx={{ borderRadius: { xs: 0, md: 2 }, overflow: 'hidden' }}>
+              <CarouselHome data={data.slice(0, 4)} />
             </Box>
-            (99+ đánh giá)
-          </Typography>
-        </Stack>
-      </m.div> */}
+          </Grid>
 
-      <m.div variants={varFade().in}>
-        <Stack spacing={1.5} direction={{ xs: 'column-reverse', sm: 'row' }} sx={{ mb: 5 }}>
-          <Stack alignItems="center" spacing={2}>
-            <Button
-              component={NextLink}
-              href={PATH_SHOP.product.root}
-              color="inherit"
-              size="large"
-              variant="contained"
-              startIcon={<Iconify icon="eva:flash-fill" width={24} />}
-              sx={{
-                bgcolor: 'text.primary',
-                color: (theme) => (theme.palette.mode === 'light' ? 'common.white' : 'grey.800'),
-                '&:hover': {
-                  bgcolor: 'text.primary',
-                },
-              }}
-            >
-              Mua sắm ngay
-            </Button>
-          </Stack>
-        </Stack>
-      </m.div>
+          <Grid item md={3} display={{ xs: 'none', md: 'block' }}>
+            {data.slice(4, 5).map((e) => (
+              <Grid item xs={12}>
+                <Image
+                  src={getUrlImage.single(`${e.image}`, '/ads')}
+                  sx={{
+                    '& *': {
+                      backgroundSize: 'contain !important',
+                      objectFit: 'contain !important',
+                    },
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
 
-      {/* <Stack spacing={3} sx={{ textAlign: 'center', opacity: 0.48 }}>
-        <m.div variants={varFade().in}>
-          <Typography variant="overline">Available For</Typography>
-        </m.div>
-
-        <Stack spacing={2} direction="row" justifyContent="center">
-          {['sketch', 'figma', 'js', 'ts', 'nextjs'].map((platform) => (
-            <m.div key={platform} variants={varFade().in}>
-              <SvgColor src={`/assets/icons/platforms/ic_${platform}.svg`} />
-            </m.div>
+          {data.slice(7, 10).map((e) => (
+            <Grid key={e.id} item sm={3} display={{ xs: 'none', sm: 'block' }}>
+              <Image src={getUrlImage.single(`${e.image}`, '/ads')} />
+            </Grid>
           ))}
-        </Stack>
-      </Stack> */}
-    </StyledDescription>
+        </Grid>
+        {/* <CarouselAutoSlide
+          data={[
+            ...Array(8).fill({
+              title: 'Banner',
+              image:
+                '',
+            }),
+          ]}
+        /> */}
+      </Container>
+
+      {/* {isDesktop && <StyledEllipseTop />}
+
+        <StyledEllipseBottom /> */}
+    </StyledRoot>
   );
 }
 
-// ----------------------------------------------------------------------
+type CarouselItemProps = {
+  id: number;
+  image: string;
+};
 
-function Content() {
+type CarouselProps = {
+  data: IAds[];
+};
+
+function CarouselHome({ data }: CarouselProps) {
   const theme = useTheme();
+  const carouselRef = useRef<Carousel | null>(null);
 
-  const isLight = theme.palette.mode === 'light';
+  const carouselSettings = {
+    dots: true,
+    arrows: false,
+    autoplay: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    rtl: Boolean(theme.direction === 'rtl'),
+    ...CarouselDots({
+      rounded: true,
+      sx: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)' },
+    }),
+  };
 
-  const transition = {
-    repeatType: 'loop',
-    ease: 'linear',
-    duration: 60 * 4,
-    repeat: Infinity,
-  } as const;
+  const handlePrev = () => {
+    carouselRef.current?.slickPrev();
+  };
+
+  const handleNext = () => {
+    carouselRef.current?.slickNext();
+  };
 
   return (
-    <Stack
-      direction="row"
-      alignItems="flex-start"
+    <Box
       sx={{
+        cursor: 'pointer',
         height: 1,
-        overflow: 'hidden',
-        position: 'absolute',
-        mt: `${HEADER.H_DESKTOP}px`,
+        position: 'relative',
+        '& .slick-list': {
+          height: 1,
+          boxShadow: theme.customShadows.z16,
+        },
       }}
     >
-      <Stack component={m.div} variants={varFade().in} sx={{ width: 344, position: 'relative' }}>
-        <Box
-          component={m.img}
-          animate={{ y: ['0%', '100%'] }}
-          transition={transition}
-          alt={`hero_${isLight ? 'light' : 'dark'}_1`}
-          src={`/assets/images/home/hero_${isLight ? 'light' : 'dark'}_1.png`}
-          sx={{ position: 'absolute' }}
-        />
-        <Box
-          component={m.img}
-          animate={{ y: ['-100%', '0%'] }}
-          transition={transition}
-          alt={`hero_${isLight ? 'light' : 'dark'}_1`}
-          src={`/assets/images/home/hero_${isLight ? 'light' : 'dark'}_1.png`}
-          sx={{ position: 'absolute' }}
-        />
-      </Stack>
-
-      <Stack
-        component={m.div}
-        variants={varFade().in}
-        sx={{ width: 720, position: 'relative', ml: -2 }}
-      >
-        <Box
-          component={m.img}
-          animate={{ y: ['100%', '0%'] }}
-          transition={transition}
-          alt={`hero_${isLight ? 'light' : 'dark'}_2`}
-          src={`/assets/images/home/hero_${isLight ? 'light' : 'dark'}_2.png`}
-          sx={{ position: 'absolute' }}
-        />
-        <Box
-          component={m.img}
-          animate={{ y: ['0%', '-100%'] }}
-          transition={transition}
-          alt={`hero_${isLight ? 'light' : 'dark'}_2`}
-          src={`/assets/images/home/hero_${isLight ? 'light' : 'dark'}_2.png`}
-          sx={{ position: 'absolute' }}
-        />
-      </Stack>
-    </Stack>
+      <CarouselArrows filled shape="rounded" onNext={handleNext} onPrevious={handlePrev}>
+        <Carousel ref={carouselRef} {...carouselSettings}>
+          {data.map(({ id, image }) => (
+            <CarouselItem key={id} id={id} image={getUrlImage.single(`${image}`, `/ads`)} />
+          ))}
+        </Carousel>
+      </CarouselArrows>
+    </Box>
   );
 }
+
+// ----------------------------------------------------------------------
+
+function CarouselItem({ image, id }: CarouselItemProps) {
+  return <Image alt={`${id}`} src={image} ratio="21/9" sx={{ lineHeight: 0 }} />;
+}
+
+// function CarouselAutoSlide({ data }: CarouselProps) {
+//   const carouselRef = useRef<Carousel | null>(null);
+
+//   const settings = {
+//     infinite: true,
+//     slidesToShow: 3,
+//     slidesToScroll: 1,
+//     autoplay: true,
+//     speed: 2000,
+//     pauseOnHover: true,
+//     pauseOnFocus: true,
+//     cssEase: 'linear',
+//   };
+
+//   return (
+//     <Box sx={{ mt: 2, height: 100 }}>
+//       <Carousel ref={carouselRef} {...settings}>
+//         {data.map(({ title, image }) => (
+//           <CarouselItemAuto key={title} title={title} image={image} />
+//         ))}
+//       </Carousel>
+//     </Box>
+//   );
+// }
+
+// function CarouselItemAuto({ image, title }: CarouselItemProps) {
+//   return (
+//     <Image
+//       alt={title}
+//       src={image}
+//       sx={{
+//         cursor: 'pointer',
+//         height: '120px',
+//         mx: 2,
+//         lineHeight: 0,
+//       }}
+//     />
+//   );
+// }

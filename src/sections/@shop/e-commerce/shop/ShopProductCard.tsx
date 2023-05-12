@@ -1,3 +1,4 @@
+import { m } from 'framer-motion';
 // next
 import NextLink from 'next/link';
 // @mui
@@ -16,7 +17,7 @@ import Iconify from 'src/components/iconify';
 import Label, { LabelColor } from 'src/components/label';
 import Image from 'src/components/image';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
-import { getLinkImage } from 'src/utils/cloudinary';
+import { getUrlImage } from 'src/utils/cloudinary';
 import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
@@ -62,14 +63,19 @@ export default function ShopProductCard({ book }: Props) {
 
   return (
     <Card
+      component={m.div}
+      whileHover={{ scale: 1.03 }}
+      transition={{
+        duration: 0.2,
+      }}
       sx={{
         '&:hover .add-cart-btn': {
           opacity: 1,
         },
-        transition: 'all .17s ease-in-out',
+        // transition: 'all .17s ease-in-out',
         '&:hover': {
           boxShadow: (theme) => theme.shadows[24],
-          transform: 'scale(1.03)',
+          // transform: 'scale(1.03)',
         },
       }}
     >
@@ -120,7 +126,7 @@ export default function ShopProductCard({ book }: Props) {
 
           <Image
             alt={name}
-            src={getLinkImage(cover, `products/${slug}`) as string}
+            src={getUrlImage.product(cover, slug)}
             ratio="1/1"
             sx={{ borderRadius: 1.5 }}
           />
@@ -134,17 +140,27 @@ export default function ShopProductCard({ book }: Props) {
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Box />
 
-            <Stack direction="row" spacing={0.5} sx={{ typography: 'subtitle1' }}>
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{ typography: 'subtitle1', alignItems: 'baseline', lineHeight: 0 }}
+            >
               {!!discount && (
                 <Box
                   component="span"
-                  sx={{ color: 'text.disabled', textDecoration: 'line-through' }}
+                  sx={{
+                    color: 'text.disabled',
+                    textDecoration: 'line-through',
+                    fontSize: 14,
+                  }}
                 >
                   {fCurrency(price)}
                 </Box>
               )}
 
-              <Box component="span">{fCurrency(price * (1 - (0.01 * discount ?? 0)))}</Box>
+              <Box component="span" sx={{ color: 'primary.main' }}>
+                {fCurrency(price * (1 - (0.01 * discount ?? 0)))}
+              </Box>
             </Stack>
           </Stack>
         </Stack>

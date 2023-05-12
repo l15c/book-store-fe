@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import { USER_ROLE_ID } from 'src/api-client/customer';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Divider, Drawer, Stack, Typography, Tooltip, IconButton } from '@mui/material';
@@ -37,6 +39,8 @@ export default function SettingsDrawer() {
     themeColorPresets,
     onResetSetting,
   } = useSettingsContext();
+
+  const { user } = useAuthContext();
 
   const theme = useTheme();
 
@@ -85,7 +89,7 @@ export default function SettingsDrawer() {
           sx={{ py: 2, pr: 1, pl: SPACING }}
         >
           <Typography variant="subtitle1" sx={{ flexGrow: 1 }}>
-            Settings
+            Giao diện
           </Typography>
 
           <Tooltip title="Reset">
@@ -105,27 +109,30 @@ export default function SettingsDrawer() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Scrollbar sx={{ p: SPACING, pb: 0 }}>
-          <Block title="Mode">
+          <Block title="Chế dộ">
             <ModeOptions />
           </Block>
 
-          <Block title="Contrast">
+          <Block title="Tương phản">
             <ContrastOptions />
           </Block>
 
-          <Block title="Direction">
+          <Block title="Hướng">
             <DirectionOptions />
           </Block>
 
-          <Block title="Layout">
-            <LayoutOptions />
-          </Block>
+          {user && user.roleId !== USER_ROLE_ID && (
+            <>
+              <Block title="Layout">
+                <LayoutOptions />
+              </Block>
+              <Block title="Stretch" tooltip="Only available at large resolutions > 1600px (xl)">
+                <StretchOptions />
+              </Block>
+            </>
+          )}
 
-          <Block title="Stretch" tooltip="Only available at large resolutions > 1600px (xl)">
-            <StretchOptions />
-          </Block>
-
-          <Block title="Presets">
+          <Block title="Tông màu">
             <ColorPresetsOptions />
           </Block>
         </Scrollbar>

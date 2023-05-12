@@ -1,4 +1,4 @@
-import { Public_Sans, Tillana } from 'next/font/google';
+import { Fira_Sans, Tillana } from 'next/font/google';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ export function responsiveFontSizes({ sm, md, lg }: { sm: number; md: number; lg
   };
 }
 
-export const primaryFont = Public_Sans({
+export const primaryFont = Fira_Sans({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
   display: 'swap',

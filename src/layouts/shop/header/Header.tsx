@@ -1,18 +1,20 @@
+import Link from 'next/link';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Stack, AppBar, Toolbar } from '@mui/material';
 // utils
 import { bgBlur } from 'src/utils/cssStyles';
-import useOffSetTop from 'src/hooks/useOffSetTop';
+// import useOffSetTop from 'src/hooks/useOffSetTop';
 import useResponsive from 'src/hooks/useResponsive';
 // config
 import { HEADER } from 'src/config-global';
 // components
-import Logo from 'src/components/logo/BookShop';
+// import Logo from 'src/components/logo/BookShop';
 //
 import { ShopProductSearch } from 'src/sections/@shop/e-commerce/shop';
 import AccountPopover from './AccountPopover';
 import CartPopover from './CartPopover';
+import LogoAnimate from './LogoAnimate';
 
 // ----------------------------------------------------------------------
 
@@ -21,13 +23,28 @@ export default function Header() {
 
   const isDesktop = useResponsive('up', 'lg');
 
-  const isOffset = useOffSetTop(HEADER.H_DESKTOP);
+  // const isOffset = useOffSetTop(HEADER.H_DESKTOP);
 
   const renderContent = (
-    <Stack width={1} direction="row" alignItems="center" justifyContent="space-between">
-      <Logo sx={{ mr: 2.5 }} />
+    <Stack
+      width={1}
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
+      position="relative"
+    >
+      <Stack component={Link} href="/">
+        <LogoAnimate />
+      </Stack>
 
-      <Stack flexGrow={1} maxWidth={480} mx={2}>
+      <Stack
+        flexGrow={1}
+        maxWidth={480}
+        mx={2}
+        {...(isDesktop && {
+          sx: { position: 'absolute', width: 480, left: '50%', transform: 'translateX(-50%)' },
+        })}
+      >
         <ShopProductSearch />
       </Stack>
 
@@ -60,9 +77,9 @@ export default function Header() {
         }),
         ...(isDesktop && {
           height: HEADER.H_DESKTOP,
-          ...(isOffset && {
-            height: HEADER.H_DESKTOP_OFFSET,
-          }),
+          // ...(isOffset && {
+          //   height: HEADER.H_DESKTOP_OFFSET,
+          // }),
         }),
       }}
     >
