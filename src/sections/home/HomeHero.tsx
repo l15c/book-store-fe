@@ -57,7 +57,7 @@ export default function HomeHero({ data }: { data: IAds[] }) {
           </Grid>
 
           <Grid item md={3} display={{ xs: 'none', md: 'block' }}>
-            {data.slice(4, 5).map((e) => (
+            {data.slice(6, 8).map((e) => (
               <Grid item xs={12}>
                 <Image
                   src={getUrlImage.single(`${e.image}`, '/ads')}
@@ -72,7 +72,7 @@ export default function HomeHero({ data }: { data: IAds[] }) {
             ))}
           </Grid>
 
-          {data.slice(7, 10).map((e) => (
+          {data.slice(6).map((e) => (
             <Grid key={e.id} item sm={3} display={{ xs: 'none', sm: 'block' }}>
               <Image src={getUrlImage.single(`${e.image}`, '/ads')} />
             </Grid>

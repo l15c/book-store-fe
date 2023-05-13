@@ -33,7 +33,7 @@ export default function ToggleButton({ notDefault, open, onToggle }: Props) {
     <Box
       sx={{
         p: 0.5,
-        right: 24,
+        left: 24,
         bottom: 24,
         zIndex: 999,
         position: 'fixed',

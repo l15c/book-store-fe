@@ -110,6 +110,8 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
     try {
       if (productsSelected.some((e) => !e.cartId)) await dispatch(syncCart(products));
 
+      console.log(productsSelected);
+
       const res = await orderApi.create({
         voucherId: 0,
         checkedCartId: compact(productsSelected.map((e) => e.cartId)),
@@ -124,16 +126,14 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
         refetchType: 'all',
       });
 
+      onNextStep();
       if (data.payment !== 'cash') push(res as string);
-      else {
-        onNextStep();
-      }
+
       enqueueSnackbar('Tạo đơn hàng thành công');
-      onGotoStep(0);
       onReset();
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Tạo đơn hàng không thành công');
+      enqueueSnackbar('Tạo đơn hàng không thành công', { variant: 'error' });
     }
   };
 

@@ -101,9 +101,9 @@ export default function HomePage({
 
         <HomeF data={bestDiscount} />
 
-        <HomeHugePackElements />
+        <HomeHugePackElements data={newest} />
 
-        <HomeForDesigner />
+        {/* <HomeForDesigner />
 
         <HomeDarkMode />
 
@@ -115,7 +115,7 @@ export default function HomePage({
 
         <HomeLookingFor />
 
-        <HomeAdvertisement />
+        <HomeAdvertisement /> */}
       </Box>
     </>
   );

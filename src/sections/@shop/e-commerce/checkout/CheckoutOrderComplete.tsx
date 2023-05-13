@@ -9,11 +9,12 @@ import { OrderCompleteIllustration } from '../../../../assets/illustrations';
 // ----------------------------------------------------------------------
 
 interface Props extends DialogProps {
+  orderId?: string;
   onReset: VoidFunction;
   onDownloadPDF: VoidFunction;
 }
 
-export default function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: Props) {
+export default function CheckoutOrderComplete({ orderId, open, onReset, onDownloadPDF }: Props) {
   return (
     <DialogAnimate
       fullScreen
@@ -34,20 +35,21 @@ export default function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: 
           px: { xs: 2, sm: 0 },
         }}
       >
-        <Typography variant="h4">Thank you for your purchase!</Typography>
+        <Typography variant="h4">Cảm ơn bạn đã mua hàng</Typography>
 
         <OrderCompleteIllustration sx={{ height: 260 }} />
 
         <Typography>
-          Thanks for placing order
+          Cảm ơn đã đặt hàng tại Book Store
           <br />
           <br />
-          <Link>01dc1370-3df6-11eb-b378-0242ac130002</Link>
+          <Link href={`/orders/${orderId}`}>{orderId}</Link>
           <br />
           <br />
-          We will send you a notification within 5 days when it ships.
-          <br /> If you have any question or queries then fell to get in contact us. <br /> <br />
-          All the best,
+          Chúng tôi sẽ gửi thông báo cho bạn trong vòng 5 ngày khi hàng được giao.
+          <br /> Nếu bạn có bất kỳ câu hỏi hoặc thắc mắc nào, hãy liên hệ với chúng tôi. <br />
+          Chúc một ngày tốt lành
+          <br />
         </Typography>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -65,7 +67,7 @@ export default function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: 
             onClick={onReset}
             startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
           >
-            Continue Shopping
+            Tiếp tục mua sắm
           </Button>
 
           <Button
@@ -75,7 +77,7 @@ export default function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: 
             startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
             onClick={onDownloadPDF}
           >
-            Download as PDF
+            Tải xuống hóa đơn
           </Button>
         </Stack>
       </Stack>

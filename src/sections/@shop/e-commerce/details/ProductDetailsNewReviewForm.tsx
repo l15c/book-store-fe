@@ -77,6 +77,7 @@ export default function ProductDetailsNewReviewForm({ onClose, slug, bookId, ...
       reset();
       onClose();
     } catch (error) {
+      enqueueSnackbar('Gửi đánh giá thất bại', { variant: 'error' });
       console.error(error);
     }
   };

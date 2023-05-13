@@ -46,6 +46,7 @@ export const PATH_PAGE = {
   page404: '/404',
   page500: '/500',
   components: '/components',
+  policy: '/policy',
 };
 
 export const PATH_ADMIN = {

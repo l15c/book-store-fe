@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { m } from 'framer-motion';
 // @type
 import { IBookCompact } from 'src/@types/book';
@@ -50,7 +51,7 @@ export default function HomeTopTrending({ data }: Props) {
           </m.div>
 
           <m.div variants={varFade().inDown}>
-            <Typography variant="h2">Top trending book</Typography>
+            <Typography variant="h2">Xu hướng</Typography>
           </m.div>
         </Stack>
 
@@ -79,11 +80,13 @@ export default function HomeTopTrending({ data }: Props) {
                   boxShadow: (theme) => theme.shadows[24],
                 }}
               >
-                <Image
-                  alt={book.name}
-                  src={getUrlImage.product(book.cover, book.slug)}
-                  ratio="4/6"
-                />
+                <Link href={`/products/${book.slug}`}>
+                  <Image
+                    alt={book.name}
+                    src={getUrlImage.product(book.cover, book.slug)}
+                    ratio="4/6"
+                  />
+                </Link>
               </StyledCard>
             </m.div>
           ))}

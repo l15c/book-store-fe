@@ -38,28 +38,28 @@ export const socials = [
     name: 'FaceBook',
     icon: 'eva:facebook-fill',
     color: '#1877F2',
-    path: 'https://www.facebook.com/caitlyn.kerluke',
+    path: '',
   },
   {
     value: 'instagram',
     name: 'Instagram',
     icon: 'ant-design:instagram-filled',
     color: '#E02D69',
-    path: 'https://www.instagram.com/caitlyn.kerluke',
+    path: '',
   },
   {
     value: 'linkedin',
     name: 'Linkedin',
     icon: 'eva:linkedin-fill',
     color: '#007EBB',
-    path: 'https://www.linkedin.com/caitlyn.kerluke',
+    path: '',
   },
   {
     value: 'twitter',
     name: 'Twitter',
     icon: 'eva:twitter-fill',
     color: '#00AAEC',
-    path: 'https://www.twitter.com/caitlyn.kerluke',
+    path: '',
   },
 ];
 
@@ -95,7 +95,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-type LabelFlashSaleProps = { sold: number; quantity: number; endDate: string };
+type LabelFlashSaleProps = { sold?: number; quantity: number; endDate: string };
 
 export function LabelFlashSale({ sold, quantity, endDate }: LabelFlashSaleProps) {
   const { days, hours, minutes, seconds } = useCountdown(new Date(endDate));
@@ -136,26 +136,29 @@ export function LabelFlashSale({ sold, quantity, endDate }: LabelFlashSaleProps)
         <TimeBlock value={minutes} /> <div>:</div>
         <TimeBlock value={seconds} />
       </Stack>
-      <Stack flexGrow={1} position="relative">
-        <BorderLinearProgress
-          variant="determinate"
-          value={(sold / quantity) * 100 || 0}
-          sx={{ mr: 0.5 }}
-        />
-        <Typography
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            color: '#F63B2F',
-            fontSize: '0.9em',
-            fontWeight: 700,
-          }}
-        >
-          Đã bán: {sold}
-        </Typography>
-      </Stack>
+      {!!sold ||
+        (sold === 0 && (
+          <Stack flexGrow={1} position="relative">
+            <BorderLinearProgress
+              variant="determinate"
+              value={(sold / quantity) * 100 || 0}
+              sx={{ mr: 0.5 }}
+            />
+            <Typography
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: '#F63B2F',
+                fontSize: '0.9em',
+                fontWeight: 700,
+              }}
+            >
+              Đã bán: {sold}
+            </Typography>
+          </Stack>
+        ))}
     </Stack>
   );
 }

@@ -101,8 +101,10 @@ const StyledThumbnailsContainer = styled('div', {
 const StyledRoot = styled('div')(({ theme }) => ({
   padding: theme.spacing(3, 0),
   bgcolor: '#f0f0f0',
+  display: 'none',
   [theme.breakpoints.up('md')]: {
     padding: theme.spacing(8, 0),
+    display: 'block',
   },
 }));
 
@@ -208,7 +210,6 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
     saleStartDate,
     saleEndDate,
     saleQuantity,
-    saleSold,
     name,
     cover,
     images,
@@ -269,11 +270,9 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
 
   useEffect(() => {
     if (carousel1.current) {
-      console.log(carousel1.current);
       setNav1(carousel1.current);
     }
     if (carousel2.current) {
-      console.log(carousel2.current);
       setNav2(carousel2.current);
     }
   }, [count]);
@@ -293,9 +292,9 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
   const renderLargeImg = (
     <Box sx={{ borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
       <Carousel {...carouselSettings1} asNavFor={nav2} ref={carousel1}>
-        {fullImages.map((img) => (
+        {fullImages.map((img, index) => (
           <NextImage
-            key={img}
+            key={index}
             alt="product"
             src={img}
             onClick={() => handleOpenLightbox(img)}
@@ -322,6 +321,7 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
       <Carousel {...carouselSettings2} asNavFor={nav1} ref={carousel2}>
         {fullImages.map((img, index) => (
           <Box
+            key={index}
             sx={{
               position: 'relative',
               overflow: 'hidden',
@@ -392,7 +392,7 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
               </Label>
             )}
             {!stopSale && !outStock && isFlashSale && (
-              <LabelFlashSale quantity={saleQuantity} sold={saleSold} endDate={saleEndDate!} />
+              <LabelFlashSale quantity={saleQuantity} endDate={saleEndDate!} />
             )}
 
             <Link component={NextLink} href={`/products/${slug}`}>

@@ -210,7 +210,9 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
       enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thành công!' : 'Cập nhật thành công!');
       push(PATH_ADMIN.eCommerce.list);
     } catch (error) {
-      enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thất bại' : 'Cập nhật thất bại');
+      enqueueSnackbar(!isEdit ? 'Thêm sản phẩm thất bại' : 'Cập nhật thất bại', {
+        variant: 'error',
+      });
       console.error(error);
     }
   };

@@ -3,6 +3,7 @@ import AuthGuard from '../../auth/AuthGuard';
 import Main from './Main';
 import Header from './header';
 import { Facebook } from './Facebook';
+import Footer from './Footer';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +17,7 @@ export default function ShopLayout({ children, noAuth }: Props) {
     <>
       <Header />
       <Main>{children}</Main>
-
+      <Footer />
       <Facebook />
     </>
   );

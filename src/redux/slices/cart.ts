@@ -92,54 +92,42 @@ export const { setSelected, getCart, resetCart, finishOrder } = slice.actions;
 export function syncCart(localCart: ICartItem[]) {
   return async (dispatch: Dispatch) => {
     try {
-      const res = await cartApi.get();
+      // const res = await cartApi.get();
 
-      // const itemNoLocal = differenceWith(res, localCart, (d, l) => d.book.id === l.id).map((e) => ({
-      //   bookId: e.book.id,
-      //   quantity: e.quantity,
-      // }));
+      const cart = localCart.filter((e) => !e.cartId);
 
-      const itemNoDb = differenceWith(localCart, res, (l, d) => l.id === d.book.id).map((e) => ({
+      // const itemNoLocal = differenceWith(res, localCart, (d, l) => d.book.id === l.id);
+
+      const itemNoDb = cart.map((e) => ({
         bookId: e.id,
         quantity: e.quantity,
       }));
 
-      const noMatchQty = localCart.map((item) => {
-        const f = res.find((e) => e.book.id === item.id);
-        if (f && item.quantity !== f.quantity)
-          return { bookId: item.id, quantity: Math.abs(item.quantity - f.quantity) };
+      // const noMatchQty = localCart.map((item) => {
+      //   const f = res.find((e) => e.book.id === item.id);
+      //   if (f && item.quantity !== f.quantity)
+      //     return { bookId: item.id, quantity: Math.abs(item.quantity - f.quantity) };
 
-        return null;
-      });
+      //   return null;
+      // });
 
-      const updateItem = [...itemNoDb, ...compact(noMatchQty)];
+      const updateItem = [...itemNoDb];
       if (updateItem.length !== 0) {
         console.log(updateItem);
         await cartApi.updateMultiple(updateItem);
-        const resAfterUpdate = await cartApi.get();
-
-        dispatch(
-          slice.actions.setCart(
-            resAfterUpdate.map((e) => ({
-              ...e.book,
-              cartId: e.id,
-              available: e.book.quantity,
-              quantity: e.quantity,
-            }))
-          )
-        );
-      } else {
-        dispatch(
-          slice.actions.setCart(
-            res.map((e) => ({
-              ...e.book,
-              cartId: e.id,
-              available: e.book.quantity,
-              quantity: e.quantity,
-            }))
-          )
-        );
       }
+      const resAfterUpdate = await cartApi.get();
+
+      dispatch(
+        slice.actions.setCart([
+          ...resAfterUpdate.map((e) => ({
+            ...e.book,
+            cartId: e.id,
+            available: e.book.quantity,
+            quantity: e.quantity,
+          })),
+        ])
+      );
     } catch (error) {
       console.log(error);
     }

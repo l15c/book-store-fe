@@ -130,8 +130,8 @@ export default function EcommerceCheckoutPage() {
 
   const handleReset = () => {
     if (completed) {
-      dispatch(finishOrder());
       dispatch(syncCart(products));
+      dispatch(finishOrder());
       replace(PATH_SHOP.product.root);
     }
   };
