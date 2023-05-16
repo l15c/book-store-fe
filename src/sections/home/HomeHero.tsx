@@ -58,8 +58,9 @@ export default function HomeHero({ data }: { data: IAds[] }) {
 
           <Grid item md={3} display={{ xs: 'none', md: 'block' }}>
             {data.slice(6, 8).map((e) => (
-              <Grid item xs={12}>
+              <Grid item xs={12} key={e.id}>
                 <Image
+                  alt="Catalog"
                   src={getUrlImage.single(`${e.image}`, '/ads')}
                   sx={{
                     '& *': {
@@ -74,7 +75,7 @@ export default function HomeHero({ data }: { data: IAds[] }) {
 
           {data.slice(6).map((e) => (
             <Grid key={e.id} item sm={3} display={{ xs: 'none', sm: 'block' }}>
-              <Image src={getUrlImage.single(`${e.image}`, '/ads')} />
+              <Image alt="Card" src={getUrlImage.single(`${e.image}`, '/ads')} />
             </Grid>
           ))}
         </Grid>
@@ -88,10 +89,6 @@ export default function HomeHero({ data }: { data: IAds[] }) {
           ]}
         /> */}
       </Container>
-
-      {/* {isDesktop && <StyledEllipseTop />}
-
-        <StyledEllipseBottom /> */}
     </StyledRoot>
   );
 }

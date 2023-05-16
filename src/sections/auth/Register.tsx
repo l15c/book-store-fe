@@ -14,7 +14,7 @@ import AuthRegisterForm from './AuthRegisterForm';
 
 export default function Register() {
   return (
-    <LoginLayout title="">
+    <LoginLayout title="Chào mừng đến với Book Store">
       <Stack spacing={1} sx={{ mb: 3, position: 'relative' }}>
         <Typography variant="h4">Đăng ký tài khoản Book Store</Typography>
 
@@ -33,15 +33,15 @@ export default function Register() {
         component="div"
         sx={{ color: 'text.secondary', mt: 3, typography: 'caption', textAlign: 'center' }}
       >
-        {'Bằng việc đăng ký, Tôi đồng ý '}
-        <Link underline="always" color="text.primary">
+        {'Bằng việc đăng ký, bạn đồng ý '}
+        <Link underline="always" color="text.primary" sx={{ cursor: 'pointer' }}>
           Điều khoản dịch vụ
         </Link>
         {' và '}
-        <Link underline="always" color="text.primary">
+        <Link underline="always" color="text.primary" sx={{ cursor: 'pointer' }}>
           Chính sách bảo mật
         </Link>
-        .
+        &nbsp;của chúng tôi.
       </Typography>
 
       {/* <AuthWithSocial /> */}

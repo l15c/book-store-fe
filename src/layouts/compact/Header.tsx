@@ -45,7 +45,7 @@ export default function Header({ isOffset }: Props) {
         <Logo />
 
         <Link component={NextLink} href={PATH_PAGE.faqs} variant="subtitle2" color="inherit">
-          Cần trợ giúp?
+          Bạn cần trợ giúp?
         </Link>
       </Toolbar>
 

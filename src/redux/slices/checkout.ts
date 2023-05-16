@@ -40,6 +40,12 @@ const slice = createSlice({
       const shipping = action.payload;
       state.shipping = Math.round(shipping / 1000) * 1000;
     },
+
+    resetCheckout(state) {
+      state.discount = 0;
+      state.shipping = 0;
+      state.billing = null;
+    },
   },
 });
 
@@ -47,5 +53,12 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { gotoStep, backStep, nextStep, createBilling, applyShipping, applyDiscount } =
-  slice.actions;
+export const {
+  gotoStep,
+  backStep,
+  nextStep,
+  resetCheckout,
+  createBilling,
+  applyShipping,
+  applyDiscount,
+} = slice.actions;

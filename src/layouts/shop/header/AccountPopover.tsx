@@ -1,10 +1,14 @@
 import { useState } from 'react';
+// util
 import { getUrlImage } from 'src/utils/cloudinary';
 // next
 import { useRouter } from 'next/router';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
+// redux
+import { useDispatch } from 'src/redux/store';
+import { resetCart } from 'src/redux/slices/cart';
 // routes
 import { PATH_ADMIN, PATH_AUTH, PATH_SHOP } from '../../../routes/paths';
 // auth
@@ -23,8 +27,12 @@ const OPTIONS = [
     linkTo: '/',
   },
   {
+    label: 'Tài khoản',
+    linkTo: PATH_SHOP.account.root,
+  },
+  {
     label: 'Đổi mật khẩu',
-    linkTo: PATH_AUTH.changPassword,
+    linkTo: PATH_SHOP.account.changePassword,
   },
 ];
 
@@ -36,6 +44,8 @@ export default function AccountPopover() {
   const { user, logout } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const dispatch = useDispatch();
 
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
@@ -54,6 +64,7 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
+      dispatch(resetCart());
       logout();
       handleClosePopover();
       enqueueSnackbar('Đã đăng xuất tài khoản', { variant: 'info' });

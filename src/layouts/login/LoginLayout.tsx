@@ -21,6 +21,7 @@ export default function LoginLayout({ children, illustration, title }: Props) {
         sx={{
           zIndex: 9,
           position: 'absolute',
+          transform: 'rotate(180deg)',
           mt: { xs: 1.5, md: 5 },
           ml: { xs: 2, md: 5 },
         }}

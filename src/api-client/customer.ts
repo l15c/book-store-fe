@@ -1,8 +1,11 @@
+import { AuthUserType } from 'src/auth/types';
 import { ConfirmResetPassword, IAuthUser, IUserAccountChangePassword } from 'src/@types/user';
 import { GET, POST, PUT } from './axios';
 import { AuthResponse, LoginPayload, RegisterPayload } from './type';
 
 export const USER_ROLE_ID = 6;
+
+type UpdateUser = Partial<RegisterPayload & { imageUrl: string | null }>;
 
 const customerApi = {
   getProfile: () => GET<IAuthUser>('/customers/my-profile'),
@@ -13,7 +16,7 @@ const customerApi = {
 
   logout: () => POST('/auth/logout', {}),
 
-  update: (id: string, data: any) => PUT('/customers', { id, ...data }),
+  update: (data: UpdateUser) => PUT<UpdateUser, AuthUserType>('/customers', data),
 
   changePassword: (data: IUserAccountChangePassword) =>
     POST<IUserAccountChangePassword, unknown>('/customers/change-password', data),

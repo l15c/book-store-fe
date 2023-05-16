@@ -20,6 +20,7 @@ import {
   deleteCart,
   getCart,
   increaseQuantity,
+  syncCart,
   // syncCart,
 } from 'src/redux/slices/cart';
 import { useDispatch, useSelector } from 'src/redux/store';
@@ -46,10 +47,10 @@ export default function CartPopover() {
     dispatch(getCart());
   }, [dispatch, products]);
 
-  // useEffect(() => {
-  //   if (user) dispatch(syncCart(products));
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user?.id]);
+  useEffect(() => {
+    if (user) dispatch(syncCart(products));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
     setOpenPopover(event.currentTarget);

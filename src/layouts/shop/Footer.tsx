@@ -32,7 +32,8 @@ const LINKS = [
   {
     headline: 'Liên hệ',
     children: [
-      { name: 'bookstore.cn19clcb@gmail.com', href: '#' },
+      { name: 'Hotline: 0966 521 770', href: 'tel:+84966521770' },
+      { name: 'bookstore.cn19clcb@gmail.com', href: 'mailto:bookstore.cn19clcb@gmail.com' },
       { name: 'Số 2 đường Võ Oanh, P.25, Q.Bình Thạnh', href: '#' },
     ],
   },
@@ -65,13 +66,23 @@ export default function Footer() {
             },
           }}
         >
-          <Grid item xs={12} sx={{ mb: 3 }}>
-            <Stack direction="row" spacing={1}>
-              <Logo sx={{ mx: { xs: 'auto', md: 'inherit' } }} /> <LogoOnly />
+          <Grid item xs={12}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Logo
+                sx={{
+                  mx: { xs: 'auto', md: 'inherit' },
+                  width: 64,
+                  height: 64,
+                  transform: 'rotate(180deg)',
+                }}
+              />
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <LogoOnly />
+              </Box>
             </Stack>
           </Grid>
 
-          <Grid item xs={8} md={3}>
+          <Grid item xs={8} md={4}>
             <Typography variant="body2" sx={{ pr: { md: 5 } }}>
               Book Store là một đơn cung cấp sỉ và lẻ với đa dạng các đầu sách thuộc nhiều thể loại
               bao gồm cả sách quốc văn và ngoại văn.

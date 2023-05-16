@@ -1,10 +1,10 @@
-import uniqBy from 'lodash/uniqBy';
-import { ICartItem, ICartState } from 'src/@types/book';
-import { Dispatch, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import sumBy from 'lodash/sumBy';
+import uniqBy from 'lodash/uniqBy';
+import intersectionWith from 'lodash/intersectionWith';
+import { ICartItem, ICartState, ICartResponse } from 'src/@types/book';
+import { Dispatch, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import differenceWith from 'lodash/differenceWith';
 import cartApi from 'src/api-client/cart';
-import compact from 'lodash/compact';
 
 // ----------------------------------------------------------------------
 
@@ -89,45 +89,62 @@ export const { setSelected, getCart, resetCart, finishOrder } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function syncCart(localCart: ICartItem[]) {
+export function syncCart(_reduxCart: ICartItem[]) {
   return async (dispatch: Dispatch) => {
     try {
-      // const res = await cartApi.get();
+      const cartDb = await cartApi.get();
 
-      const cart = localCart.filter((e) => !e.cartId);
+      const idsDb = cartDb.map((e) => e.id);
 
-      // const itemNoLocal = differenceWith(res, localCart, (d, l) => d.book.id === l.id);
+      const reduxCart = _reduxCart.filter((e) => !e.cartId || idsDb.includes(e.cartId));
 
-      const itemNoDb = cart.map((e) => ({
-        bookId: e.id,
-        quantity: e.quantity,
-      }));
+      const matchNoUpdate: ICartResponse[] = [];
+      const update: { bookId: number; quantity: number }[] = [];
 
-      // const noMatchQty = localCart.map((item) => {
-      //   const f = res.find((e) => e.book.id === item.id);
-      //   if (f && item.quantity !== f.quantity)
-      //     return { bookId: item.id, quantity: Math.abs(item.quantity - f.quantity) };
+      const onlyDb = differenceWith(cartDb, reduxCart, (db, local) => db.book.id === local.id);
 
-      //   return null;
-      // });
+      intersectionWith(cartDb, reduxCart, (db, local) => {
+        if (db.book.id !== local.id) return false;
+        if (local.quantity > db.quantity)
+          // > - Lấy max | !== - cộng dồn
+          update.push({
+            bookId: local.id,
+            quantity: Math.abs(local.quantity - db.quantity),
+          });
+        else {
+          matchNoUpdate.push(db);
+        }
+        return true;
+      });
 
-      const updateItem = [...itemNoDb];
-      if (updateItem.length !== 0) {
-        console.log(updateItem);
-        await cartApi.updateMultiple(updateItem);
+      differenceWith(reduxCart, cartDb, (local, db) => db.book.id === local.id).forEach((item) => {
+        update.push({ bookId: item.id, quantity: item.quantity });
+      });
+
+      if (update.length !== 0) {
+        const res = await cartApi.updateMultiple(update);
+        dispatch(
+          slice.actions.setCart(
+            [...matchNoUpdate, ...res, ...onlyDb].map((e) => ({
+              ...e.book,
+              cartId: e.id,
+              available: e.book.quantity,
+              quantity: e.quantity,
+            }))
+          )
+        );
+      } else {
+        dispatch(
+          slice.actions.setCart(
+            [...matchNoUpdate, ...onlyDb].map((e) => ({
+              ...e.book,
+              cartId: e.id,
+              available: e.book.quantity,
+              quantity: e.quantity,
+            }))
+          )
+        );
       }
-      const resAfterUpdate = await cartApi.get();
-
-      dispatch(
-        slice.actions.setCart([
-          ...resAfterUpdate.map((e) => ({
-            ...e.book,
-            cartId: e.id,
-            available: e.book.quantity,
-            quantity: e.quantity,
-          })),
-        ])
-      );
     } catch (error) {
       console.log(error);
     }

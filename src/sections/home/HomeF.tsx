@@ -181,6 +181,7 @@ function ProductScroll({
               alt={book.name}
               src={getUrlImage.product(book.cover, book.slug)}
               fill
+              sizes="100vw"
               priority
               style={{ objectFit: 'contain' }}
             />

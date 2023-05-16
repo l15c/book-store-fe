@@ -18,7 +18,7 @@ export default function Login() {
   const { method } = useAuthContext();
 
   return (
-    <LoginLayout>
+    <LoginLayout title="Chào mừng đến với Book Store">
       <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
         <Typography variant="h4">Đăng nhập vào Book Store</Typography>
 

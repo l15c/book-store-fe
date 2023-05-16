@@ -165,10 +165,10 @@ export default function ShopFilterDrawer({
               />
             </Stack>
 
-            <Stack spacing={1}>
+            {/* <Stack spacing={1}>
               <Typography variant="subtitle1">Rating</Typography>
 
-              {/* <Controller
+              <Controller
                 name="rating"
                 control={control}
                 render={({ field }) => (
@@ -201,8 +201,8 @@ export default function ShopFilterDrawer({
                     ))}
                   </RadioGroup>
                 )}
-              /> */}
-            </Stack>
+              />
+            </Stack> */}
           </Stack>
         </Scrollbar>
 

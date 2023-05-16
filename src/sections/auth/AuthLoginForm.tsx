@@ -69,7 +69,6 @@ export default function AuthLoginForm({ customers = false }: Props) {
         queryKey: ['user'],
         refetchType: 'all',
       });
-      dispatch(syncCart(cart));
     } catch (error) {
       console.log(error);
       reset();
