@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import { useQueryClient } from '@tanstack/react-query';
 import compact from 'lodash/compact';
@@ -85,7 +86,10 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
   const { billing, shipping } = useSelector((state) => state.checkout);
   const { products, selected } = useSelector((state) => state.cart);
 
-  const productsSelected = intersectionWith(products, selected, (p, id) => p.id === id);
+  const productsSelected = useMemo(
+    () => intersectionWith(products, selected, (p, id) => p.id === id),
+    [products, selected]
+  );
 
   const PaymentSchema = Yup.object().shape({
     payment: Yup.string().required('Vui lòng chọn phương thức thanh toán'),
@@ -108,9 +112,7 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      if (productsSelected.some((e) => !e.cartId)) await dispatch(syncCart(products));
-
-      console.log(productsSelected);
+      if (!productsSelected.every((e) => e.cartId)) await dispatch(syncCart(products));
 
       const res = await orderApi.create({
         voucherId: 0,
@@ -126,11 +128,12 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
         refetchType: 'all',
       });
 
-      onNextStep();
-      if (data.payment !== 'cash') push(res as string);
-
-      enqueueSnackbar('Tạo đơn hàng thành công');
       onReset();
+      enqueueSnackbar('Tạo đơn hàng thành công');
+      if (data.payment !== 'cash') {
+        push(res as string);
+        // onGotoStep(0);
+      } else onNextStep();
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Tạo đơn hàng không thành công', { variant: 'error' });

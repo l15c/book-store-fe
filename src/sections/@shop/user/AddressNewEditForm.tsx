@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useMemo } from 'react';
 import compact from 'lodash/compact';
 import { useSnackbar } from 'notistack';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -39,12 +40,20 @@ interface FormValuesProps {
 }
 
 type Props = {
+  isEdit?: boolean;
+  addressCurrent?: IUserAddress;
   open: boolean;
   onClose: VoidFunction;
-  onCreateBilling: (address: IUserAddress) => void;
+  onSubmit: (address: IUserAddress) => void;
 };
 
-export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateBilling }: Props) {
+export default function AddressNewEditForm({
+  isEdit,
+  addressCurrent,
+  open,
+  onClose,
+  onSubmit,
+}: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
 
@@ -58,15 +67,18 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
     district: Yup.object().required('Vui lòng chọn Quận/Huyện/Thị xã'),
   });
 
-  const defaultValues = {
-    receiver: '',
-    phone: '',
-    address: '',
-    isDefault: false,
-    province: null,
-    district: null,
-    ward: null,
-  };
+  const defaultValues = useMemo(
+    () => ({
+      receiver: addressCurrent?.receiver || '',
+      phone: addressCurrent?.phone || '',
+      address: addressCurrent?.address || '',
+      isDefault: addressCurrent?.isDefault || false,
+      province: null,
+      district: null,
+      ward: null,
+    }),
+    [addressCurrent]
+  );
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(NewAddressSchema),
@@ -79,10 +91,10 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
     reset,
     setError,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty, isValid, defaultValues: defaultForm },
   } = methods;
-
   const values = watch();
+
   const provinceId = values.province?.ProvinceID;
   const districtId = values.district?.DistrictID;
 
@@ -104,6 +116,32 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
   });
 
   useEffect(() => {
+    reset(defaultValues);
+  }, [addressCurrent]);
+
+  useEffect(() => {
+    if (isEdit) {
+      if (!defaultForm?.province) {
+        const _p = provinces.find((e) => e.ProvinceID === addressCurrent?.province);
+
+        resetField('province', {
+          defaultValue: _p || null,
+        });
+      } else if (!defaultForm?.district) {
+        const _d = districts.find((e) => e.DistrictID === addressCurrent?.district);
+        resetField('district', {
+          defaultValue: _d,
+        });
+      } else if (!defaultForm?.ward) {
+        const _w = wards.find((e) => e.WardCode === addressCurrent?.ward.toString());
+        resetField('ward', {
+          defaultValue: _w || null,
+        });
+      }
+    }
+  }, [addressCurrent, provinces, districts, wards, defaultForm]);
+
+  useEffect(() => {
     resetField('district');
     resetField('ward');
   }, [provinceId, resetField]);
@@ -112,12 +150,17 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
     resetField('ward');
   }, [districtId, resetField]);
 
-  const onSubmit = async (data: FormValuesProps) => {
+  const handleClose = () => {
+    onClose();
+  };
+
+  const onSubmitForm = async (data: FormValuesProps) => {
     try {
       if (wards.length !== 0 && values.ward === null)
         setError('ward', { message: 'Vui lòng chọn Xã/Phường' });
       else {
         const { address, receiver, isDefault, phone, province, district, ward } = data;
+
         const body = {
           address,
           province: province!.ProvinceID,
@@ -134,33 +177,28 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
           ]).join(', '),
         };
 
-        const res = await addressApi.create(body);
-        onCreateBilling(res);
-        queryClient.invalidateQueries({
+        const res = isEdit
+          ? await addressApi.update({ ...body, id: addressCurrent!.id })
+          : await addressApi.create(body);
+        onSubmit(res);
+        await queryClient.invalidateQueries({
           queryKey: ['user', 'address'],
           refetchType: 'all',
         });
 
-        enqueueSnackbar('Thêm địa chỉ thành công');
+        enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm'} địa chỉ thành công`);
         reset();
         onClose();
       }
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(`${isEdit ? 'Cập nhật' : 'Thêm'} địa chỉ thất bại`, { variant: 'error' });
     }
   };
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      open={open}
-      onClose={() => {
-        onClose();
-        reset();
-      }}
-    >
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
         <DialogTitle sx={{ pb: 0 }}>Thêm địa chỉ nhận hàng</DialogTitle>
 
         <DialogContent dividers sx={{ pt: 3 }}>
@@ -235,11 +273,16 @@ export default function CheckoutBillingNewAddressForm({ open, onClose, onCreateB
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Thêm mới
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+            disabled={!isValid || !isDirty}
+          >
+            {isEdit ? 'Cập nhật' : 'Thêm mới'}
           </LoadingButton>
 
-          <Button color="inherit" variant="outlined" onClick={onClose}>
+          <Button color="inherit" variant="outlined" onClick={handleClose}>
             Hủy
           </Button>
         </DialogActions>

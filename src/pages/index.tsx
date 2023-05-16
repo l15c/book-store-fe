@@ -12,19 +12,7 @@ import ShopLayout from 'src/layouts/shop';
 // components
 import ScrollProgress from 'src/components/scroll-progress';
 // sections
-import {
-  HomeHero,
-  HomeTopTrending,
-  HomeDarkMode,
-  HomeLookingFor,
-  HomeForDesigner,
-  HomeColorPresets,
-  HomePricingPlans,
-  HomeAdvertisement,
-  HomeCleanInterfaces,
-  HomeHugePackElements,
-  HomeF,
-} from '../sections/home';
+import { HomeHero, HomeTopTrending, HomeHugePackElements, HomeF } from '../sections/home';
 
 // ----------------------------------------------------------------------
 
@@ -81,7 +69,7 @@ export default function HomePage({
   return (
     <>
       <Head>
-        <title>Book Store</title>
+        <title>Trang chủ | Book Store</title>
       </Head>
 
       <ScrollProgress />

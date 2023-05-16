@@ -172,6 +172,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, []);
 
+  const update = useCallback(async (user: AuthUserType) => {
+    dispatch({
+      type: Types.INITIAL,
+      payload: {
+        isAuthenticated: true,
+        user,
+      },
+    });
+  }, []);
+
   // LOGOUT
   const logout = useCallback(() => {
     customerApi.logout();
@@ -192,8 +202,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       loginWithTwitter: () => {},
       register,
       logout,
+      update,
     }),
-    [state.isAuthenticated, state.isInitialized, state.user, login, logout, register]
+    [state.isAuthenticated, state.isInitialized, state.user, login, logout, register, update]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

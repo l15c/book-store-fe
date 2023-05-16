@@ -13,7 +13,6 @@ export const PATH_AUTH = {
   root: ROOTS_AUTH,
   login: path(ROOTS_AUTH, '/login'),
   register: path(ROOTS_AUTH, '/register'),
-  changPassword: path(ROOTS_AUTH, '/change-password'),
   loginUnprotected: path(ROOTS_AUTH, '/login-unprotected'),
   registerUnprotected: path(ROOTS_AUTH, '/register-unprotected'),
   verify: path(ROOTS_AUTH, '/verify'),
@@ -31,6 +30,10 @@ export const PATH_SHOP = {
   order: {
     root: '/orders',
     detail: (id: string) => `/orders/${id}`,
+  },
+  account: {
+    root: '/account',
+    changePassword: '/account#change-password',
   },
 };
 

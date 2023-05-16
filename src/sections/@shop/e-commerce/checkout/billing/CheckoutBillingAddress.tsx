@@ -11,7 +11,7 @@ import Iconify from '../../../../../components/iconify';
 import Label from '../../../../../components/label';
 //
 import CheckoutSummary from '../CheckoutSummary';
-import CheckoutBillingNewAddressForm from './CheckoutBillingNewAddressForm';
+import AddressNewEditForm from '../../../user/AddressNewEditForm';
 
 // ----------------------------------------------------------------------
 
@@ -94,11 +94,7 @@ export default function CheckoutBillingAddress({ onBackStep, onCreateBilling }: 
         </Grid>
       </Grid>
 
-      <CheckoutBillingNewAddressForm
-        open={open}
-        onClose={handleClose}
-        onCreateBilling={onCreateBilling}
-      />
+      <AddressNewEditForm open={open} onClose={handleClose} onSubmit={onCreateBilling} />
     </>
   );
 }

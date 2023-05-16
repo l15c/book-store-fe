@@ -32,6 +32,7 @@ export type JWTContextType = {
   login: (email: string, password: string, isCustomer?: boolean) => Promise<void>;
   register: (data: RegisterPayload) => Promise<void>;
   logout: () => void;
+  update: (user: AuthUserType) => void;
   loginWithGoogle?: () => void;
   loginWithGithub?: () => void;
   loginWithTwitter?: () => void;

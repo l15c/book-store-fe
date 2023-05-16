@@ -20,6 +20,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  transform: 'rotate(180deg)',
   backgroundColor: theme.palette.background.default,
 }));
 

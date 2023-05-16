@@ -1,4 +1,4 @@
-import { IAuthUser, IUserAddress } from 'src/@types/user';
+import { IUserAddress } from 'src/@types/user';
 import { GET, POST, PUT, DELETE } from './axios';
 
 import { Create } from './type';
@@ -9,9 +9,9 @@ const addressApi = {
   create: (data: Create<IUserAddress>) =>
     POST<Create<IUserAddress>, IUserAddress>('/address', data),
 
-  update: (data: IUserAddress) => PUT<IUserAddress, IAuthUser>('/address', data),
+  update: (data: IUserAddress) => PUT<IUserAddress, IUserAddress>('/address', data),
 
-  delete: (id: string) => DELETE(`/address/${id}`),
+  delete: (id: number) => DELETE(`/address/${id}`),
 
   // GHN API
   getProvinces: async () => {

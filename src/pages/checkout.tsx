@@ -27,6 +27,7 @@ import {
   createBilling,
   applyShipping,
   applyDiscount,
+  resetCheckout,
 } from 'src/redux/slices/checkout';
 // @types
 import { ICartItem } from 'src/@types/book';
@@ -77,6 +78,14 @@ export default function EcommerceCheckoutPage() {
       dispatch(createBilling(null));
     }
   }, [dispatch, activeStep]);
+
+  useEffect(() => {
+    dispatch(setSelected([]));
+    dispatch(gotoStep(0));
+    dispatch(resetCheckout());
+    dispatch(syncCart(products));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleNextStep = () => {
     dispatch(nextStep());
@@ -129,11 +138,9 @@ export default function EcommerceCheckoutPage() {
   };
 
   const handleReset = () => {
-    if (completed) {
-      dispatch(syncCart(products));
-      dispatch(finishOrder());
-      replace(PATH_SHOP.product.root);
-    }
+    dispatch(resetCheckout());
+    dispatch(finishOrder());
+    // dispatch(syncCart(products));
   };
 
   return (
@@ -150,7 +157,14 @@ export default function EcommerceCheckoutPage() {
         </Grid>
 
         {completed ? (
-          <CheckoutOrderComplete open={completed} onReset={handleReset} onDownloadPDF={() => {}} />
+          <CheckoutOrderComplete
+            open={completed}
+            onReset={() => {
+              // handleGotoStep(0);
+              replace(PATH_SHOP.order.root);
+            }}
+            onDownloadPDF={() => {}}
+          />
         ) : (
           <>
             {activeStep === 0 && (

@@ -10,7 +10,7 @@ type Props = TextFieldProps & {
 };
 
 export default function RHFTextField({ name, helperText, ...other }: Props) {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   return (
     <Controller
@@ -19,6 +19,9 @@ export default function RHFTextField({ name, helperText, ...other }: Props) {
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          onChange={(e) =>
+            setValue(name, e.target.value, { shouldValidate: true, shouldDirty: true })
+          }
           fullWidth
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}

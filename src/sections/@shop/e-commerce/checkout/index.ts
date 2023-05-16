@@ -3,8 +3,6 @@ export { default as CheckoutCartProduct } from './cart/CheckoutCartProduct';
 export { default as CheckoutCartProductList } from './cart/CheckoutCartProductList';
 
 export { default as CheckoutBillingAddress } from './billing/CheckoutBillingAddress';
-export { default as CheckoutBillingNewAddressForm } from './billing/CheckoutBillingNewAddressForm';
-
 export { default as CheckoutPayment } from './payment/CheckoutPayment';
 export { default as CheckoutDelivery } from './payment/CheckoutDelivery';
 export { default as CheckoutBillingInfo } from './payment/CheckoutBillingInfo';
