@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import * as Yup from 'yup';
+import { AuthUserType } from 'src/auth/types';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -41,11 +42,18 @@ export default function AccountGeneral() {
     // phone: Yup.string().required('Phone number is required'),
   });
 
+  const createDefaultValues = (_user: AuthUserType) => ({
+    fullName: _user?.fullName || '',
+    email: _user?.email || '',
+    imageUrl: getUrlImage.avatar(_user?.imageUrl) ?? null,
+    phone: _user?.phone || '',
+  });
+
   const defaultValues = useMemo(
     () => ({
       fullName: user?.fullName || '',
       email: user?.email || '',
-      imageUrl: getUrlImage.avatar(user?.imageUrl) || null,
+      imageUrl: getUrlImage.avatar(user?.imageUrl) ?? null,
       phone: user?.phone || '',
     }),
     [user]
@@ -60,26 +68,32 @@ export default function AccountGeneral() {
     setValue,
     handleSubmit,
     watch,
-    // reset,
-    formState: { isSubmitting, isValid, isDirty },
+    reset,
+    formState: { isSubmitting, isValid, isDirty, dirtyFields },
   } = methods;
 
   const values = watch();
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
+      // const time = Date.now();
       let imageUrl = user?.imageUrl ?? null;
       if (data.imageUrl && typeof data.imageUrl !== 'string') {
         const res = await cloudinaryApi.uploadSign(data.imageUrl, {
-          public_id: user?.id,
+          public_id: `${user?.id}`,
           folder: 'users',
         });
-        imageUrl = `${user?.id}.${res.format}`;
+        imageUrl = `v${res.version}/users/${user?.id}.${res.format}`;
       }
+      if (data.imageUrl === null) imageUrl = '';
 
-      const res = await customerApi.update({ fullName: data.fullName, imageUrl });
+      const res = await customerApi.update({
+        ...(dirtyFields.fullName && { fullName: data.fullName }),
+        ...(dirtyFields.imageUrl && { imageUrl }),
+      });
       update(res);
 
+      reset(createDefaultValues(res));
       enqueueSnackbar('Cập nhật tài khoản thành công!');
     } catch (error) {
       enqueueSnackbar('Cập nhật tài khoản thất bại', { variant: 'error' });
