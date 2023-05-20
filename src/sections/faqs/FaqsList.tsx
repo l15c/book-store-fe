@@ -1,55 +1,11 @@
 // @mui
-import {
-  Accordion,
-  Typography,
-  Box,
-  AccordionDetails,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-} from '@mui/material';
-// _mock_
-// components
-import Iconify from '../../components/iconify';
+import { Typography, Box, Table, TableRow, TableCell } from '@mui/material';
 
 // ----------------------------------------------------------------------
-export const _faqs = [
-  {
-    id: 1,
-    heading: `Questions 1`,
-    detail: `Chúng tôi luôn trân trọng sự tin tưởng và ủng hộ của quý khách hàng khi trải nghiệm mua hàng tại BookStore. Do đó chúng tôi luôn cố gắng hoàn thiện dịch vụ tốt nhất để phục vụ mọi nhu cầu mua sắm của quý khách.
-    BookStore chúng tôi luôn luôn cam kết tất cả các sản phẩm bán tại BookStore 100% là những sản phẩm chất lượng và xuất xứ nguồn gốc rõ ràng, hợp pháp cũng như an toàn cho người tiêu dùng. Để việc mua sắm của quý khách tại BookStore là trải nghiệm dịch vụ thân thiện, chúng tôi hy vọng quý khách sẽ kiểm tra kỹ các nội dung sau trước khi nhận hàng: 
-    •	Thông tin sản phẩm: tên sản phẩm và chất lượng sản phẩm.
-    •	Số lượng sản phẩm.
-    Trong trường hợp hiếm hoi sản phẩm quý khách nhận được có khiếm khuyết, hư hỏng hoặc không như mô tả, BookStore cam kết bảo vệ khách hàng bằng chính sách đổi trả/ hoàn tiền trên tinh thần bảo vệ quyền lợi người tiêu dùng nhằm cam kết với quý khách về chất lượng sản phẩm và dịch vụ của chúng tôi.
-    `,
-  },
-  {
-    id: 1,
-    heading: `Questions 1`,
-    detail: `Chúng tôi luôn trân trọng sự tin tưởng và ủng hộ của quý khách hàng khi trải nghiệm mua hàng tại BookStore. Do đó chúng tôi luôn cố gắng hoàn thiện dịch vụ tốt nhất để phục vụ mọi nhu cầu mua sắm của quý khách.
-    BookStore chúng tôi luôn luôn cam kết tất cả các sản phẩm bán tại BookStore 100% là những sản phẩm chất lượng và xuất xứ nguồn gốc rõ ràng, hợp pháp cũng như an toàn cho người tiêu dùng. Để việc mua sắm của quý khách tại BookStore là trải nghiệm dịch vụ thân thiện, chúng tôi hy vọng quý khách sẽ kiểm tra kỹ các nội dung sau trước khi nhận hàng: 
-    •	Thông tin sản phẩm: tên sản phẩm và chất lượng sản phẩm.
-    •	Số lượng sản phẩm.
-    Trong trường hợp hiếm hoi sản phẩm quý khách nhận được có khiếm khuyết, hư hỏng hoặc không như mô tả, BookStore cam kết bảo vệ khách hàng bằng chính sách đổi trả/ hoàn tiền trên tinh thần bảo vệ quyền lợi người tiêu dùng nhằm cam kết với quý khách về chất lượng sản phẩm và dịch vụ của chúng tôi.
-    `,
-  },
-];
+export const _faqs = [];
 export default function FaqsList() {
   return (
     <div>
-      {/* {_faqs.map((accordion) => (
-        <Accordion key={accordion.id}>
-          <AccordionSummary expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}>
-            <Typography variant="subtitle1">{accordion.heading}</Typography>
-          </AccordionSummary>
-
-          <AccordionDetails>
-            <Typography>{accordion.detail}</Typography>
-          </AccordionDetails>
-        </Accordion>
-      ))} */}
       <Typography>
         Chúng tôi luôn trân trọng sự tin tưởng và ủng hộ của quý khách hàng khi trải nghiệm mua hàng
         tại BookStore. Do đó chúng tôi luôn cố gắng hoàn thiện dịch vụ tốt nhất để phục vụ mọi nhu

@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 // routes
 // @types
-import { IInvoice } from '../../../../@types/invoice';
+import { IOrder } from '../../../../@types/order';
 // components
 import Iconify from '../../../../components/iconify';
 //
@@ -21,10 +21,10 @@ import InvoicePDF from './InvoicePDF';
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  order: IOrder;
 };
 
-export default function InvoiceToolbar({ invoice }: Props) {
+export default function InvoiceToolbar({ order }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -52,8 +52,8 @@ export default function InvoiceToolbar({ invoice }: Props) {
           </Tooltip>
 
           <PDFDownloadLink
-            document={<InvoicePDF invoice={invoice} />}
-            fileName={invoice.invoiceNumber}
+            document={<InvoicePDF order={order} />}
+            fileName={order.id}
             style={{ textDecoration: 'none' }}
           >
             {({ loading }) => (
@@ -88,7 +88,7 @@ export default function InvoiceToolbar({ invoice }: Props) {
           </DialogActions>
           <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-              <InvoicePDF invoice={invoice} />
+              <InvoicePDF order={order} />
             </PDFViewer>
           </Box>
         </Box>

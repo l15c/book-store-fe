@@ -15,12 +15,12 @@ import {
 } from '@mui/material';
 // utils
 // routes
-import { PATH_SHOP } from '../../../../routes/paths';
+import { PATH_SHOP } from '../../../routes/paths';
 // @types
-import { IProduct } from '../../../../@types/product';
+import { IProduct } from '../../../@types/product';
 // components
-import Image from '../../../../components/image';
-import Iconify from '../../../../components/iconify';
+import Image from '../../../components/image';
+import Iconify from '../../../components/iconify';
 // import SearchNotFound from '../../../../components/search-not-found';
 
 // ----------------------------------------------------------------------

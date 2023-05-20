@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 // next
 import Head from 'next/head';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 // @mui
 import { Container, Typography, Stack, Pagination } from '@mui/material';
@@ -38,6 +39,8 @@ export default function ProductsPage() {
   const { themeStretch } = useSettingsContext();
 
   const { query } = useRouter();
+  const searchParams = useSearchParams();
+  console.log(searchParams.getAll('a'));
 
   const search = (query.q ?? '') as string;
 
@@ -97,6 +100,7 @@ export default function ProductsPage() {
     publisherId: publishersF.map((e) => e.id),
     startPrice: fixMinMax(min),
     endPrice: fixMinMax(max),
+    isFlashSale: searchParams.has('flashSale'),
   };
   const { data, isFetching } = useQuery({
     queryKey: ['products', filter, page, PAGE_SIZE],
@@ -139,7 +143,7 @@ export default function ProductsPage() {
       </Head>
 
       <FormProvider methods={methods}>
-        <Container maxWidth={themeStretch ? false : 'lg'}>
+        <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mb: -6 }}>
           <Stack direction="row" spacing={1} justifyContent="space-between" sx={{ my: 1 }}>
             <Stack my="auto">
               {!isFetching && (!isDefault || search) && data?.totalCount !== 0 && (
@@ -188,7 +192,7 @@ export default function ProductsPage() {
               showFirstButton
               boundaryCount={2}
               sx={{
-                mt: 2,
+                mt: 3,
                 mx: 'auto',
                 '& .MuiPagination-ul': {
                   justifyContent: 'center',

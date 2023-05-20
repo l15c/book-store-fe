@@ -64,7 +64,7 @@ export default function EcommerceCheckoutPage() {
 
   const cart = useSelector((state) => state.cart);
   const checkout = useSelector((state) => state.checkout);
-  const { products } = cart;
+  const { products, selected } = cart;
   const { billing, activeStep } = checkout;
 
   const completed = activeStep === STEPS.length;
@@ -100,7 +100,7 @@ export default function EcommerceCheckoutPage() {
   };
 
   const handleApplyDiscount = (value: number) => {
-    if (products.length) {
+    if (selected.length) {
       dispatch(applyDiscount(value));
     }
   };

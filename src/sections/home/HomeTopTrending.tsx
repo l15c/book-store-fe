@@ -16,9 +16,9 @@ import { getUrlImage } from '../../utils/cloudinary';
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
-  padding: theme.spacing(3, 0),
+  padding: theme.spacing(4, 0),
   [theme.breakpoints.up('md')]: {
-    padding: theme.spacing(8, 0),
+    padding: theme.spacing(10, 0),
   },
 }));
 
@@ -38,7 +38,7 @@ export default function HomeTopTrending({ data }: Props) {
     <StyledRoot>
       <Container component={MotionViewport}>
         <Stack
-          spacing={5}
+          spacing={3}
           sx={{
             textAlign: 'center',
             mb: 4,

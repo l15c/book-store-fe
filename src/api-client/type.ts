@@ -35,6 +35,7 @@ export type SearchPayload = Partial<{
   startPrice: number;
   endPrice: number;
   type: string[];
+  isFlashSale: boolean;
 }>;
 
 export type ListResponse<T> = {

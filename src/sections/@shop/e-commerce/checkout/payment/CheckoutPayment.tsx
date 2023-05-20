@@ -119,7 +119,7 @@ export default function CheckoutPayment({ onReset, onNextStep, onBackStep, onGot
         checkedCartId: compact(productsSelected.map((e) => e.cartId)),
         deliveryFee: shipping,
         payType: data.payment as PayType,
-        shipNote: 'abc',
+        shipNote: 'Note',
         userAddressId: billing!.id,
       });
 

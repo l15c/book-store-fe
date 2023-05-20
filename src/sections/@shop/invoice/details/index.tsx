@@ -47,7 +47,7 @@ export default function InvoiceDetails({ order }: Props) {
 
   const {
     totalPrice,
-    dayOfPayment,
+    dateOfPayment,
     deliveryFee,
     discountPrice,
     displayAddress,
@@ -133,7 +133,7 @@ export default function InvoiceDetails({ order }: Props) {
             </Typography>
 
             <Typography variant="body2">
-              {dayOfPayment ? fDate(dayOfPayment) : 'Chưa thanh toán'}
+              {dateOfPayment ? fDate(dateOfPayment) : 'Chưa thanh toán'}
             </Typography>
           </Grid>
         </Grid>
@@ -172,7 +172,7 @@ export default function InvoiceDetails({ order }: Props) {
                     <TableCell>{index + 1}</TableCell>
 
                     <TableCell align="left">
-                      <Box sx={{ maxWidth: 560 }}>
+                      <Box sx={{ maxWidth: 480 }}>
                         <Typography variant="subtitle2">{row.name}</Typography>
                       </Box>
                     </TableCell>

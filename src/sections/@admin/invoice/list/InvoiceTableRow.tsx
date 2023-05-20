@@ -1,180 +1,90 @@
-import { useState } from 'react';
 // @mui
-import {
-  Link,
-  Stack,
-  Button,
-  Divider,
-  Checkbox,
-  TableRow,
-  MenuItem,
-  TableCell,
-  IconButton,
-  Typography,
-} from '@mui/material';
+import { Stack, TableCell, TableRow, Typography } from '@mui/material';
 // utils
-import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
+import { fDate } from '../../../../utils/formatTime';
 // @types
-import { IInvoice } from '../../../../@types/invoice';
+import { IOrder } from '../../../../@types/order';
 // components
-import Label from '../../../../components/label';
-import Iconify from '../../../../components/iconify';
 import { CustomAvatar } from '../../../../components/custom-avatar';
-import MenuPopover from '../../../../components/menu-popover';
-import ConfirmDialog from '../../../../components/confirm-dialog';
+import Label from '../../../../components/label';
+import { COLOR_STATUS } from '../../../@shop/invoice/constant';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IInvoice;
-  selected: boolean;
-  onSelectRow: VoidFunction;
+  row: IOrder;
   onViewRow: VoidFunction;
-  onEditRow: VoidFunction;
-  onDeleteRow: VoidFunction;
 };
 
-export default function InvoiceTableRow({
-  row,
-  selected,
-  onSelectRow,
-  onViewRow,
-  onEditRow,
-  onDeleteRow,
-}: Props) {
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalPrice } = row;
-
-  const [openConfirm, setOpenConfirm] = useState(false);
-
-  const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
-
-  const handleOpenConfirm = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleCloseConfirm = () => {
-    setOpenConfirm(false);
-  };
-
-  const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
-    setOpenPopover(event.currentTarget);
-  };
-
-  const handleClosePopover = () => {
-    setOpenPopover(null);
-  };
+export default function InvoiceTableRow({ row, onViewRow }: Props) {
+  const {
+    shipPhone,
+    totalPrice,
+    deliveryFee,
+    dateOfPayment,
+    displayAddress,
+    orderDate,
+    shipName,
+    status,
+  } = row;
 
   return (
-    <>
-      <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+    <TableRow hover onClick={onViewRow} sx={{ cursor: 'pointer' }}>
+      <TableCell>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <CustomAvatar name={shipName} />
 
-        <TableCell>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <CustomAvatar name={invoiceTo.name} />
-
-            <div>
+          <div>
+            <Stack direction="row" spacing={1}>
               <Typography variant="subtitle2" noWrap>
-                {invoiceTo.name}
+                {shipName}
               </Typography>
-
-              <Link
+              <Typography
                 noWrap
                 variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                sx={{
+                  color: 'text.disabled',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitLineClamp: 1,
+                  maxWidth: 300,
+                }}
               >
-                {`INV-${invoiceNumber}`}
-              </Link>
-            </div>
-          </Stack>
-        </TableCell>
+                ({shipPhone})
+              </Typography>
+            </Stack>
 
-        <TableCell align="left">{fDate(createDate)}</TableCell>
+            <Typography
+              noWrap
+              variant="body2"
+              sx={{
+                color: 'text.disabled',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                WebkitLineClamp: 1,
+                maxWidth: 300,
+              }}
+            >
+              {displayAddress || '-'}
+            </Typography>
+          </div>
+        </Stack>
+      </TableCell>
 
-        <TableCell align="left">{fDate(dueDate)}</TableCell>
+      <TableCell align="center">{fDate(orderDate)}</TableCell>
 
-        <TableCell align="center">{fCurrency(totalPrice)}</TableCell>
+      <TableCell align="center">{dateOfPayment ? fDate('2023-05-19T15:45:50.475') : '-'}</TableCell>
 
-        <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
-          {sent}
-        </TableCell>
+      <TableCell align="center">{fCurrency(totalPrice + deliveryFee)}</TableCell>
 
-        <TableCell align="left">
-          <Label
-            variant="soft"
-            color={
-              (status === 'paid' && 'success') ||
-              (status === 'unpaid' && 'warning') ||
-              (status === 'overdue' && 'error') ||
-              'default'
-            }
-          >
-            {status}
-          </Label>
-        </TableCell>
+      <TableCell align="center">
+        <Label variant="soft" color={COLOR_STATUS[status]} sx={{ p: 1 }}>
+          {status}
+        </Label>
+      </TableCell>
 
-        <TableCell align="right">
-          <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
-      </TableRow>
-
-      <MenuPopover
-        open={openPopover}
-        onClose={handleClosePopover}
-        arrow="right-top"
-        sx={{ width: 160 }}
-      >
-        <MenuItem
-          onClick={() => {
-            onViewRow();
-            handleClosePopover();
-          }}
-        >
-          <Iconify icon="eva:eye-fill" />
-          View
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            onEditRow();
-            handleClosePopover();
-          }}
-        >
-          <Iconify icon="eva:edit-fill" />
-          Edit
-        </MenuItem>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem
-          onClick={() => {
-            handleOpenConfirm();
-            handleClosePopover();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="eva:trash-2-outline" />
-          Delete
-        </MenuItem>
-      </MenuPopover>
-
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={handleCloseConfirm}
-        title="Delete"
-        content="Are you sure want to delete?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
-    </>
+      <TableCell align="right">Action</TableCell>
+    </TableRow>
   );
 }

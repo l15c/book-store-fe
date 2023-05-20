@@ -1,23 +1,21 @@
-import { useState } from 'react';
 import sumBy from 'lodash/sumBy';
+import { useState } from 'react';
 // next
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import {
-  Tab,
-  Tabs,
   Card,
-  Table,
-  Stack,
-  Tooltip,
-  Divider,
-  TableBody,
   Container,
-  IconButton,
+  Divider,
+  Stack,
+  Tab,
+  Table,
+  TableBody,
   TableContainer,
+  Tabs,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 // routes
 import { PATH_SHOP } from 'src/routes/paths';
 // utils
@@ -27,29 +25,27 @@ import { IOrder } from 'src/@types/order';
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Label from 'src/components/label';
+import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
-  getComparator,
-  emptyRows,
-  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
+  TablePaginationActionsExtra,
   TablePaginationCustom,
   TableSkeleton,
-  TablePaginationActionsExtra,
+  emptyRows,
+  getComparator,
+  useTable,
 } from 'src/components/table';
 // sections
-import InvoiceAnalytic from 'src/sections/@shop/invoice/InvoiceAnalytic';
-import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@shop/invoice/list';
-import { GROUP_STATUS } from 'src/sections/@shop/invoice/constant';
 import { useQuery } from '@tanstack/react-query';
 import orderApi from 'src/api-client/order';
+import InvoiceAnalytic from 'src/sections/@shop/invoice/InvoiceAnalytic';
+import { GROUP_STATUS } from 'src/sections/@shop/invoice/constant';
+import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@shop/invoice/list';
 import { toNonAccentVietnamese as nonAccent } from 'src/utils/stringConverter';
 
 // ----------------------------------------------------------------------
@@ -57,7 +53,7 @@ import { toNonAccentVietnamese as nonAccent } from 'src/utils/stringConverter';
 const TABLE_HEAD = [
   { id: 'shipName', label: 'Thông tin đơn hàng', align: 'left', width: 480, minWidth: 480 },
   { id: 'orderDate', label: 'Ngày đặt hàng', align: 'center' },
-  { id: 'dayOfPayment', label: 'Ngày thanh toán', align: 'center' },
+  { id: 'dateOfPayment', label: 'Ngày thanh toán', align: 'center' },
   { id: 'totalPrice', label: 'Tổng đơn hàng', align: 'center', width: 140 },
   { id: 'status', label: 'Trạng thái', align: 'center', width: 180 },
 ];
@@ -82,10 +78,6 @@ export default function InvoiceIndexPage() {
     orderBy,
     rowsPerPage,
     setPage,
-    //
-    selected,
-    onSelectRow,
-    onSelectAllRows,
     //
     onSort,
     onChangeDense,
@@ -148,13 +140,13 @@ export default function InvoiceIndexPage() {
     },
     {
       value: 'warning',
-      label: 'Đang giao hàng',
+      label: 'Đang chờ',
       color: 'warning',
       count: getLengthByColorGroup('warning'),
     },
     {
       value: 'error',
-      label: 'Thất bại',
+      label: 'Đã hủy',
       color: 'error',
       count: getLengthByColorGroup('error'),
     },
@@ -244,7 +236,7 @@ export default function InvoiceIndexPage() {
               />
 
               <InvoiceAnalytic
-                title="Thất bại"
+                title="Đã hủy"
                 total={getLengthByColorGroup('error')}
                 percent={getPercentByColorGroup('error')}
                 price={getTotalPriceByColorGroup('error')}
@@ -305,48 +297,13 @@ export default function InvoiceIndexPage() {
           />
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={dense}
-              numSelected={selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Tải xuống">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="In đơn hàng">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:printer-fill" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
             <Scrollbar>
               <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={selected.length}
                   onSort={onSort}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
                   sx={{ whiteSpace: 'nowrap' }}
                 />
 
@@ -358,8 +315,6 @@ export default function InvoiceIndexPage() {
                         <InvoiceTableRow
                           key={row.id}
                           row={row}
-                          selected={selected.includes(row.id)}
-                          onSelectRow={() => onSelectRow(row.id)}
                           onViewRow={() => handleViewRow(row.id)}
                         />
                       ) : (

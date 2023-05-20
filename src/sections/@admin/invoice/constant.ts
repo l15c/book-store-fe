@@ -1,10 +1,10 @@
 import { LabelColor } from 'src/components/label';
 
 export const GROUP_STATUS: { [key: string]: string[] } = {
-  default: ['Đã thanh toán', 'Đang xử lý'],
-  success: ['Giao hàng thành công', 'Đổi/trả', 'Hoàn tiền', 'Đã hoàn thành'],
-  warning: ['Chờ thanh toán', 'Đang giao hàng', 'Yêu cầu hủy', 'Giao hàng thất bại'],
-  error: ['Đã hủy'],
+  default: ['Đang xử lý'],
+  success: ['Giao hàng thành công', 'Đã hoàn thành', 'Đã thanh toán'],
+  warning: ['Chờ thanh toán', 'Đang giao hàng', 'Đổi/trả', 'Hoàn tiền', 'Yêu cầu hủy'],
+  error: ['Đã hủy', 'Giao hàng thất bại'],
 };
 
 export const COLOR_STATUS: { [key: string]: LabelColor } = {

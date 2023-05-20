@@ -11,12 +11,13 @@ const bookApi = {
   getBySlug: (slug: string, config?: Config) => GET<IBook>(`/books/slugs/${slug}`, config),
 
   // HOMEPAGE
-  related: (bookId: string, config?: Config) =>
+  related: (bookId: number, config?: Config) =>
     GET<IBookCompact[]>(`/books/related?id=${bookId}`, config),
   bestSeller: (config?: Config) => GET<IBookCompact[]>('/books/best-seller', config),
   bestDiscount: (config?: Config) => GET<IBookCompact[]>('/books/best-discount', config),
   newest: (config?: Config) => GET<IBookCompact[]>('/books/newest', config),
   upComing: (config?: Config) => GET<IBookCompact[]>('/books/up-coming', config),
+  flashSale: (config?: Config) => GET<IBookCompact[]>('/books/flash-sale', config),
   random: (config?: Config) => GET<IBookCompact[]>('/books/random', config),
 
   // ADMIN

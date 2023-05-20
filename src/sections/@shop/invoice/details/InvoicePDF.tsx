@@ -17,7 +17,7 @@ type Props = {
 export default function InvoicePDF({ order }: Props) {
   const {
     totalPrice,
-    dayOfPayment,
+    dateOfPayment,
     deliveryFee,
     discountPrice,
     displayAddress,
@@ -59,7 +59,7 @@ export default function InvoicePDF({ order }: Props) {
           </View>
           <View style={styles.col4}>
             <Text style={[styles.overline, styles.mb8]}>Ngày thanh toán</Text>
-            <Text style={styles.body1}>{fDate(dayOfPayment)}</Text>
+            <Text style={styles.body1}>{fDate(dateOfPayment)}</Text>
           </View>
         </View>
 

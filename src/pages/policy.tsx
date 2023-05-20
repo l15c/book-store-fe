@@ -1,11 +1,11 @@
 // next
 import Head from 'next/head';
 // @mui
-import { Box, Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 // layouts
 import ShopLayout from 'src/layouts/shop/ShopLayout';
 // sections
-import { FaqsHero, FaqsCategory, FaqsList, FaqsForm } from 'src/sections/faqs';
+import { FaqsHero, FaqsCategory, FaqsList } from 'src/sections/faqs';
 
 // ----------------------------------------------------------------------
 

@@ -92,7 +92,7 @@ export default function SettingsDrawer() {
             Giao diện
           </Typography>
 
-          <Tooltip title="Reset">
+          <Tooltip title="Cài lại">
             <Box sx={{ position: 'relative' }}>
               {notDefault && <BadgeDot />}
               <IconButton onClick={onResetSetting}>

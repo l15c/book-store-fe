@@ -40,14 +40,11 @@ export default function CheckoutOrderComplete({ orderId, open, onReset, onDownlo
         <OrderCompleteIllustration sx={{ height: 260 }} />
 
         <Typography>
-          Cảm ơn đã đặt hàng tại Book Store
-          <br />
-          <br />
           <Link href={`/orders/${orderId}`}>{orderId}</Link>
           <br />
           <br />
           Chúng tôi sẽ gửi thông báo cho bạn trong vòng 5 ngày khi hàng được giao.
-          <br /> Nếu bạn có bất kỳ câu hỏi hoặc thắc mắc nào, hãy liên hệ với chúng tôi. <br />
+          <br />
           Chúc một ngày tốt lành
           <br />
         </Typography>
@@ -74,6 +71,7 @@ export default function CheckoutOrderComplete({ orderId, open, onReset, onDownlo
             fullWidth
             size="large"
             variant="contained"
+            disabled
             startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
             onClick={onDownloadPDF}
           >

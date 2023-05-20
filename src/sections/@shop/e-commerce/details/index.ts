@@ -1,4 +1,5 @@
 export { default as ProductDetailsCarousel } from './ProductDetailsCarousel';
+export { default as ProductDetailsRelated } from './ProductDetailsRelated';
 export { default as ProductDetailsSummary } from './ProductDetailsSummary';
 
 export { default as ProductDetailsReview } from './ProductDetailsReview';

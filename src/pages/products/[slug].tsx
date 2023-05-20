@@ -6,7 +6,7 @@ import { Box, Tab, Tabs, Card, Grid, Divider, Container } from '@mui/material';
 // redux
 import { gotoStep } from 'src/redux/slices/checkout';
 // @types
-import { IBook, ICartItem } from 'src/@types/book';
+import { IBook, IBookCompact, ICartItem } from 'src/@types/book';
 // layouts
 import ShopLayout from 'src/layouts/shop';
 // components
@@ -18,6 +18,7 @@ import {
   ProductDetailsSummary,
   ProductDetailsReview,
   ProductDetailsCarousel,
+  ProductDetailsRelated,
 } from 'src/sections/@shop/e-commerce/details';
 import bookApi from 'src/api-client/book';
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -26,6 +27,7 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { addToCart } from 'src/redux/slices/cart';
 import { useAuthContext } from 'src/auth/useAuthContext';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 
 // ----------------------------------------------------------------------
 
@@ -73,6 +75,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   try {
     const { slug } = context.params as IParams;
     const book = await bookApi.getBySlug(slug, { baseURL: `${ENDPOINT}/api` });
+    const booksRelated = await bookApi.related(book.id, { baseURL: `${ENDPOINT}/api` });
     if (!book)
       return {
         notFound: true,
@@ -80,6 +83,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return {
       props: {
         book,
+        booksRelated,
       },
       revalidate: 60 * 15,
     };
@@ -96,12 +100,14 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
 type Props = {
   book: IBook;
+  booksRelated: IBookCompact[];
 };
 
-export default function ProductDetailsPage({ book: _book }: Props) {
+export default function ProductDetailsPage({ book: _book, booksRelated }: Props) {
   const { themeStretch } = useSettingsContext();
   const { user } = useAuthContext();
   const dispatch = useDispatch();
+  const { asPath } = useRouter();
 
   const { data: book, isFetching } = useQuery({
     initialData: _book,
@@ -149,6 +155,13 @@ export default function ProductDetailsPage({ book: _book }: Props) {
     }
   }, [TABS, currentTab, triggerScroll]);
 
+  useEffect(
+    () => () => {
+      firstUpdate.current = true;
+    },
+    [asPath]
+  );
+
   return (
     <>
       <Head>
@@ -177,40 +190,7 @@ export default function ProductDetailsPage({ book: _book }: Props) {
               </Grid>
             </Grid>
 
-            {/* <Box
-              gap={5}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                md: 'repeat(3, 1fr)',
-              }}
-              sx={{ my: 10 }}
-            >
-              {SUMMARY.map((item) => (
-                <Box key={item.title} sx={{ textAlign: 'center' }}>
-                  <Stack
-                    alignItems="center"
-                    justifyContent="center"
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      mx: 'auto',
-                      borderRadius: '50%',
-                      color: 'primary.main',
-                      bgcolor: (theme) => `${alpha(theme.palette.primary.main, 0.08)}`,
-                    }}
-                  >
-                    <Iconify icon={item.icon} width={36} />
-                  </Stack>
-
-                  <Typography variant="h6" sx={{ mb: 1, mt: 3 }}>
-                    {item.title}
-                  </Typography>
-
-                  <Typography sx={{ color: 'text.secondary' }}>{item.description}</Typography>
-                </Box>
-              ))}
-            </Box> */}
+            <ProductDetailsRelated books={booksRelated} />
 
             <Card sx={{ my: 8 }}>
               <Tabs

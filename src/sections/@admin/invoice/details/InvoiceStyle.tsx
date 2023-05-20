@@ -21,9 +21,11 @@ const styles = StyleSheet.create({
   },
   h3: { fontSize: 16, fontWeight: 700 },
   h4: { fontSize: 13, fontWeight: 700 },
+  h5: { fontSize: 12, fontWeight: 700 },
   body1: { fontSize: 10 },
   subtitle2: { fontSize: 9, fontWeight: 700 },
   alignRight: { textAlign: 'right' },
+  alignCenter: { textAlign: 'center' },
   page: {
     padding: '40px 24px 0 24px',
     fontSize: 9,
@@ -58,6 +60,7 @@ const styles = StyleSheet.create({
   tableCell_1: { width: '5%' },
   tableCell_2: { width: '50%', paddingRight: 16 },
   tableCell_3: { width: '15%' },
+  tableCell_4: { width: '10%' },
 });
 
 export default styles;

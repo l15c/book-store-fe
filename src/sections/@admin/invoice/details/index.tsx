@@ -17,13 +17,14 @@ import {
 import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
 // _mock_
-import { IInvoice } from '../../../../@types/invoice';
+import { IOrder } from '../../../../@types/order';
 // components
 import Label from '../../../../components/label';
-import Image from '../../../../components/image';
 import Scrollbar from '../../../../components/scrollbar';
+import Logo from '../../../../components/logo/BookShop';
 //
 import InvoiceToolbar from './InvoiceToolbar';
+import { COLOR_STATUS } from '../constant';
 
 // ----------------------------------------------------------------------
 
@@ -37,95 +38,105 @@ const StyledRowResult = styled(TableRow)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice?: IInvoice;
+  order?: IOrder;
 };
 
-export default function InvoiceDetails({ invoice }: Props) {
-  if (!invoice) {
+export default function InvoiceDetails({ order }: Props) {
+  if (!order) {
     return null;
   }
 
   const {
-    items,
-    taxes,
-    status,
-    dueDate,
-    discount,
-    invoiceTo,
-    createDate,
     totalPrice,
-    invoiceFrom,
-    invoiceNumber,
-    subTotalPrice,
-  } = invoice;
+    dateOfPayment,
+    deliveryFee,
+    discountPrice,
+    displayAddress,
+    orderDetails = [],
+    shipNote,
+    shipPhone,
+    id,
+    orderDate,
+    shipName,
+    status,
+  } = order;
 
   return (
     <>
-      <InvoiceToolbar invoice={invoice} />
+      <InvoiceToolbar order={order} />
 
       <Card sx={{ pt: 5, px: 5 }}>
         <Grid container>
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
-            <Image disabledEffect alt="logo" src="/logo/logo_full.svg" sx={{ maxWidth: 120 }} />
+            <Logo disabledLink />
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Box sx={{ textAlign: { sm: 'right' } }}>
               <Label
                 variant="soft"
-                color={
-                  (status === 'paid' && 'success') ||
-                  (status === 'unpaid' && 'warning') ||
-                  (status === 'overdue' && 'error') ||
-                  'default'
-                }
-                sx={{ textTransform: 'uppercase', mb: 1 }}
+                color={COLOR_STATUS[status] || 'default'}
+                sx={{ textTransform: 'uppercase', mb: 1, p: 2 }}
               >
                 {status}
               </Label>
 
-              <Typography variant="h6">{`INV-${invoiceNumber}`}</Typography>
+              <Typography variant="body2">{`Mã đơn hàng: ${id}`}</Typography>
             </Box>
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Invoice from
+              Thông tin người nhận
             </Typography>
 
-            <Typography variant="body2">{invoiceFrom.name}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Tên người nhận:&nbsp;
+              </Typography>
+              <b>{shipName}</b>
+            </Typography>
 
-            <Typography variant="body2">{invoiceFrom.address}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                <Typography variant="body2" component="span" color="text.secondary">
+                  Số điện thoại:&nbsp;
+                </Typography>
+              </Typography>
+              {shipPhone}
+            </Typography>
 
-            <Typography variant="body2">Phone: {invoiceFrom.phone}</Typography>
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Địa chỉ:&nbsp;
+              </Typography>
+              {displayAddress}
+            </Typography>
+
+            <Typography variant="body2">
+              <Typography variant="body2" component="span" color="text.secondary">
+                Ghi chú:&nbsp;
+              </Typography>
+              {shipNote}
+            </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
+          <Grid item xs={12} sm={3} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Invoice to
+              Ngày đặt hàng
             </Typography>
 
-            <Typography variant="body2">{invoiceTo.name}</Typography>
-
-            <Typography variant="body2">{invoiceTo.address}</Typography>
-
-            <Typography variant="body2">Phone: {invoiceTo.phone}</Typography>
+            <Typography variant="body2">{fDate(orderDate)}</Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
+          <Grid item xs={12} sm={3} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              date create
+              Ngày thanh toán
             </Typography>
 
-            <Typography variant="body2">{fDate(createDate)}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
-            <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Due date
+            <Typography variant="body2">
+              {dateOfPayment ? fDate(dateOfPayment) : 'Chưa thanh toán'}
             </Typography>
-
-            <Typography variant="body2">{fDate(dueDate)}</Typography>
           </Grid>
         </Grid>
 
@@ -141,18 +152,19 @@ export default function InvoiceDetails({ invoice }: Props) {
                 <TableRow>
                   <TableCell width={40}>#</TableCell>
 
-                  <TableCell align="left">Description</TableCell>
+                  <TableCell align="left">Tên sản phẩm</TableCell>
 
-                  <TableCell align="left">Qty</TableCell>
+                  <TableCell align="center">Số lượng</TableCell>
 
-                  <TableCell align="right">Unit price</TableCell>
+                  <TableCell align="right">Đơn giá</TableCell>
+                  <TableCell align="center">Giảm giá</TableCell>
 
-                  <TableCell align="right">Total</TableCell>
+                  <TableCell align="right">Thành tiền</TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {items.map((row, index) => (
+                {orderDetails.map((row, index) => (
                   <TableRow
                     key={index}
                     sx={{
@@ -162,42 +174,27 @@ export default function InvoiceDetails({ invoice }: Props) {
                     <TableCell>{index + 1}</TableCell>
 
                     <TableCell align="left">
-                      <Box sx={{ maxWidth: 560 }}>
-                        <Typography variant="subtitle2">{row.title}</Typography>
-
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                          {row.description}
-                        </Typography>
+                      <Box sx={{ maxWidth: 480 }}>
+                        <Typography variant="subtitle2">{row.name}</Typography>
                       </Box>
                     </TableCell>
 
-                    <TableCell align="left">{row.quantity}</TableCell>
+                    <TableCell align="center">{row.quantity}</TableCell>
 
                     <TableCell align="right">{fCurrency(row.price)}</TableCell>
-
-                    <TableCell align="right">{fCurrency(row.price * row.quantity)}</TableCell>
+                    <TableCell align="center">{row.discount ? `${row.discount}%` : '-'}</TableCell>
+                    <TableCell align="right">
+                      {fCurrency(row.price * (1 - row.discount / 100) * row.quantity)}
+                    </TableCell>
                   </TableRow>
                 ))}
 
                 <StyledRowResult>
-                  <TableCell colSpan={3} />
+                  <TableCell colSpan={4} />
 
                   <TableCell align="right" sx={{ typography: 'body1' }}>
                     <Box sx={{ mt: 2 }} />
-                    Subtotal
-                  </TableCell>
-
-                  <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
-                    <Box sx={{ mt: 2 }} />
-                    {fCurrency(subTotalPrice)}
-                  </TableCell>
-                </StyledRowResult>
-
-                <StyledRowResult>
-                  <TableCell colSpan={3} />
-
-                  <TableCell align="right" sx={{ typography: 'body1' }}>
-                    Discount
+                    Đã giảm giá
                   </TableCell>
 
                   <TableCell
@@ -205,31 +202,44 @@ export default function InvoiceDetails({ invoice }: Props) {
                     width={120}
                     sx={{ color: 'error.main', typography: 'body1' }}
                   >
-                    {discount && fCurrency(-discount)}
+                    <Box sx={{ mt: 2 }} />
+                    {discountPrice && fCurrency(discountPrice)}
                   </TableCell>
                 </StyledRowResult>
 
                 <StyledRowResult>
-                  <TableCell colSpan={3} />
+                  <TableCell colSpan={4} />
 
                   <TableCell align="right" sx={{ typography: 'body1' }}>
-                    Taxes
+                    Tạm tính
                   </TableCell>
 
                   <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
-                    {taxes && fCurrency(taxes)}
+                    {fCurrency(totalPrice)}
                   </TableCell>
                 </StyledRowResult>
 
                 <StyledRowResult>
-                  <TableCell colSpan={3} />
+                  <TableCell colSpan={4} />
+
+                  <TableCell align="right" sx={{ typography: 'body1' }}>
+                    Phí vận chuyển
+                  </TableCell>
+
+                  <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
+                    {deliveryFee && fCurrency(deliveryFee)}
+                  </TableCell>
+                </StyledRowResult>
+
+                <StyledRowResult>
+                  <TableCell colSpan={4} />
 
                   <TableCell align="right" sx={{ typography: 'h6' }}>
-                    Total
+                    Tổng tiền
                   </TableCell>
 
                   <TableCell align="right" width={140} sx={{ typography: 'h6' }}>
-                    {fCurrency(totalPrice)}
+                    {fCurrency(totalPrice + deliveryFee)}
                   </TableCell>
                 </StyledRowResult>
               </TableBody>
@@ -240,18 +250,12 @@ export default function InvoiceDetails({ invoice }: Props) {
         <Divider sx={{ mt: 5 }} />
 
         <Grid container>
-          <Grid item xs={12} md={9} sx={{ py: 3 }}>
-            <Typography variant="subtitle2">NOTES</Typography>
+          <Grid item xs={12} md={6} sx={{ py: 3 }} />
 
-            <Typography variant="body2">
-              We appreciate your business. Should you need us to add VAT or extra notes let us know!
-            </Typography>
-          </Grid>
+          <Grid item xs={12} md={6} sx={{ py: 3, textAlign: 'right' }}>
+            <Typography variant="subtitle2">Bạn cần trợ giúp?</Typography>
 
-          <Grid item xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
-            <Typography variant="subtitle2">Have a Question?</Typography>
-
-            <Typography variant="body2">support@minimals.cc</Typography>
+            <Typography variant="body2">Vui lòng liên hệ: bookstore.cn19clcb@gmail.com</Typography>
           </Grid>
         </Grid>
       </Card>

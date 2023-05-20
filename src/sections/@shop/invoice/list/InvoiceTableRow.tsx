@@ -1,5 +1,5 @@
 // @mui
-import { Checkbox, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { Stack, TableCell, TableRow, Typography } from '@mui/material';
 // @types
 import { IOrder } from 'src/@types/order';
 // utils
@@ -14,17 +14,15 @@ import { COLOR_STATUS } from '../constant';
 
 type Props = {
   row: IOrder;
-  selected: boolean;
-  onSelectRow: VoidFunction;
   onViewRow: VoidFunction;
 };
 
-export default function InvoiceTableRow({ row, selected, onSelectRow, onViewRow }: Props) {
+export default function InvoiceTableRow({ row, onViewRow }: Props) {
   const {
     shipPhone,
     totalPrice,
     deliveryFee,
-    dayOfPayment,
+    dateOfPayment,
     displayAddress,
     orderDate,
     shipName,
@@ -32,17 +30,7 @@ export default function InvoiceTableRow({ row, selected, onSelectRow, onViewRow 
   } = row;
 
   return (
-    <TableRow hover selected={selected} onClick={onViewRow} sx={{ cursor: 'pointer' }}>
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={selected}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelectRow();
-          }}
-        />
-      </TableCell>
-
+    <TableRow hover onClick={onViewRow} sx={{ cursor: 'pointer' }}>
       <TableCell>
         <Stack direction="row" alignItems="center" spacing={2}>
           <CustomAvatar name={shipName} />
@@ -86,7 +74,7 @@ export default function InvoiceTableRow({ row, selected, onSelectRow, onViewRow 
 
       <TableCell align="center">{fDate(orderDate)}</TableCell>
 
-      <TableCell align="center">{dayOfPayment ? fDate(dayOfPayment) : '-'}</TableCell>
+      <TableCell align="center">{dateOfPayment ? fDate(dateOfPayment) : '-'}</TableCell>
 
       <TableCell align="center">{fCurrency(totalPrice + deliveryFee)}</TableCell>
 

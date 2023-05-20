@@ -1,8 +1,11 @@
 import { m } from 'framer-motion';
+import NextImage from 'next/image';
+import SvgFlashSale from 'src/assets/images/label-flashsale.svg';
+
 // next
 import NextLink from 'next/link';
 // @mui
-import { Box, Card, Link, Stack, Fab } from '@mui/material';
+import { Box, Card, Link, Stack, Fab, Typography } from '@mui/material';
 // routes
 import { PATH_SHOP } from 'src/routes/paths';
 // utils
@@ -19,32 +22,31 @@ import Image from 'src/components/image';
 import TextMaxLine from 'src/components/text-max-line/TextMaxLine';
 import { getUrlImage } from 'src/utils/cloudinary';
 import { useAuthContext } from 'src/auth/useAuthContext';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   book: IBookCompact;
+  disableFlashSale?: boolean;
 };
 
-const genStatus = (quantity: number, discount: number) => {
+const genStatus = (quantity: number) => {
   let status = null;
-  if (discount)
-    status = {
-      text: `-${discount}%`,
-      color: 'error',
-      sx: { borderRadius: 999, p: 2, width: 48, height: 48, fontSize: 15 },
-    };
-  if (quantity === 0) status = { text: 'Tạm hết hàng', color: 'default' };
+  if (quantity === 0) status = { text: 'Tạm hết hàng', color: 'warning' };
   if (quantity < 0) status = { text: 'Ngừng bán', color: 'default' };
   return status;
 };
 
-export default function ShopProductCard({ book }: Props) {
-  const { name, slug, cover, price, quantity, discount } = book;
+export default function ShopProductCard({ book, disableFlashSale }: Props) {
+  const { name, slug, cover, price, quantity, discount, saleStartDate, saleEndDate } = book;
   const dispatch = useDispatch();
   const { user } = useAuthContext();
   const products = useSelector((state) => state.cart.products);
-  const status = genStatus(quantity, discount);
+
+  const isFlashSale = moment().isBetween(saleStartDate, saleEndDate, 'hours', '[]');
+
+  const status = genStatus(quantity);
 
   const linkTo = PATH_SHOP.product.view(slug);
 
@@ -69,12 +71,13 @@ export default function ShopProductCard({ book }: Props) {
         duration: 0.2,
       }}
       sx={{
+        position: 'relative',
         '&:hover .add-cart-btn': {
           opacity: 1,
         },
         // transition: 'all .17s ease-in-out',
         '&:hover': {
-          boxShadow: (theme) => theme.shadows[24],
+          boxShadow: (theme) => theme.shadows[16],
           // transform: 'scale(1.03)',
         },
       }}
@@ -92,12 +95,82 @@ export default function ShopProductCard({ book }: Props) {
                 py: 2,
                 position: 'absolute',
                 textTransform: 'uppercase',
-                ...status?.sx,
               }}
             >
               {status.text}
             </Label>
           )}
+
+          {!status &&
+            ((isFlashSale && !disableFlashSale && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  p: 0.5,
+                  borderRadius: 1,
+                  alignItems: 'center',
+                  background:
+                    'transparent linear-gradient(180deg, #FF6D6D 0%, #FF5247 100%) 0% 0% no-repeat padding-box',
+                  position: 'absolute',
+                  right: 8,
+                  zIndex: 9,
+                }}
+              >
+                <Stack
+                  direction="row"
+                  mr="auto"
+                  spacing={0.5}
+                  sx={{
+                    bgcolor: '#fff',
+                    px: 1,
+                    borderRadius: 1,
+                  }}
+                >
+                  <NextImage alt="label-flashsale" src={SvgFlashSale} />
+                </Stack>
+
+                <Typography fontWeight={700} color="white">
+                  {discount}%
+                </Typography>
+              </Stack>
+            )) ||
+              (discount && (
+                <Label
+                  variant="filled"
+                  color="error"
+                  sx={{
+                    top: 16,
+                    right: 16,
+                    zIndex: 9,
+                    py: 2,
+                    position: 'absolute',
+                    textTransform: 'uppercase',
+                    borderRadius: 0,
+                    p: 2,
+                    width: 40,
+                    height: 40,
+                    fontSize: 15,
+                    textAlign: 'center',
+                    '&:before, &:after': {
+                      content: '""',
+                      position: 'absolute',
+                      height: 40,
+                      width: 40,
+                      background: 'inherit',
+                      zIndex: -1,
+                    },
+                    '&:before': {
+                      transform: 'rotate(30deg)',
+                    },
+                    '&:after': {
+                      transform: 'rotate(60deg)',
+                    },
+                  }}
+                >
+                  {`-${discount}%`}
+                </Label>
+              )))}
 
           <Fab
             color="warning"
@@ -133,7 +206,7 @@ export default function ShopProductCard({ book }: Props) {
         </Box>
 
         <Stack spacing={2.5} sx={{ p: 3 }}>
-          <TextMaxLine line={2} variant="subtitle2">
+          <TextMaxLine line={2} persistent variant="subtitle2">
             {name}
           </TextMaxLine>
 

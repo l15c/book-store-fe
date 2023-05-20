@@ -1,12 +1,10 @@
 // next
 import Head from 'next/head';
-// @mui
-import { Divider } from '@mui/material';
 // layouts
 import ShopLayout from 'src/layouts/shop/ShopLayout';
 // sections
 import AboutMap from 'src/sections/about/AboutMap';
-import { AboutHero, AboutWhat, AboutVision, AboutTestimonials } from '../sections/about';
+import { AboutHero, AboutWhat } from '../sections/about';
 
 // ----------------------------------------------------------------------
 

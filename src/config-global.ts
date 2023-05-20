@@ -35,9 +35,9 @@ export const PATH_AFTER_LOGIN = PATH_ADMIN.general.app; // as '/dashboard/app'
 // ----------------------------------------------------------------------
 
 export const HEADER = {
-  H_MOBILE: 72,
-  H_DESKTOP: 72,
-  H_DESKTOP_OFFSET: 72 - 8,
+  H_MOBILE: 64,
+  H_DESKTOP: 64,
+  H_DESKTOP_OFFSET: 64 - 8,
 };
 
 export const NAV = {

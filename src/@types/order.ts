@@ -24,7 +24,7 @@ export type IOrder = {
   discountPrice: number;
   totalPrice: number;
   status: string;
-  dayOfPayment: string;
+  dateOfPayment: string;
   isPay: boolean;
   payType: PayType;
   orderDetails: IOrderDetail[];

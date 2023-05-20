@@ -3,6 +3,7 @@ import { GET, POST, DELETE } from './axios';
 
 const orderApi = {
   getList: () => GET<IOrder[]>('/orders'),
+  adminGetAll: () => GET<IOrder[]>('/orders/all'),
   getById: (id: string) => GET<IOrder>(`/orders/${id}`),
   create: (data: CreateOrder) => POST<CreateOrder, IOrder | string>('/orders', data),
   update: (data: any) => POST('/orders', data),

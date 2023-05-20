@@ -1,75 +1,58 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import sumBy from 'lodash/sumBy';
 // next
 import Head from 'next/head';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import {
-  Tab,
-  Tabs,
   Card,
-  Table,
-  Stack,
-  Button,
-  Tooltip,
-  Divider,
-  TableBody,
   Container,
-  IconButton,
+  Divider,
+  Tab,
+  Table,
+  TableBody,
   TableContainer,
+  Tabs,
 } from '@mui/material';
 // routes
 import { PATH_ADMIN } from 'src/routes/paths';
+// api
+import orderApi from 'src/api-client/order';
 // utils
 import { fTimestampDate } from 'src/utils/formatTime';
-// _mock_
-import { _invoices } from 'src/_mock/arrays';
+import { toNonAccentVietnamese as nonAccent } from 'src/utils/stringConverter';
 // @types
-import { IInvoice } from 'src/@types/invoice';
+import { IOrder } from 'src/@types/order';
 // layouts
 import AdminLayout from 'src/layouts/admin';
 // components
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-import ConfirmDialog from 'src/components/confirm-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Label from 'src/components/label';
+import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import {
-  useTable,
-  getComparator,
-  emptyRows,
-  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSkeleton,
+  emptyRows,
+  getComparator,
+  useTable,
 } from 'src/components/table';
 // sections
-import InvoiceAnalytic from 'src/sections/@admin/invoice/InvoiceAnalytic';
+import { GROUP_STATUS } from 'src/sections/@admin/invoice/constant';
 import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@admin/invoice/list';
 
 // ----------------------------------------------------------------------
 
-const SERVICE_OPTIONS = [
-  'all',
-  'full stack development',
-  'backend development',
-  'ui design',
-  'ui/ux design',
-  'front end development',
-];
-
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Client', align: 'left' },
-  { id: 'createDate', label: 'Create', align: 'left' },
-  { id: 'dueDate', label: 'Due', align: 'left' },
-  { id: 'price', label: 'Amount', align: 'center', width: 140 },
-  { id: 'sent', label: 'Sent', align: 'center', width: 140 },
-  { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
+  { id: 'shipName', label: 'Thông tin đơn hàng', align: 'left', width: 400, minWidth: 400 },
+  { id: 'orderDate', label: 'Ngày đặt hàng', align: 'center' },
+  { id: 'dateOfPayment', label: 'Ngày thanh toán', align: 'center' },
+  { id: 'totalPrice', label: 'Tổng đơn hàng', align: 'center', width: 140 },
+  { id: 'status', label: 'Trạng thái', align: 'center', width: 180 },
+  { id: 'action' },
 ];
 
 // ----------------------------------------------------------------------
@@ -79,8 +62,6 @@ InvoiceIndexPage.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</
 // ----------------------------------------------------------------------
 
 export default function InvoiceIndexPage() {
-  const theme = useTheme();
-
   const { themeStretch } = useSettingsContext();
 
   const { push } = useRouter();
@@ -93,26 +74,27 @@ export default function InvoiceIndexPage() {
     rowsPerPage,
     setPage,
     //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
     onSort,
     onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({ defaultOrderBy: 'createDate' });
+  } = useTable({ defaultOrderBy: 'orderDate', defaultOrder: 'desc' });
 
-  const [tableData, setTableData] = useState(_invoices);
+  const { data: tableData = [], isFetching } = useQuery({
+    queryKey: ['admin', 'orders'],
+    queryFn: () => orderApi.adminGetAll(),
+  });
 
   const [filterName, setFilterName] = useState('');
 
-  const [openConfirm, setOpenConfirm] = useState(false);
-
   const [filterStatus, setFilterStatus] = useState('all');
 
-  const [filterService, setFilterService] = useState('all');
+  const [serviceOpt, setServiceOpt] = useState([
+    ...Object.keys(GROUP_STATUS)
+      .map((key) => GROUP_STATUS[key])
+      .flat(),
+  ]);
+  const [filterService, setFilterService] = useState('Tất cả');
 
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
 
@@ -128,53 +110,59 @@ export default function InvoiceIndexPage() {
     filterEndDate,
   });
 
-  const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   const denseHeight = dense ? 56 : 76;
 
   const isFiltered =
     filterStatus !== 'all' ||
     filterName !== '' ||
-    filterService !== 'all' ||
+    filterService !== 'Tất cả' ||
     (!!filterStartDate && !!filterEndDate);
 
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterStatus) ||
-    (!dataFiltered.length && !!filterService) ||
-    (!dataFiltered.length && !!filterEndDate) ||
-    (!dataFiltered.length && !!filterStartDate);
+  const isNotFound = dataFiltered.length === 0;
 
-  const getLengthByStatus = (status: string) =>
-    tableData.filter((item) => item.status === status).length;
-
-  const getTotalPriceByStatus = (status: string) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      'totalPrice'
-    );
-
-  const getPercentByStatus = (status: string) =>
-    (getLengthByStatus(status) / tableData.length) * 100;
+  const getLengthByColorGroup = (color: string) =>
+    tableData.filter((item) => GROUP_STATUS[color].includes(item.status)).length;
 
   const TABS = [
-    { value: 'all', label: 'All', color: 'info', count: tableData.length },
-    { value: 'paid', label: 'Paid', color: 'success', count: getLengthByStatus('paid') },
-    { value: 'unpaid', label: 'Unpaid', color: 'warning', count: getLengthByStatus('unpaid') },
-    { value: 'overdue', label: 'Overdue', color: 'error', count: getLengthByStatus('overdue') },
-    { value: 'draft', label: 'Draft', color: 'default', count: getLengthByStatus('draft') },
+    { value: 'all', label: 'Tất cả', color: 'info', count: tableData.length },
+    {
+      value: 'success',
+      label: 'Thành công',
+      color: 'success',
+      count: getLengthByColorGroup('success'),
+    },
+    {
+      value: 'warning',
+      label: 'Chờ giải quyết',
+      color: 'warning',
+      count: getLengthByColorGroup('warning'),
+    },
+    {
+      value: 'error',
+      label: 'Thất bại',
+      color: 'error',
+      count: getLengthByColorGroup('error'),
+    },
+    {
+      value: 'default',
+      label: 'Chờ xác nhận',
+      color: 'default',
+      count: getLengthByColorGroup('default'),
+    },
   ] as const;
-
-  const handleOpenConfirm = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleCloseConfirm = () => {
-    setOpenConfirm(false);
-  };
 
   const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
     setPage(0);
+    setFilterService('Tất cả');
+    if (newValue === 'all') {
+      setServiceOpt(
+        Object.keys(GROUP_STATUS)
+          .map((key) => GROUP_STATUS[key])
+          .flat()
+      );
+    } else {
+      setServiceOpt(GROUP_STATUS[newValue]);
+    }
     setFilterStatus(newValue);
   };
 
@@ -188,39 +176,6 @@ export default function InvoiceIndexPage() {
     setFilterService(event.target.value);
   };
 
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-
-    if (page > 0) {
-      if (dataInPage.length < 2) {
-        setPage(page - 1);
-      }
-    }
-  };
-
-  const handleDeleteRows = (selectedRows: (string | number)[]) => {
-    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
-
-    if (page > 0) {
-      if (selectedRows.length === dataInPage.length) {
-        setPage(page - 1);
-      } else if (selectedRows.length === dataFiltered.length) {
-        setPage(0);
-      } else if (selectedRows.length > dataInPage.length) {
-        const newPage = Math.ceil((tableData.length - selectedRows.length) / rowsPerPage) - 1;
-        setPage(newPage);
-      }
-    }
-  };
-
-  const handleEditRow = (id: string) => {
-    push(PATH_ADMIN.invoice.edit(id));
-  };
-
   const handleViewRow = (id: string) => {
     push(PATH_ADMIN.invoice.view(id));
   };
@@ -228,7 +183,7 @@ export default function InvoiceIndexPage() {
   const handleResetFilter = () => {
     setFilterName('');
     setFilterStatus('all');
-    setFilterService('all');
+    setFilterService('Tất cả');
     setFilterEndDate(null);
     setFilterStartDate(null);
   };
@@ -236,92 +191,21 @@ export default function InvoiceIndexPage() {
   return (
     <>
       <Head>
-        <title> Invoice: List | Minimal UI</title>
+        <title>Danh sách đơn hàng | Book Store</title>
       </Head>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Invoice List"
           links={[
             {
-              name: 'Dashboard',
+              name: 'Trang chủ',
               href: PATH_ADMIN.root,
             },
             {
-              name: 'Invoices',
-              href: PATH_ADMIN.invoice.root,
-            },
-            {
-              name: 'List',
+              name: 'Danh sách đơn hàng',
             },
           ]}
-          action={
-            <Button
-              component={NextLink}
-              href={PATH_ADMIN.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-            >
-              New Invoice
-            </Button>
-          }
         />
-
-        <Card sx={{ mb: 5 }}>
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <InvoiceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, 'totalPrice')}
-                icon="ic:round-receipt"
-                color={theme.palette.info.main}
-              />
-
-              <InvoiceAnalytic
-                title="Paid"
-                total={getLengthByStatus('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalPriceByStatus('paid')}
-                icon="eva:checkmark-circle-2-fill"
-                color={theme.palette.success.main}
-              />
-
-              <InvoiceAnalytic
-                title="Unpaid"
-                total={getLengthByStatus('unpaid')}
-                percent={getPercentByStatus('unpaid')}
-                price={getTotalPriceByStatus('unpaid')}
-                icon="eva:clock-fill"
-                color={theme.palette.warning.main}
-              />
-
-              <InvoiceAnalytic
-                title="Overdue"
-                total={getLengthByStatus('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalPriceByStatus('overdue')}
-                icon="eva:bell-fill"
-                color={theme.palette.error.main}
-              />
-
-              <InvoiceAnalytic
-                title="Draft"
-                total={getLengthByStatus('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalPriceByStatus('draft')}
-                icon="eva:file-fill"
-                color={theme.palette.text.secondary}
-              />
-            </Stack>
-          </Scrollbar>
-        </Card>
-
         <Card>
           <Tabs
             value={filterStatus}
@@ -353,7 +237,7 @@ export default function InvoiceIndexPage() {
             filterService={filterService}
             filterEndDate={filterEndDate}
             onFilterName={handleFilterName}
-            optionsService={SERVICE_OPTIONS}
+            optionsService={['Tất cả', ...serviceOpt]}
             onResetFilter={handleResetFilter}
             filterStartDate={filterStartDate}
             onFilterService={handleFilterService}
@@ -366,83 +250,37 @@ export default function InvoiceIndexPage() {
           />
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={dense}
-              numSelected={selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="ic:round-send" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:printer-fill" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={handleOpenConfirm}>
-                      <Iconify icon="eva:trash-2-outline" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
             <Scrollbar>
               <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={selected.length}
                   onSort={onSort}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
+                  sx={{ whiteSpace: 'nowrap' }}
                 />
 
                 <TableBody>
-                  {dataFiltered
+                  {(isFetching ? [...Array(rowsPerPage)] : dataFiltered)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <InvoiceTableRow
-                        key={row.id}
-                        row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
+                    .map((row, index) =>
+                      row ? (
+                        <InvoiceTableRow
+                          key={row.id}
+                          row={row}
+                          onViewRow={() => handleViewRow(row.id)}
+                        />
+                      ) : (
+                        <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                      )
+                    )}
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableNoData isNotFound={isNotFound} />
+                  <TableNoData isNotFound={!isFetching && isNotFound} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -460,29 +298,6 @@ export default function InvoiceIndexPage() {
           />
         </Card>
       </Container>
-
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={handleCloseConfirm}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows(selected);
-              handleCloseConfirm();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }
@@ -498,7 +313,7 @@ function applyFilter({
   filterStartDate,
   filterEndDate,
 }: {
-  inputData: IInvoice[];
+  inputData: IOrder[];
   comparator: (a: any, b: any) => number;
   filterName: string;
   filterStatus: string;
@@ -516,29 +331,37 @@ function applyFilter({
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (filterName) {
-    inputData = inputData.filter(
-      (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
+  inputData = inputData.filter(
+    (order) =>
+      nonAccent(order.shipName.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !== -1 ||
+      nonAccent(order.displayAddress.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !==
+        -1 ||
+      nonAccent(order.shipPhone.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !==
+        -1 ||
+      nonAccent(order.id.toLowerCase()).indexOf(nonAccent(filterName.toLowerCase())) !== -1
+  );
 
   if (filterStatus !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === filterStatus);
+    inputData = inputData.filter((order) => GROUP_STATUS[filterStatus].includes(order.status));
   }
 
-  if (filterService !== 'all') {
-    inputData = inputData.filter((invoice) =>
-      invoice.items.some((c) => c.service === filterService)
-    );
+  if (filterService !== 'Tất cả') {
+    inputData = inputData.filter((order) => filterService === order.status);
   }
 
   if (filterStartDate && filterEndDate) {
     inputData = inputData.filter(
-      (invoice) =>
-        fTimestampDate(invoice.createDate) >= fTimestampDate(filterStartDate) &&
-        fTimestampDate(invoice.createDate) <= fTimestampDate(filterEndDate)
+      (order) =>
+        fTimestampDate(order.orderDate) >= fTimestampDate(filterStartDate) &&
+        fTimestampDate(order.orderDate) <= fTimestampDate(filterEndDate)
+    );
+  } else if (filterStartDate) {
+    inputData = inputData.filter(
+      (order) => fTimestampDate(order.orderDate) >= fTimestampDate(filterStartDate)
+    );
+  } else if (filterEndDate) {
+    inputData = inputData.filter(
+      (order) => fTimestampDate(order.orderDate) <= fTimestampDate(filterEndDate)
     );
   }
 

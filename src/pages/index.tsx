@@ -12,7 +12,13 @@ import ShopLayout from 'src/layouts/shop';
 // components
 import ScrollProgress from 'src/components/scroll-progress';
 // sections
-import { HomeHero, HomeTopTrending, HomeHugePackElements, HomeF } from '../sections/home';
+import {
+  HomeHero,
+  HomeTopTrending,
+  HomeNewest,
+  HomeDiscount,
+  HomeFlashSale,
+} from '../sections/home';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +34,7 @@ export const getStaticProps: GetStaticProps = async () => {
     const newest = await bookApi.newest({ baseURL: `${ENDPOINT}/api` });
     const upComing = await bookApi.upComing({ baseURL: `${ENDPOINT}/api` });
     const random = await bookApi.random({ baseURL: `${ENDPOINT}/api` });
+    const flashSale = await bookApi.flashSale({ baseURL: `${ENDPOINT}/api` });
 
     return {
       props: {
@@ -37,8 +44,9 @@ export const getStaticProps: GetStaticProps = async () => {
         newest,
         upComing,
         random,
+        flashSale,
       },
-      revalidate: 1,
+      revalidate: 60 * 30,
     };
   } catch (err) {
     console.log(err);
@@ -57,12 +65,14 @@ type Props = {
   newest: IBookCompact[];
   upComing: IBookCompact[];
   random: IBookCompact[];
+  flashSale: IBookCompact[];
 };
 export default function HomePage({
   ads,
   bestSeller,
   bestDiscount,
   newest,
+  flashSale,
   upComing,
   random,
 }: Props) {
@@ -83,13 +93,16 @@ export default function HomePage({
           top: 0,
           right: 0,
           bgcolor: 'background.default',
+          mb: -10,
         }}
       >
         <HomeTopTrending data={bestSeller} />
 
-        <HomeF data={bestDiscount} />
+        <HomeDiscount data={bestDiscount} />
 
-        <HomeHugePackElements data={newest} />
+        <HomeNewest data={newest} />
+
+        <HomeFlashSale data={flashSale} />
 
         {/* <HomeForDesigner />
 

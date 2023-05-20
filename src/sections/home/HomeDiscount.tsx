@@ -7,7 +7,6 @@ import { IBookCompact } from 'src/@types/book';
 // @mui
 import {
   Box,
-  Button,
   Card,
   Container,
   Divider,
@@ -22,7 +21,6 @@ import {
 import { styled } from '@mui/material/styles';
 // components
 import NextLink from 'next/link';
-import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
 // utils
@@ -99,11 +97,11 @@ const StyledThumbnailsContainer = styled('div', {
 }));
 
 const StyledRoot = styled('div')(({ theme }) => ({
-  padding: theme.spacing(3, 0),
-  bgcolor: '#f0f0f0',
+  padding: theme.spacing(4, 0),
+  backgroundColor: '#f0f0f0',
   display: 'none',
   [theme.breakpoints.up('md')]: {
-    padding: theme.spacing(8, 0),
+    padding: theme.spacing(10, 0),
     display: 'block',
   },
 }));
@@ -113,7 +111,7 @@ type Props = {
   data: IBookCompact[];
 };
 
-export default function HomeF({ data }: Props) {
+export default function HomeDiscount({ data }: Props) {
   const [current, setCurrent] = useState(data[0]);
   const [count, setCount] = useState(0);
 
@@ -421,19 +419,6 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
               ))}
             </Grid>
 
-            {/* <Stack direction="row" alignItems="center" spacing={1}>
-            <Rating
-              value={reviews.reduce((a, b) => a + b.rating, 0) / reviews.length}
-              precision={0.1}
-              readOnly
-            />
-    
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <Link onClick={scrollToTab} color="warning.main" sx={{ cursor: 'pointer' }}>
-                ({fShortenNumber(reviews.length) || 'Chưa có '} đánh giá)
-              </Link>
-            </Typography>
-          </Stack> */}
             <Stack
               direction="row"
               spacing={1}
@@ -468,31 +453,6 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
           </Stack>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
-
-          <Stack direction="row" spacing={2} mt={4}>
-            <Button
-              fullWidth
-              disabled={stopSale || outStock}
-              size="large"
-              color="warning"
-              variant="contained"
-              startIcon={<Iconify icon="ic:round-add-shopping-cart" />}
-              // onClick={handleAddCart}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Thêm vào giỏ hàng
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              disabled={stopSale || outStock}
-              // onClick={handleBuyNow}
-              variant="contained"
-            >
-              Mua ngay
-            </Button>
-          </Stack>
 
           <Box
             sx={{
