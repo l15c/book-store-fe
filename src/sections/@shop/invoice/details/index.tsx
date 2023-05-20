@@ -1,5 +1,5 @@
 import orderApi from 'src/api-client/order';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -14,8 +14,8 @@ import {
   TableCell,
   Typography,
   TableContainer,
-  Button,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { IOrder } from 'src/@types/order';
 import Logo from 'src/components/logo/BookShop';
 // utils
@@ -46,6 +46,13 @@ type Props = {
 export default function InvoiceDetails({ order }: Props) {
   const queryClient = useQueryClient();
 
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (_id: string) => orderApi.cancelOrder(_id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'orders', id], refetchType: 'all' });
+    },
+  });
+
   if (!order) {
     return null;
   }
@@ -65,10 +72,6 @@ export default function InvoiceDetails({ order }: Props) {
     status,
   } = order;
 
-  const handleCancel = async () => {
-    await orderApi.cancelOrder(id);
-    queryClient.invalidateQueries({ queryKey: ['user', 'orders', id], refetchType: 'all' });
-  };
   return (
     <>
       <InvoiceToolbar order={order} />
@@ -82,9 +85,15 @@ export default function InvoiceDetails({ order }: Props) {
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Box sx={{ textAlign: { sm: 'right' } }}>
               {status === 'Đang xử lý' && (
-                <Button variant="outlined" sx={{ mr: 2 }} color="error" onClick={handleCancel}>
+                <LoadingButton
+                  loading={isLoading}
+                  variant="outlined"
+                  sx={{ mr: 2 }}
+                  color="error"
+                  onClick={() => mutate(id)}
+                >
                   Hủy đơn
-                </Button>
+                </LoadingButton>
               )}
               <Label
                 variant="soft"

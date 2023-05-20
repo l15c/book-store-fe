@@ -1,6 +1,15 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 // @mui
-import { Stack, TableCell, TableRow, Typography, TextField, MenuItem } from '@mui/material';
+import {
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+  TextField,
+  MenuItem,
+  InputAdornment,
+  CircularProgress,
+} from '@mui/material';
 import orderApi from 'src/api-client/order';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
@@ -25,12 +34,15 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
 
   const queryClient = useQueryClient();
 
-  const handleChangeStatus = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await orderApi.update({ orderId: row.id, status: event.target.value });
-    queryClient.invalidateQueries({
-      queryKey: ['admin', 'orders'],
-      refetchType: 'all',
-    });
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (data: { orderId: string; status: string }) => orderApi.update(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'], refetchType: 'all' });
+    },
+  });
+
+  const handleChangeStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    mutate({ orderId: row.id, status: event.target.value });
   };
 
   return (
@@ -93,6 +105,15 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
           select
           label="Trạng thái"
           value=""
+          {...(isLoading && {
+            InputProps: {
+              endAdornment: (
+                <InputAdornment position="end" sx={{ mr: 1.5 }}>
+                  <CircularProgress size={20} />
+                </InputAdornment>
+              ),
+            },
+          })}
           onChange={handleChangeStatus}
           SelectProps={{
             MenuProps: {
