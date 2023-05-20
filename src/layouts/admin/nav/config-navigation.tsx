@@ -41,10 +41,10 @@ const navConfig = [
   {
     subheader: 'Tổng quan',
     items: [
-      { title: 'Trang chủ', path: PATH_ADMIN.general.app, icon: ICONS.dashboard },
-      { title: 'Cửa hàng', path: PATH_ADMIN.general.ecommerce, icon: ICONS.ecommerce },
-      { title: 'Thống kê', path: PATH_ADMIN.general.analytics, icon: ICONS.analytics },
-      { title: 'Vận chuyển', path: PATH_ADMIN.general.banking, icon: ICONS.banking },
+      // { title: 'Trang chủ', path: PATH_ADMIN.general.app, icon: ICONS.dashboard },
+      { title: 'Trang chủ', path: PATH_ADMIN.general.ecommerce, icon: ICONS.ecommerce },
+      // { title: 'Thống kê', path: PATH_ADMIN.general.analytics, icon: ICONS.analytics },
+      // { title: 'Vận chuyển', path: PATH_ADMIN.general.banking, icon: ICONS.banking },
       // { title: 'booking', path: PATH_ADMIN.general.booking, icon: ICONS.booking },
       // { title: 'file', path: PATH_ADMIN.general.file, icon: ICONS.file },
     ],
@@ -63,6 +63,7 @@ const navConfig = [
         children: [
           { title: 'Danh sách', path: PATH_ADMIN.eCommerce.list },
           { title: 'Tạo mới', path: PATH_ADMIN.eCommerce.new },
+          // { title: 'Flash sale', path: PATH_ADMIN.eCommerce.flashSale },
           { title: 'Thông tin khác', path: PATH_ADMIN.eCommerce.moreInfo },
         ],
       },

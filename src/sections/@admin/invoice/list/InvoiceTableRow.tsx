@@ -1,5 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query';
 // @mui
-import { Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { Stack, TableCell, TableRow, Typography, TextField, MenuItem } from '@mui/material';
+import orderApi from 'src/api-client/order';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 import { fDate } from '../../../../utils/formatTime';
@@ -9,6 +11,7 @@ import { IOrder } from '../../../../@types/order';
 import { CustomAvatar } from '../../../../components/custom-avatar';
 import Label from '../../../../components/label';
 import { COLOR_STATUS } from '../../../@shop/invoice/constant';
+import { GROUP_STATUS } from '../constant';
 
 // ----------------------------------------------------------------------
 
@@ -18,20 +21,21 @@ type Props = {
 };
 
 export default function InvoiceTableRow({ row, onViewRow }: Props) {
-  const {
-    shipPhone,
-    totalPrice,
-    deliveryFee,
-    dateOfPayment,
-    displayAddress,
-    orderDate,
-    shipName,
-    status,
-  } = row;
+  const { shipPhone, totalPrice, deliveryFee, displayAddress, orderDate, shipName, status } = row;
+
+  const queryClient = useQueryClient();
+
+  const handleChangeStatus = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    await orderApi.update({ orderId: row.id, status: event.target.value });
+    queryClient.invalidateQueries({
+      queryKey: ['admin', 'orders'],
+      refetchType: 'all',
+    });
+  };
 
   return (
-    <TableRow hover onClick={onViewRow} sx={{ cursor: 'pointer' }}>
-      <TableCell>
+    <TableRow hover sx={{ cursor: 'pointer' }}>
+      <TableCell onClick={onViewRow}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <CustomAvatar name={shipName} />
 
@@ -74,8 +78,6 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
 
       <TableCell align="center">{fDate(orderDate)}</TableCell>
 
-      <TableCell align="center">{dateOfPayment ? fDate('2023-05-19T15:45:50.475') : '-'}</TableCell>
-
       <TableCell align="center">{fCurrency(totalPrice + deliveryFee)}</TableCell>
 
       <TableCell align="center">
@@ -84,7 +86,46 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
         </Label>
       </TableCell>
 
-      <TableCell align="right">Action</TableCell>
+      <TableCell>
+        <TextField
+          fullWidth
+          size="small"
+          select
+          label="Trạng thái"
+          value=""
+          onChange={handleChangeStatus}
+          SelectProps={{
+            MenuProps: {
+              PaperProps: {
+                sx: { maxHeight: 220 },
+              },
+            },
+          }}
+          sx={{
+            maxWidth: { md: 200 },
+          }}
+        >
+          {[
+            ...Object.keys(GROUP_STATUS)
+              .map((key) => GROUP_STATUS[key])
+              .flat(),
+          ]
+            .filter((e) => e !== status)
+            .map((option) => (
+              <MenuItem
+                key={option}
+                value={option}
+                sx={{
+                  mx: 1,
+                  borderRadius: 0.75,
+                  typography: 'body2',
+                }}
+              >
+                {option}
+              </MenuItem>
+            ))}
+        </TextField>
+      </TableCell>
     </TableRow>
   );
 }

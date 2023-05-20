@@ -1,3 +1,5 @@
+import orderApi from 'src/api-client/order';
+import { useQueryClient } from '@tanstack/react-query';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -12,6 +14,7 @@ import {
   TableCell,
   Typography,
   TableContainer,
+  Button,
 } from '@mui/material';
 import { IOrder } from 'src/@types/order';
 import Logo from 'src/components/logo/BookShop';
@@ -41,6 +44,8 @@ type Props = {
 };
 
 export default function InvoiceDetails({ order }: Props) {
+  const queryClient = useQueryClient();
+
   if (!order) {
     return null;
   }
@@ -59,6 +64,11 @@ export default function InvoiceDetails({ order }: Props) {
     shipName,
     status,
   } = order;
+
+  const handleCancel = async () => {
+    await orderApi.cancelOrder(id);
+    queryClient.invalidateQueries({ queryKey: ['user', 'orders', id], refetchType: 'all' });
+  };
   return (
     <>
       <InvoiceToolbar order={order} />
@@ -71,6 +81,11 @@ export default function InvoiceDetails({ order }: Props) {
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Box sx={{ textAlign: { sm: 'right' } }}>
+              {status === 'Đang xử lý' && (
+                <Button variant="outlined" sx={{ mr: 2 }} color="error" onClick={handleCancel}>
+                  Hủy đơn
+                </Button>
+              )}
               <Label
                 variant="soft"
                 color={COLOR_STATUS[status] || 'default'}

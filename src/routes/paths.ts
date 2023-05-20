@@ -88,9 +88,10 @@ export const PATH_ADMIN = {
   },
   eCommerce: {
     root: path(ROOTS_ADMIN, '/e-commerce'),
-    list: path(ROOTS_ADMIN, '/e-commerce/product'),
+    list: path(ROOTS_ADMIN, '/e-commerce/product/list'),
     new: path(ROOTS_ADMIN, '/e-commerce/product/new'),
     edit: (name: string) => path(ROOTS_ADMIN, `/e-commerce/product/${name}/edit`),
+    flashSale: path(ROOTS_ADMIN, '/e-commerce/product/flash-sale'),
     moreInfo: path(ROOTS_ADMIN, '/e-commerce/product/more-info'),
   },
   invoice: {

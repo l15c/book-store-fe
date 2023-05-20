@@ -49,10 +49,9 @@ import { InvoiceTableRow, InvoiceTableToolbar } from 'src/sections/@admin/invoic
 const TABLE_HEAD = [
   { id: 'shipName', label: 'Thông tin đơn hàng', align: 'left', width: 400, minWidth: 400 },
   { id: 'orderDate', label: 'Ngày đặt hàng', align: 'center' },
-  { id: 'dateOfPayment', label: 'Ngày thanh toán', align: 'center' },
   { id: 'totalPrice', label: 'Tổng đơn hàng', align: 'center', width: 140 },
   { id: 'status', label: 'Trạng thái', align: 'center', width: 180 },
-  { id: 'action' },
+  { id: 'action', width: 200, minWidth: 200 },
 ];
 
 // ----------------------------------------------------------------------
