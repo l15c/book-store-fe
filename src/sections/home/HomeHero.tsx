@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { IAds } from 'src/api-client/ads';
 // @mui
-import { Box, Container, Grid } from '@mui/material';
+import { Box, Container, Grid, Stack } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 // utils
 import { getUrlImage } from 'src/utils/cloudinary';
@@ -46,7 +46,7 @@ export default function HomeHero({ data }: { data: IAds[] }) {
   return (
     <StyledRoot sx={{ ...(hide && { opacity: 0 }) }}>
       <Container component={MotionContainer} disableGutters sx={{ height: 1, py: 1 }}>
-        <Grid container spacing={1}>
+        <Grid container spacing={1.5}>
           <Grid item xs={12} md={9}>
             <Box sx={{ borderRadius: { xs: 0, md: 2 }, overflow: 'hidden', height: 1 }}>
               <CarouselHome data={data.slice(0, 4)} />
@@ -54,18 +54,22 @@ export default function HomeHero({ data }: { data: IAds[] }) {
           </Grid>
 
           <Grid item md={3} display={{ xs: 'none', md: 'block' }}>
-            {data.slice(6, 8).map((e) => (
-              <Grid item xs={12} key={e.id} sx={{ position: 'relative', height: '50%' }}>
-                <Image
-                  alt="Catalog"
-                  src={getUrlImage.single(`${e.image}`, '/ads')}
-                  fill
-                  priority
-                  sizes="100vw"
-                  // style={{ width: '100%', height: 'auto' }}
-                />
-              </Grid>
-            ))}
+            <Stack spacing={1.5} height="100%">
+              {data.slice(4, 6).map((e) => (
+                <Box key={e.id} sx={{ position: 'relative', height: '50%' }}>
+                  <Image
+                    alt="Catalog"
+                    src={getUrlImage.single(`${e.image}`, '/ads')}
+                    // fill
+                    width={0}
+                    height={0}
+                    priority
+                    sizes="100vw"
+                    style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                  />
+                </Box>
+              ))}
+            </Stack>
           </Grid>
 
           {data.slice(6).map((e) => (
@@ -82,7 +86,7 @@ export default function HomeHero({ data }: { data: IAds[] }) {
             </Grid>
           ))}
         </Grid>
-        <CarouselAutoSlide data={[...Array(8).fill(data[9])]} />
+        {/* <CarouselAutoSlide data={[...Array(8).fill(data[9])]} /> */}
       </Container>
     </StyledRoot>
   );
@@ -161,50 +165,50 @@ function CarouselItem({ image, id }: CarouselItemProps) {
   );
 }
 
-function CarouselAutoSlide({ data }: CarouselProps) {
-  const carouselRef = useRef<Carousel | null>(null);
+// function CarouselAutoSlide({ data }: CarouselProps) {
+//   const carouselRef = useRef<Carousel | null>(null);
 
-  const settings = {
-    infinite: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 2000,
-    pauseOnHover: true,
-    pauseOnFocus: true,
-    cssEase: 'linear',
-  };
+//   const settings = {
+//     infinite: true,
+//     slidesToShow: 3,
+//     slidesToScroll: 1,
+//     autoplay: true,
+//     speed: 2000,
+//     pauseOnHover: true,
+//     pauseOnFocus: true,
+//     cssEase: 'linear',
+//   };
 
-  return (
-    <Box
-      sx={{
-        mt: 2,
-        maxHeight: 100,
-        '& .slick-slide': {
-          mx: 5,
-          width: 'unset !important',
-        },
-      }}
-    >
-      <Carousel ref={carouselRef} {...settings}>
-        {data.map(({ id, image }) => (
-          <CarouselItemAuto key={id} id={id} image={image} />
-        ))}
-      </Carousel>
-    </Box>
-  );
-}
+//   return (
+//     <Box
+//       sx={{
+//         mt: 2,
+//         maxHeight: 100,
+//         '& .slick-slide': {
+//           mx: 5,
+//           width: 'unset !important',
+//         },
+//       }}
+//     >
+//       <Carousel ref={carouselRef} {...settings}>
+//         {data.map(({ id, image }) => (
+//           <CarouselItemAuto key={id} id={id} image={image} />
+//         ))}
+//       </Carousel>
+//     </Box>
+//   );
+// }
 
-function CarouselItemAuto({ id, image }: CarouselItemProps) {
-  return (
-    <Image
-      alt={`${id}`}
-      src={image}
-      width={0}
-      height={100}
-      sizes="100vw"
-      style={{ width: 'auto', objectFit: 'contain' }}
-      priority
-    />
-  );
-}
+// function CarouselItemAuto({ id, image }: CarouselItemProps) {
+//   return (
+//     <Image
+//       alt={`${id}`}
+//       src={image}
+//       width={0}
+//       height={100}
+//       sizes="100vw"
+//       style={{ width: 'auto', objectFit: 'contain' }}
+//       priority
+//     />
+//   );
+// }

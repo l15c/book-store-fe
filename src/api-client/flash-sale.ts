@@ -1,23 +1,13 @@
-import { ICartResponse } from 'src/@types/book';
-import { GET, POST, DELETE } from './axios';
-
-type IFlashSale = {
-  id: 1;
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-};
+import { IFlashSale } from 'src/@types/flash-sale';
+import { GET, POST, PUT, DELETE } from './axios';
 
 const flashSaleApi = {
-  getList: () => GET('/orders'),
-  adminGetAll: () => GET('/orders/all'),
-  getById: (id: string) => GET(`/orders/${id}`),
-  create: (data: any) => POST('/orders', data),
-  update: (data: any) => POST('/orders', data),
-  remove: (id: string) => DELETE(`/orders?bookId=${id}`),
-  clear: () => DELETE('/orders/clear'),
+  getList: () => GET<IFlashSale[]>('/sales'),
+  getById: (id: number) => GET<IFlashSale>(`/sales/id?id=${id}`),
+  getCurrentSale: () => GET<IFlashSale>(`/sales/current-sale`),
+  create: (data: Omit<IFlashSale, 'id'>) => POST<Omit<IFlashSale, 'id'>, unknown>('/sales', data),
+  update: (data: IFlashSale) => PUT<IFlashSale, IFlashSale>('/sales', data),
+  delete: (id: number) => DELETE(`/sales/id?id=${id}`),
 };
 
 export default flashSaleApi;

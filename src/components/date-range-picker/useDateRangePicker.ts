@@ -39,13 +39,13 @@ export default function useDateRangePicker(start: Date | null, end: Date | null)
     if (isCurrentYear) {
       if (isSameMonths) {
         if (isSameDays) {
-          return fDate(endDate, 'dd MMM yy');
+          return fDate(endDate, 'dd/MM/yyyy');
         }
-        return `${fDate(startDate, 'dd')} - ${fDate(endDate, 'dd MMM yy')}`;
+        return `${fDate(startDate, 'dd')} - ${fDate(endDate, 'dd/MM/yyyy')}`;
       }
-      return `${fDate(startDate, 'dd MMM')} - ${fDate(endDate, 'dd MMM yy')}`;
+      return `${fDate(startDate, 'dd/MM')} - ${fDate(endDate, 'dd/MM/yyyy')}`;
     }
-    return `${fDate(startDate, 'dd MMM yy')} - ${fDate(endDate, 'dd MMM yy')}`;
+    return `${fDate(startDate, 'dd/MM/yyyy')} - ${fDate(endDate, 'dd/MM/yyyy')}`;
   };
 
   const onChangeStartDate = (newValue: Date | null) => {
