@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import orderApi from 'src/api-client/order';
 // utils
+import { useAuthContext } from 'src/auth/useAuthContext';
 import { fCurrency } from '../../../../utils/formatNumber';
 import { fDate } from '../../../../utils/formatTime';
 // @types
@@ -31,6 +32,8 @@ type Props = {
 
 export default function InvoiceTableRow({ row, onViewRow }: Props) {
   const { shipPhone, totalPrice, deliveryFee, displayAddress, orderDate, shipName, status } = row;
+
+  const { user } = useAuthContext();
 
   const queryClient = useQueryClient();
 
@@ -99,53 +102,55 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
       </TableCell>
 
       <TableCell>
-        <TextField
-          fullWidth
-          size="small"
-          select
-          label="Trạng thái"
-          value=""
-          {...(isLoading && {
-            InputProps: {
-              endAdornment: (
-                <InputAdornment position="end" sx={{ mr: 1.5 }}>
-                  <CircularProgress size={20} />
-                </InputAdornment>
-              ),
-            },
-          })}
-          onChange={handleChangeStatus}
-          SelectProps={{
-            MenuProps: {
-              PaperProps: {
-                sx: { maxHeight: 220 },
+        {user?.roleId === 4 && (
+          <TextField
+            fullWidth
+            size="small"
+            select
+            label="Trạng thái"
+            value=""
+            {...(isLoading && {
+              InputProps: {
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ mr: 1.5 }}>
+                    <CircularProgress size={20} />
+                  </InputAdornment>
+                ),
               },
-            },
-          }}
-          sx={{
-            maxWidth: { md: 200 },
-          }}
-        >
-          {[
-            ...Object.keys(GROUP_STATUS)
-              .map((key) => GROUP_STATUS[key])
-              .flat(),
-          ]
-            .filter((e) => e !== status)
-            .map((option) => (
-              <MenuItem
-                key={option}
-                value={option}
-                sx={{
-                  mx: 1,
-                  borderRadius: 0.75,
-                  typography: 'body2',
-                }}
-              >
-                {option}
-              </MenuItem>
-            ))}
-        </TextField>
+            })}
+            onChange={handleChangeStatus}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: {
+                  sx: { maxHeight: 220 },
+                },
+              },
+            }}
+            sx={{
+              maxWidth: { md: 200 },
+            }}
+          >
+            {[
+              ...Object.keys(GROUP_STATUS)
+                .map((key) => GROUP_STATUS[key])
+                .flat(),
+            ]
+              .filter((e) => e !== status)
+              .map((option) => (
+                <MenuItem
+                  key={option}
+                  value={option}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 0.75,
+                    typography: 'body2',
+                  }}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+          </TextField>
+        )}
       </TableCell>
     </TableRow>
   );

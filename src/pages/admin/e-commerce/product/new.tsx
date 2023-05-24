@@ -11,11 +11,16 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // sections
 import { ProductNewEditForm } from 'src/sections/@admin/e-commerce';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
 
 EcommerceProductCreatePage.getLayout = (page: React.ReactElement) => (
-  <AdminLayout>{page}</AdminLayout>
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
 );
 
 // ----------------------------------------------------------------------

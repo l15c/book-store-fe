@@ -53,9 +53,12 @@ export default function ProductTableToolbar({
           width: { xs: 1, md: 320 },
         }}
       >
-        <InputLabel sx={{ '&.Mui-focused': { color: 'text.primary' } }}>Trạng thái</InputLabel>
+        <InputLabel size="small" sx={{ '&.Mui-focused': { color: 'text.primary' } }}>
+          Trạng thái
+        </InputLabel>
         <Select
           multiple
+          size="small"
           value={filterStatus}
           onChange={onFilterStatus}
           input={<OutlinedInput label="Trạng thái" />}
@@ -84,6 +87,7 @@ export default function ProductTableToolbar({
 
       <TextField
         fullWidth
+        size="small"
         value={filterName}
         onChange={onFilterName}
         placeholder="Tìm kiếm sách..."

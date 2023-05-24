@@ -11,6 +11,7 @@ import { Container } from '@mui/material';
 // layouts
 import AdminLayout from 'src/layouts/admin';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 // // sections
 import { ProductNewEditForm } from 'src/sections/@admin/e-commerce';
 // components
@@ -23,7 +24,11 @@ import { LoadingLinear } from '../../../../../components/loading-screen/LoadingS
 // ----------------------------------------------------------------------
 
 EcommerceProductEditPage.getLayout = (page: React.ReactElement) => (
-  <AdminLayout>{page}</AdminLayout>
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
 );
 
 // ----------------------------------------------------------------------

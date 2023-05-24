@@ -38,9 +38,12 @@ import { fDateTimeRange } from 'src/utils/formatTime';
 import { LoadingButton } from '@mui/lab';
 import { IFlashSale } from 'src/@types/flash-sale';
 import ConfirmDialog from 'src/components/confirm-dialog/ConfirmDialog';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
-ProductMoreInfoPage.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</AdminLayout>;
+ProductMoreInfoPage.getLayout = (page: React.ReactElement) => <AdminLayout><RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+{page}
+</RoleBasedGuard></AdminLayout>;
 
 export default function ProductMoreInfoPage() {
   const { themeStretch } = useSettingsContext();

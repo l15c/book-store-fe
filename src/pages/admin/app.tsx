@@ -32,10 +32,17 @@ import {
 } from 'src/sections/@admin/general/app';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
 
-GeneralAppPage.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</AdminLayout>;
+GeneralAppPage.getLayout = (page: React.ReactElement) => (
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
+);
 
 // ----------------------------------------------------------------------
 

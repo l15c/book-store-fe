@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 // next
 import Head from 'next/head';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
 // @mui
 import { Container, Typography, Stack, Pagination } from '@mui/material';
 // layouts
@@ -38,11 +37,9 @@ const PAGE_SIZE = 12;
 export default function ProductsPage() {
   const { themeStretch } = useSettingsContext();
 
-  const { query } = useRouter();
   const searchParams = useSearchParams();
-  console.log(searchParams.getAll('a'));
 
-  const search = (query.q ?? '') as string;
+  const search = searchParams.get('q') ?? '';
 
   const [openFilter, setOpenFilter] = useState(false);
 

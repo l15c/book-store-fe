@@ -30,10 +30,17 @@ import {
 import { AppWelcome } from 'src/sections/@admin/general/app';
 // assets
 import { MotivationIllustration } from 'src/assets/illustrations';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
 
-GeneralEcommercePage.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</AdminLayout>;
+GeneralEcommercePage.getLayout = (page: React.ReactElement) => (
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
+);
 
 // ----------------------------------------------------------------------
 
