@@ -22,7 +22,8 @@ export default function Index() {
   }, [pathname]);
 
   useEffect(() => {
-    prefetch(PATH_AFTER_LOGIN);
+    if (user?.roleId === 4) prefetch(PATH_ADMIN.invoice.root);
+    else prefetch(PATH_ADMIN.general.ecommerce);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
