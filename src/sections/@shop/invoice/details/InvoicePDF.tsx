@@ -118,7 +118,9 @@ export default function InvoicePDF({ order }: Props) {
                 </View>
 
                 <View style={[styles.tableCell_3, styles.alignRight]}>
-                  <Text>{fCurrency(item.price * (1 - item.discount / 100) * item.quantity)}</Text>
+                  <Text>
+                    {fCurrency(item.price * (1 - (item.discount || 0) / 100) * item.quantity)}
+                  </Text>
                 </View>
               </View>
             ))}

@@ -41,6 +41,7 @@ import { ProductTableRow, ProductTableToolbar } from 'src/sections/@admin/e-comm
 import { useQuery } from '@tanstack/react-query';
 import bookApi from 'src/api-client/book';
 import useDebounce from 'src/hooks/useDebounce';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
 
@@ -65,7 +66,11 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 EcommerceProductListPage.getLayout = (page: React.ReactElement) => (
-  <AdminLayout>{page}</AdminLayout>
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
 );
 
 // ----------------------------------------------------------------------

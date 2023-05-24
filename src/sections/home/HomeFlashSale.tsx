@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import { useRef } from 'react';
 import { m } from 'framer-motion';
 // @mui
-import { Box, Button, Card, Container, Link, Stack } from '@mui/material';
+import { Box, Button, Card, Container } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // utils
 // @types
@@ -97,7 +97,7 @@ export default function HomeFlashSale({ data }: Props) {
             <Button
               variant="outlined"
               component={NextLink}
-              href="/products?flashSale=true"
+              href="/products?flashSale"
               sx={{ display: 'flex', width: 'fit-content', mx: 'auto', mb: 2, px: 4 }}
             >
               Xem thêm

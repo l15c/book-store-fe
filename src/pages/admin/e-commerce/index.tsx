@@ -5,9 +5,16 @@ import { useRouter } from 'next/router';
 import AdminLayout from 'src/layouts/admin/AdminLayout';
 // routes
 import { PATH_ADMIN } from 'src/routes/paths';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
-EcommerceIndex.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</AdminLayout>;
+EcommerceIndex.getLayout = (page: React.ReactElement) => (
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
+);
 
 export default function EcommerceIndex() {
   const { pathname, push } = useRouter();

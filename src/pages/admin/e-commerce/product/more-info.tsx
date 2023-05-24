@@ -25,9 +25,16 @@ import { IAuthor, IGenre, IPublisher } from 'src/@types/book';
 import { toNonAccentVietnamese as nonAccent } from 'src/utils/stringConverter';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import RoleBasedGuard from 'src/auth/RoleBasedGuard';
 
 // ----------------------------------------------------------------------
-ProductMoreInfoPage.getLayout = (page: React.ReactElement) => <AdminLayout>{page}</AdminLayout>;
+ProductMoreInfoPage.getLayout = (page: React.ReactElement) => (
+  <AdminLayout>
+    <RoleBasedGuard hasContent roles={[1, 2, 3, 5]}>
+      {page}
+    </RoleBasedGuard>
+  </AdminLayout>
+);
 
 export default function ProductMoreInfoPage() {
   const { themeStretch } = useSettingsContext();

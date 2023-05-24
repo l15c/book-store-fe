@@ -306,7 +306,7 @@ export default function ProductDetailsSummary({
               </Box>
             )}
 
-            {fCurrency(price * (1 - discount / 100))}
+            {fCurrency(price * (1 - (discount || 0) / 100))}
           </Typography>
           {!stopSale && sale && (
             <Label variant="filled" color="error" sx={{ fontSize: 16, py: 2 }}>

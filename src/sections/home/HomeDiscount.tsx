@@ -436,7 +436,7 @@ function DetailSummary({ count, book }: { count: number; book: IBookCompact }) {
                   </Box>
                 )}
 
-                {fCurrency(price * (1 - discount / 100))}
+                {fCurrency(price * (1 - (discount || 0) / 100))}
               </Typography>
               {!stopSale && sale && (
                 <Label

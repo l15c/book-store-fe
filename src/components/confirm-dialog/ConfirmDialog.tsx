@@ -11,6 +11,7 @@ export default function ConfirmDialog({
   action,
   open,
   onClose,
+  textCancel = 'Hủy',
   ...other
 }: ConfirmDialogProps) {
   return (
@@ -23,7 +24,7 @@ export default function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Huỷ
+          {textCancel}
         </Button>
       </DialogActions>
     </Dialog>

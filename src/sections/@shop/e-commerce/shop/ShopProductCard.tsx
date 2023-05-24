@@ -135,7 +135,7 @@ export default function ShopProductCard({ book, disableFlashSale }: Props) {
                 </Typography>
               </Stack>
             )) ||
-              (discount && (
+              (!!discount && (
                 <Label
                   variant="filled"
                   color="error"
@@ -232,7 +232,7 @@ export default function ShopProductCard({ book, disableFlashSale }: Props) {
               )}
 
               <Box component="span" sx={{ color: 'primary.main' }}>
-                {fCurrency(price * (1 - (0.01 * discount ?? 0)))}
+                {fCurrency(price * (1 - 0.01 * (discount || 0)))}
               </Box>
             </Stack>
           </Stack>

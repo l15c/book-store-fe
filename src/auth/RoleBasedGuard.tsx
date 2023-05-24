@@ -14,8 +14,6 @@ type RoleBasedGuardProp = {
   hasContent?: boolean;
   excludes?: boolean;
   roles?: number[];
-  permissions?: string[];
-  views?: string[];
   children: React.ReactNode;
 };
 
@@ -23,8 +21,6 @@ export default function RoleBasedGuard({
   hasContent,
   excludes,
   roles,
-  views,
-  permissions,
   children,
 }: RoleBasedGuardProp) {
   // Logic here to get current user role

@@ -9,4 +9,5 @@ export interface ConfirmDialogProps extends Omit<DialogProps, 'title'> {
   action: React.ReactNode;
   open: boolean;
   onClose: VoidFunction;
+  textCancel?: string;
 }

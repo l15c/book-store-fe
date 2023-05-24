@@ -206,7 +206,7 @@ export default function InvoiceDetails({ order }: Props) {
                     <TableCell align="right">{fCurrency(row.price)}</TableCell>
                     <TableCell align="center">{row.discount ? `${row.discount}%` : '-'}</TableCell>
                     <TableCell align="right">
-                      {fCurrency(row.price * (1 - row.discount / 100) * row.quantity)}
+                      {fCurrency(row.price * (1 - (row.discount || 0) / 100) * row.quantity)}
                     </TableCell>
                   </TableRow>
                 ))}
